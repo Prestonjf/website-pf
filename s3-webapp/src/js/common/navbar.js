@@ -13,7 +13,7 @@ class AppNavbar extends React.Component {
     return (
       <Navbar  bg="dark" variant="dark" expand="lg" style={style}>
         <Navbar.Brand href="#home">
-        <img alt="prestonlogo" src={logo} height="30" wdith="30"/>&nbsp;Preston | Website</Navbar.Brand>
+        <img alt="prestonlogo" src={logo} height="30" wdith="30"/>&nbsp;prestonfrazier.net</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto" defaultActiveKey="#about">

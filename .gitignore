@@ -1,2 +1,11 @@
 build/*
 node_modules/*
+
+/lambda-backend/node_modules/*
+
+/s3-webapp/build/*
+/s3-webapp/node_modules/*
+
+.serverless/*
+.serverless/cloudformation-template-create-stack.json
+.serverless/cloudformation-template-update-stack.json

@@ -1,0 +1,178 @@
+# prestonfrazier.net
+#
+# website-pf Serverless Deployment configuration
+
+service: website-pf
+
+plugins:
+  - serverless-s3-deploy
+  - serverless-s3-sync
+
+# Custom environment variables
+custom:
+    stages:
+      - dev
+      - prod
+    accountId:
+      dev: 890384337971
+      prod: 890384337971
+    acmCertificateArn:
+      dev: "arn:aws:acm:us-east-1:890384337971:certificate/62ab5b7e-a3fa-4598-b6e3-d1eecadf4301"
+      prod: "arn:aws:acm:us-east-1:890384337971:certificate/62ab5b7e-a3fa-4598-b6e3-d1eecadf4301"
+    secretsArn:
+      dev: ""
+      prod: ""
+
+    # Update S3 Files thru serverless plugins
+    assets:
+      targets:
+        - bucket: website-pf-${self:provider.stage}
+          empty: true
+          files:
+            - source: s3-webapp/build/
+              globs: "**/*.md"
+
+    s3Sync:
+      - bucketName: website-pf-${self:provider.stage}
+        localDir: s3-webapp/build/
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  versionFunctions: false
+  endpointType: REGIONAL
+  accountId: ${self:custom.accountId.${self:provider.stage}}
+  region: us-east-1
+  stage: ${opt:stage, 'prod'}
+
+  # IAM Role for Lambda configuration
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource:
+        - "arn:aws:s3:::${self:functions.website-pf.environment.S3_WEBSITE_PF_BUCKET}"
+
+# Application packaging information
+package:
+  exclude:
+    - documentation/**
+    - dynamo-db/**
+    - s3-webapp/**
+    - README.md
+  include:
+    - lamba-backend/**
+
+# Lambda backend configuration
+functions:
+  website-pf:
+    handler: lambda-backend/src/app.handler
+    name: website-pf-${self:provider.stage}
+    description: Website-PF backend for querying and retrieving transitions of care information.
+    memorySize: 128
+    timeout: 10
+    provisionedConcurrency: 0
+
+    events:
+      # API Gateway configuration
+      - http:
+          path: /{proxy+}
+          method: any
+          private: false
+          integration: lambda_proxy
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+            allowCredentials: true
+    environment:
+      LOG_LEVEL: INFO
+      ENVIRONMENT: ${self:provider.stage}
+      S3_WEBSITE_PF_BUCKET: website-pf-${self:provider.stage}
+      VERSION: 0.1.0
+
+
+# CloudFormation resources
+resources:
+  Description: Website-PF CloudFormation Stack using serverless
+  Resources:
+    WebsitePFBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: website-pf-${self:provider.stage}
+        AccessControl: Private
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+    # S3 Bucket for webapp configuration
+    WebAppS3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: WebsitePFBucket
+        PolicyDocument:
+          Statement:
+            - Sid: OAIReadGetObject
+              Effect: Allow
+              Principal:
+                AWS:
+                - { "Fn::Join" : [" ", ["arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity", { Ref: WebAppCloudFrontOriginAccessIdentity } ] ] }
+                - "arn:aws:iam::${self:custom.accountId.${self:provider.stage}}:role/website-pf-${self:provider.stage}-${self:provider.region}-lambdaRole"
+              Action:
+              - s3:GetObject
+              Resource: arn:aws:s3:::website-pf-${self:provider.stage}/*
+    # Cloudfront distribution configuration
+    WebAppCloudFrontOriginAccessIdentity:
+      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: ${self:service}-${self:provider.stage}-access-identity
+    WebAppCloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Comment: Website-PF serverless distribution for webapp in s3 bucket
+          PriceClass: PriceClass_100
+          Origins:
+            - DomainName: website-pf-${self:provider.stage}.s3.amazonaws.com
+              Id: s3-website-pf-${self:provider.stage}
+              S3OriginConfig:
+                OriginAccessIdentity: { "Fn::Join" : ["", ["origin-access-identity/cloudfront/", { Ref: WebAppCloudFrontOriginAccessIdentity } ] ]  }
+          Enabled: 'true'
+          DefaultRootObject: index.html
+          CustomErrorResponses:
+            - ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - DELETE
+              - GET
+              - HEAD
+              - OPTIONS
+              - PATCH
+              - POST
+              - PUT
+            TargetOriginId: s3-website-pf-${self:provider.stage}
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https
+          Aliases:
+            - "prestonfrazier.net"
+            - "*.prestonfrazier.net"
+          ViewerCertificate:
+            AcmCertificateArn: ${self:custom.acmCertificateArn.${self:provider.stage}}
+            MinimumProtocolVersion: "TLSv1.2_2018"
+            SslSupportMethod: "sni-only"
+
+# Serverless stack outputs
+Outputs:
+  WebAppCloudFrontDistributionOutput:
+    Value: { "Fn::GetAtt" : [ WebAppCloudFrontDistribution, DomainName ] }

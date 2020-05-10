@@ -31,7 +31,19 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-
+      console.log(process.env.REACT_APP_API_URL);
+      const url = process.env.REACT_APP_API_URL+'/init';
+      fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          console.log(result);
+          this.setState({isLoaded: true, items: result.items});
+        },
+        (error) => {
+          this.setState({isLoaded: true, error});
+        }
+      )
     }
 }
 

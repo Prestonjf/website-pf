@@ -16,7 +16,7 @@ class AppFooter extends React.Component {
       <a href="https://prestonfrazier.net" target="_blank" rel="noopener noreferrer">prestonfrazier.net</a></span>
       <br />
       <span className="small">
-      React Website | {process.REACT_APP_ENVIRONMENT} v{version}
+      Website | {process.REACT_APP_ENVIRONMENT} v{version}
       </span>
       </div>
     );
