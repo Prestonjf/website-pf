@@ -1,17 +1,16 @@
 {
   "name": "website-react-pf",
   "version": "0.1.0",
+  "description": "Website-PF S3 Webapp",
   "private": true,
   "dependencies": {
-    "bootstrap": "^4.3.1",
-    "concurrently": "^5.2.0",
-    "nodemon": "^1.19.4",
+    "bootstrap": "^4.5.0",
+    "react-bootstrap": "1.0.1",
     "react": "^16.11.0",
-    "react-bootstrap": "^1.0.0-beta.14",
-    "react-burger-menu": "^2.6.11",
     "react-dom": "^16.11.0",
     "react-scripts": "^3.4.1",
-    "react-sidebar": "^3.0.2"
+    "react-sidebar": "^3.0.2",
+    "react-social-icons": "^4.1.0"
   },
   "scripts": {
     "start": "export PORT=3001 && react-scripts start",
@@ -20,8 +19,8 @@
     "eject": "react-scripts eject",
     "server": "nodemon src/index.js 3001"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "devDependencies": {
+    "nodemon": "1.19.4"
   },
   "browserslist": {
     "production": [

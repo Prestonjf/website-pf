@@ -7,7 +7,7 @@ Before you begin, ensure you have met the following requirements:
 
 - 	AWS Account Console Access
 
--	  NPM
+-   NPM
 
 - 	Serverless framework environment
 
