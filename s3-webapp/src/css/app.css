@@ -21,7 +21,7 @@ code {
   display: flex;
   flex-direction: column;
   color: black;
-  padding-bottom: 65px;
+
 }
 
 .header {
@@ -31,7 +31,7 @@ code {
 .content {
   margin-left: 5%;
   margin-right: 5%;
-  margin-top: 30px;;
+  margin-top: 30px;
   background-color: #FFFFFF;
   text-align: center;
 }
@@ -46,7 +46,7 @@ code {
   bottom: 0;
   width: 100%;
   position: absolute;
-  height: 65px;
+  line-height: 25px;
   z-index: 2000;
   font-size: 0.9em;
   padding-top: 8px;
@@ -56,4 +56,27 @@ code {
   text-align: left;
   background-color: #343a40;
   color: white;
+}
+
+#cookiePolicyNotification {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  z-index: 2500;
+  background-color: #ddffaa;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.cookieLink {
+  text-decoration: underline;
+  color: #343a40;
+}
+
+.cookieBtn {
+  background-color: #343a40;
+  color: #FFFFFF;
 }

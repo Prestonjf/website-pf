@@ -28,12 +28,20 @@ custom:
       targets:
         - bucket: website-pf-${self:provider.stage}
           empty: true
+          prefix: site
           files:
             - source: s3-webapp/build/
-              globs: "**/*.md"
-
+              globs: "posts/**"
+        - bucket: website-pf-${self:provider.stage}
+          files:
+            - source: s3-webapp/build/
+              globs:
+                 - "sitemap.xml"
+                 - "robots.txt"
+                 - "rss.xml"
     s3Sync:
       - bucketName: website-pf-${self:provider.stage}
+        bucketPrefix: site/${self:functions.website-pf.environment.VERSION}
         localDir: s3-webapp/build/
 
 provider:
@@ -94,7 +102,8 @@ functions:
       LOG_LEVEL: INFO
       ENVIRONMENT: ${self:provider.stage}
       S3_WEBSITE_PF_BUCKET: website-pf-${self:provider.stage}
-      VERSION: 0.1.0
+      CLOUDFRONT_URL: { "Fn::GetAtt" : [ WebAppCloudFrontDistribution, DomainName ] }
+      VERSION: 0.1.8
 
 
 # CloudFormation resources
@@ -144,20 +153,19 @@ resources:
               S3OriginConfig:
                 OriginAccessIdentity: { "Fn::Join" : ["", ["origin-access-identity/cloudfront/", { Ref: WebAppCloudFrontOriginAccessIdentity } ] ]  }
           Enabled: 'true'
-          DefaultRootObject: index.html
+          DefaultRootObject: site/${self:functions.website-pf.environment.VERSION}/index.html
           CustomErrorResponses:
+            - ErrorCode: 403
+              ResponseCode: 200
+              ResponsePagePath: /site/${self:functions.website-pf.environment.VERSION}/index.html
             - ErrorCode: 404
               ResponseCode: 200
-              ResponsePagePath: /index.html
+              ResponsePagePath: /site/${self:functions.website-pf.environment.VERSION}/index.html
           DefaultCacheBehavior:
             AllowedMethods:
-              - DELETE
               - GET
               - HEAD
               - OPTIONS
-              - PATCH
-              - POST
-              - PUT
             TargetOriginId: s3-website-pf-${self:provider.stage}
             ForwardedValues:
               QueryString: 'false'

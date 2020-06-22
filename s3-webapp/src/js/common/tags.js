@@ -5,13 +5,14 @@ class Tags extends React.Component {
 
   constructor(props) {
     super(props);
+    console.log('display tags');
   }
 
   render() {
 
     return (
-      <div className="tags">
-
+      <div className="post">
+        # TAGS
       </div>
     );
   }

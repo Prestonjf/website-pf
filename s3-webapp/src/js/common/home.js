@@ -14,7 +14,7 @@ class Home extends React.Component {
     };
 
     return (
-      <div className="home">
+      <div className="post">
         <h1>A Tech Blog and Portfolio</h1>
         <p><i>by Preston Frazier</i></p>
         <Container fluid="md">
@@ -22,8 +22,8 @@ class Home extends React.Component {
 
         </Row>
         <Row>
-        <Col md={1}></Col>
-        <Col md={10}>
+        <Col sm={0} md={1}></Col>
+        <Col sm={12} md={10}>
           <Form>
             <Form.Group controlId="formBasicEmail">
               <Form.Control type="email" placeholder="Search for a post" />
@@ -41,12 +41,18 @@ class Home extends React.Component {
 
 
         <Row>
-        <Col md={1}></Col>
-        <Col md={10} style={style}>
+        <Col sm={0} md={1}></Col>
+        <Col sm={12} md={10} style={style}>
           <p>Thank you for visting prestonfrazier.net! The site is currently under construction, but it will soon be a blog site for
           my personal interests, projects, and portfolio. Topics will include technology, programming, music, gaming, and other related content.
           Posts will be tagged and searchable.
-
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          ...qwrojqwpirqnwpin
           </p>
         </Col>
         </Row>
@@ -59,7 +65,21 @@ class Home extends React.Component {
   }
 
   componentDidMount() {
-
+    /*
+    console.log(process.env.REACT_APP_API_URL);
+    const url = process.env.REACT_APP_API_URL+'/init';
+    fetch(url)
+    .then(res => res.json())
+    .then(
+      (result) => {
+        //console.log(result);
+        this.setState({isLoaded: true, items: result.items});
+      },
+      (error) => {
+        this.setState({isLoaded: true, error});
+      }
+    );
+    */
   }
 
   componentWillUnmount() {
