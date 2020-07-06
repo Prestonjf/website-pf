@@ -34,7 +34,7 @@ class AppNavbar extends React.Component {
       <Navbar  bg="dark" variant="dark" expand="lg" style={style}>
         <Navbar.Brand >
         <Link to="/" style={linkStyle}>
-        <img alt="prestonlogo" src={logo} height="30" wdith="30"/>&nbsp;prestonfrazier.net
+        <img alt="prestonfraziernetlogo" src={logo} height="30" wdith="30"/>&nbsp;prestonfrazier.net
         </Link>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />

@@ -52,7 +52,7 @@ class Home extends React.Component {
           <br />
           <br />
           <br />
-          ...qwrojqwpirqnwpin
+          <br />
           </p>
         </Col>
         </Row>

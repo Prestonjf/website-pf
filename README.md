@@ -1,6 +1,6 @@
-# Website prestonfrazier.net
+# website-pf (prestonfrazier.net)
 
-This README file describes how to configure and deploy the prestonfrazier.net website. This is a personal portfolio site. It is built on a serverless architecture using ReactJS as the front end webapp and AWS API Gateway and NodeJS Lambda as the back end server. It is deployed using serverless framework.
+This README file describes how to configure and deploy the prestonfrazier.net web application. This is a personal portfolio and blog site. It is built on an AWS serverless architecture using ReactJS as the front-end webapp and NodeJS as the back-end server. See AWS Services used for full tech stack. It is deployed using serverless framework.
 
 ### Prerequisites
 Before you begin, ensure you have met the following requirements:
@@ -11,7 +11,7 @@ Before you begin, ensure you have met the following requirements:
 
 - 	Serverless framework environment
 
-- 	Serverless-s3-deploy, Serverless-s3-sync plugin
+- 	Plugins: Serverless-s3-deploy, Serverless-s3-sync, serverless-plugin-scripts
 
 
 ### Deployment Instructions
@@ -51,15 +51,16 @@ custom.secretsArn.${self:provider.stage} : { ARN of your AWS Secret for applicat
 **5\.** Deploy website-pf to AWS. Initial deployment will create AWS services via a Cloudformation Stack and subsequent deployments will update these services. Choose the desired stage (dev|prod). Use the following commands:
 
 ```
-$ serverless deploy -s prod
-$ sls s3deploy -s prod
-$ sls s3sync -s prod
+$ serverless fulldeploy -s prod
 ```
 
-**6\.** If initial deployment, you will need to add the URL for the newly created API gateway to the .env file of the React webapp. Modify the file website-pf/s3-webapp/.env and update the following property:
+**6\.** If initial deployment, you will need to add the URL for the newly created API gateway to the .env file of the React webapp. Modify the file website-pf/s3-webapp/.env and update the following property. (Rename .env-example to .env first if .env does not exist):
 
 ```
 REACT_APP_API_URL= { API Gateway execution URL }
+REACT_APP_API_KEY= { API Gateway API Key }
+REACT_APP_ENV= { environment name (DEV|PROD) }
+
 ```
 
 Perform a new React build, and deploy the static resources:
@@ -68,8 +69,7 @@ Perform a new React build, and deploy the static resources:
 $ cd website-pf/s3-webapp
 $ npm run-script build
 
-$ sls s3deploy -s prod
-$ sls s3sync -s prod
+$ serverless fulldeploy -s prod
 ```
 
 **7\.** Website-pf is now deployed.
@@ -81,9 +81,10 @@ $ sls s3sync -s prod
 * View website-pf Lambda Cloudwatch logs for information regarding the application's APIs/back end. Log level can be set with environment variable "LOG_LEVEL". (DEBUG|INFO|ERROR)
 
 ### AWS Services Used
-- S3: Used to store react webapp static content. Also used for serverless framework deployment storage.
+- S3: Used to store react webapp static content and content related to posts. Also used for serverless framework deployment storage.
 - Lambda: NodeJS processing engine to handle dynamic data requests.
-- API Gateway: Endpoint to handle api calls from the webapp.
+- DynamoDB: Database used to index and store metadata about posts.
+- API Gateway: Endpoint to handle api calls from the webapp. Secured with API Key and configured with Usage Plan to throttle requests.
 - Cloudfront: Used to securely host and quickly deliver static webapp content to the end users.
 - Secrets: Stores credentials and urls for website-pf lambda.
 - IAM: Custom role created for website-pf lambda in order to access needed services.

@@ -9,3 +9,4 @@ node_modules/*
 .serverless/*
 .serverless/cloudformation-template-create-stack.json
 .serverless/cloudformation-template-update-stack.json
+s3-webapp/.env

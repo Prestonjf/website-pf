@@ -12,6 +12,16 @@ code {
     monospace;
 }
 
+.defaultLinkStyle, .defaultLinkStyle:hover  {
+  text-decoration: none;
+  color: #ddffaa;
+}
+
+.defaultPageStyle {
+  background-color: #343a40;
+  color: #ddffaa;
+}
+
 .wrap {
   min-height: 100vh;
   position: relative;
@@ -37,7 +47,7 @@ code {
 }
 
 .post {
-  max-width: 1180px;
+  max-width: 1150px;
   margin-left: auto;
   margin-right: auto;
 }

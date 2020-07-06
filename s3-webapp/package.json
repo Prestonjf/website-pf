@@ -1,9 +1,9 @@
 {
   "name": "website-react-pf",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Website-PF S3 Webapp",
   "private": true,
-  "homepage": "site/0.1.8",
+  "homepage": "site/0.1.9",
   "dependencies": {
     "bootstrap": "4.5.0",
     "react": "16.11.0",

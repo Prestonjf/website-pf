@@ -7,6 +7,7 @@ service: website-pf
 plugins:
   - serverless-s3-deploy
   - serverless-s3-sync
+  - serverless-plugin-scripts
 
 # Custom environment variables
 custom:
@@ -23,7 +24,7 @@ custom:
       dev: ""
       prod: ""
 
-    # Update S3 Files thru serverless plugins
+    # Clear S3 Files with S3Deploy
     assets:
       targets:
         - bucket: website-pf-${self:provider.stage}
@@ -39,19 +40,39 @@ custom:
                  - "sitemap.xml"
                  - "robots.txt"
                  - "rss.xml"
+    # Upload S3 Files with S3Sync
     s3Sync:
       - bucketName: website-pf-${self:provider.stage}
         bucketPrefix: site/${self:functions.website-pf.environment.VERSION}
         localDir: s3-webapp/build/
+    # Additional cli scripts to run for deployments
+    # Add Cache-Control metadata with S3Meta
+    scripts:
+      commands:
+        fulldeploy: 'serverless deploy --nos3sync -s ${self:provider.stage}; sls s3deploy -s ${self:provider.stage}; sls s3sync -s ${self:provider.stage}; sls s3meta -s ${self:provider.stage}'
+        s3meta: 'aws s3 cp s3://website-pf-${self:provider.stage}/ s3://website-pf-${self:provider.stage}/ --recursive --exclude "site/*" --exclude "posts/*" --cache-control max-age=86400,s-maxage=86400;
+        aws s3 cp s3://website-pf-${self:provider.stage}/site/ s3://website-pf-${self:provider.stage}/site/ --recursive --cache-control max-age=31536000,s-maxage=2592000'
+        #aws s3 cp s3://website-pf-${self:provider.stage}/posts/ s3://website-pf-${self:provider.stage}/posts/ --recursive --exclude "*.html" --cache-control max-age=31536000,s-maxage=31536000'
 
 provider:
   name: aws
+  accountId: ${self:custom.accountId.${self:provider.stage}}
+  region: us-east-1
   runtime: nodejs12.x
   versionFunctions: false
   endpointType: REGIONAL
-  accountId: ${self:custom.accountId.${self:provider.stage}}
-  region: us-east-1
   stage: ${opt:stage, 'prod'}
+  apiKeys:
+    - name: website-pf-${self:provider.stage}-client-key-111111
+      description: Client key for website-pf api application.
+  usagePlan:
+    quota:
+      limit: 40000
+      offset: 0
+      period: DAY
+    throttle:
+      burstLimit: 10
+      rateLimit: 20
 
   # IAM Role for Lambda configuration
   iamRoleStatements:
@@ -86,7 +107,7 @@ functions:
       - http:
           path: /{proxy+}
           method: any
-          private: false
+          private: true
           integration: lambda_proxy
           cors:
             origin: '*'
@@ -103,7 +124,7 @@ functions:
       ENVIRONMENT: ${self:provider.stage}
       S3_WEBSITE_PF_BUCKET: website-pf-${self:provider.stage}
       CLOUDFRONT_URL: { "Fn::GetAtt" : [ WebAppCloudFrontDistribution, DomainName ] }
-      VERSION: 0.1.8
+      VERSION: 0.1.9
 
 
 # CloudFormation resources
@@ -126,7 +147,8 @@ resources:
           Ref: WebsitePFBucket
         PolicyDocument:
           Statement:
-            - Sid: OAIReadGetObject
+            # Cloudfront & Lambda Bucket Allow
+            - Sid: OAIReadGetObjects
               Effect: Allow
               Principal:
                 AWS:
@@ -134,7 +156,18 @@ resources:
                 - "arn:aws:iam::${self:custom.accountId.${self:provider.stage}}:role/website-pf-${self:provider.stage}-${self:provider.region}-lambdaRole"
               Action:
               - s3:GetObject
-              Resource: arn:aws:s3:::website-pf-${self:provider.stage}/*
+              Resource:
+                - "arn:aws:s3:::website-pf-${self:provider.stage}/*"
+            # Cloudfront Bucket Deny
+            - Sid: OAIDenyObjects
+              Effect: Deny
+              Principal:
+                AWS:
+                - { "Fn::Join" : [" ", ["arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity", { Ref: WebAppCloudFrontOriginAccessIdentity } ] ] }
+              Action:
+              - s3:*
+              Resource:
+                - "arn:aws:s3:::website-pf-${self:provider.stage}/posts/*.html"
     # Cloudfront distribution configuration
     WebAppCloudFrontOriginAccessIdentity:
       Type: AWS::CloudFront::CloudFrontOriginAccessIdentity

@@ -2,6 +2,7 @@ import React from 'react';
 import {Link} from "react-router-dom";
 import {version} from '../../../package.json';
 import { SocialIcon } from 'react-social-icons';
+import CommonModal from './common-modal.js';
 
 class AppFooter extends React.Component {
 
@@ -11,7 +12,6 @@ class AppFooter extends React.Component {
   }
 
   render() {
-
     const linkStyle = {
       "textDecoration": "none",
       "color": "#ddffaa"
@@ -26,7 +26,8 @@ class AppFooter extends React.Component {
         <SocialIcon url="https://www.linkedin.com/in/preston-frazier/" style={{ height: 25, width: 25 }} bgColor="#ddffaa" target="_blank"/>&nbsp;&nbsp;
         <SocialIcon url="/rss.xml" network="rss" style={{ height: 25, width: 25 }} bgColor="#ddffaa" target="_blank"/>
         <br />
-        <Link className="small" style={linkStyle} to="/cookies">Cookie Policy</Link>&nbsp;&nbsp;
+        <Link className="small" style={linkStyle} to="/privacypolicy">Privacy Policy</Link>&nbsp;&nbsp;
+        <CommonModal type="cookiepreferences" />&nbsp;&nbsp;
         <Link className="small" style={linkStyle} to="/sitemap.xml" target="_blank">Sitemap</Link>&nbsp;&nbsp;
         <br />
         <span className="small credit copyright">Copyright &#169; {this.state.date}&nbsp;
@@ -34,6 +35,7 @@ class AppFooter extends React.Component {
         <span className="small">
         | {process.REACT_APP_ENVIRONMENT} v{version}
         </span>
+
       </div>
     );
   }
@@ -45,6 +47,8 @@ class AppFooter extends React.Component {
   componentWillUnmount() {
 
   }
+
+
 
 }
 
