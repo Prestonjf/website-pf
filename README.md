@@ -1,6 +1,8 @@
-# website-pf (prestonfrazier.net)
+# website-pf
 
-This README file describes how to configure and deploy the prestonfrazier.net web application. This is a personal portfolio and blog site. It is built on an AWS serverless architecture using ReactJS as the front-end webapp and NodeJS as the back-end server. See AWS Services used for full tech stack. It is deployed using serverless framework.
+### Live Version: [https://prestonfrazier.net](https://prestonfrazier.net)
+
+This README file describes how to configure and deploy the website-pf application. This is a personal portfolio and blog site. It is built on an AWS serverless architecture using ReactJS as the front-end webapp and NodeJS as the back-end server. See AWS Services used for full tech stack. It is deployed using serverless framework.
 
 ### Prerequisites
 Before you begin, ensure you have met the following requirements:
