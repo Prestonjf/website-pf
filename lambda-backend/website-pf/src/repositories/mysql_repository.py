@@ -1,4 +1,4 @@
-# MySQL Services
+# MySQL Services.
 import mysql.connector
 
 def query():
