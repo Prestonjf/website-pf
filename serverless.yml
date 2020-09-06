@@ -8,6 +8,8 @@ plugins:
   - serverless-s3-deploy
   - serverless-s3-sync
   - serverless-plugin-scripts
+  - serverless-wsgi
+  - serverless-python-requirements
 
 # Custom environment variables
 custom:
@@ -23,6 +25,22 @@ custom:
     secretsArn:
       dev: ""
       prod: ""
+    subnetId:
+      dev: ""
+      prod:
+        - subnet-bf021290
+    securityGroupId:
+      dev: ""
+      prod:
+        - sg-072fbfb9b319fbfce
+
+    # Python Flask Lmabda Config
+    wsgi:
+      app: lambda-backend/website-pf/src/app.app
+      pythonBin: python3
+      packRequirements: false
+    pythonRequirements:
+      dockerizePip: non-linux
 
     # Clear S3 Files with S3Deploy
     assets:
@@ -50,15 +68,15 @@ custom:
     scripts:
       commands:
         fulldeploy: 'serverless deploy --nos3sync -s ${self:provider.stage}; sls s3deploy -s ${self:provider.stage}; sls s3sync -s ${self:provider.stage}; sls s3meta -s ${self:provider.stage}'
+        functiondeploy: 'serverless deploy function -f website-pf -s ${self:provider.stage}'
+        functionlayer: 'pip3 install -t lambda-backend/website-pf/lambda-layer/python/lib/python3.7/site-packages -r lambda-backend/website-pf/requirements.txt'
         s3meta: 'aws s3 cp s3://website-pf-${self:provider.stage}/ s3://website-pf-${self:provider.stage}/ --recursive --exclude "site/*" --exclude "posts/*" --cache-control max-age=86400,s-maxage=86400;
         aws s3 cp s3://website-pf-${self:provider.stage}/site/ s3://website-pf-${self:provider.stage}/site/ --recursive --cache-control max-age=31536000,s-maxage=2592000'
-        #aws s3 cp s3://website-pf-${self:provider.stage}/posts/ s3://website-pf-${self:provider.stage}/posts/ --recursive --exclude "*.html" --cache-control max-age=31536000,s-maxage=31536000'
 
 provider:
   name: aws
   accountId: ${self:custom.accountId.${self:provider.stage}}
   region: us-east-1
-  runtime: nodejs12.x
   versionFunctions: false
   endpointType: REGIONAL
   stage: ${opt:stage, 'prod'}
@@ -84,23 +102,43 @@ provider:
 
 # Application packaging information
 package:
-  exclude:
-    - documentation/**
-    - dynamo-db/**
-    - s3-webapp/**
-    - README.md
-  include:
-    - lamba-backend/**
+  individually: true
+
+# Lambda Layers
+layers:
+  websitepf:
+    path: lambda-backend/website-pf/lambda-layer
+    name: website-pf-lambda-layer-${self:provider.stage}
+    description: Lambda Layer for Website-PF application.
+    compatibleRuntimes:
+      - python3.7
+      - python3.8
 
 # Lambda backend configuration
 functions:
   website-pf:
-    handler: lambda-backend/src/app.handler
+    runtime: python3.7
+    handler: wsgi_handler.handler
     name: website-pf-${self:provider.stage}
     description: Website-PF backend for querying and retrieving transitions of care information.
-    memorySize: 128
+    memorySize: 512
     timeout: 10
     provisionedConcurrency: 0
+
+    layers:
+      - Ref: WebsitepfLambdaLayer
+
+    package:
+      exclude:
+      - documentation/**
+      - rds-mysql-db/**
+      - node_modules/**
+      - s3-webapp/**
+      - README.md
+      - LICENSE
+      - package-lock.json
+      include:
+        - lamba-backend/**
 
     events:
       # API Gateway configuration
@@ -119,6 +157,10 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
             allowCredentials: true
+    vpc:
+      securityGroupIds: ${self:custom.securityGroupId.${self:provider.stage}}
+      subnetIds: ${self:custom.subnetId.${self:provider.stage}}
+
     environment:
       LOG_LEVEL: INFO
       ENVIRONMENT: ${self:provider.stage}
@@ -212,8 +254,3 @@ resources:
             AcmCertificateArn: ${self:custom.acmCertificateArn.${self:provider.stage}}
             MinimumProtocolVersion: "TLSv1.2_2018"
             SslSupportMethod: "sni-only"
-
-# Serverless stack outputs
-Outputs:
-  WebAppCloudFrontDistributionOutput:
-    Value: { "Fn::GetAtt" : [ WebAppCloudFrontDistribution, DomainName ] }

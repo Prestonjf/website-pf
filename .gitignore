@@ -2,11 +2,16 @@ build/*
 node_modules/*
 
 /lambda-backend/node_modules/*
+/lambda-backend/website-pf/lambda-layer*
 
 /s3-webapp/build/*
 /s3-webapp/node_modules/*
+/s3-webapp/.env
 
 .serverless/*
-.serverless/cloudformation-template-create-stack.json
-.serverless/cloudformation-template-update-stack.json
-s3-webapp/.env
+.serverless-wsgi
+.vscode/*
+
+package-lock.json
+serverless_wsgi.py
+wsgi_handler.py
