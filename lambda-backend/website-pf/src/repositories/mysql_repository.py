@@ -2,7 +2,7 @@
 import mysql.connector
 
 def query():
-    cnx = mysql.connector.connect(host='ip-172-31-88-223.ec2.internal', database='website-pf', user='website-pf-user', password='Web21!epfW')
+    cnx = mysql.connector.connect(host='', database='website-pf', user='', password='')
     cursor = cnx.cursor()
 
     query = ("SELECT * FROM post ")
