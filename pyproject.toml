@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "website-react-pf"
+version = "0.1.13"
+description = "Website-PF Application"
+authors = ["Preston Frazier <preston@prestonfrazier.net>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Flask = "1.1.2"
+Flask-Cors = "3.0.9"
+jsonpickle = "1.4.1"
+mysql-connector-python = "8.0.21"
+MarkupSafe = "1.1.1"
+"ruamel.yaml" = "^0.16.12"
+
+[tool.poetry.dev-dependencies]
+boto3 = "^1.16.9"
+pytest = "^6.1.2"
+pytest-cov = "^2.10.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = [
+    "lambda-backend/website-pf/tests",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["lambda-backend/website-pf/", "lambda-backend/website-pf/src"]
+omit = ["lambda-backend/website-pf/tests/*"]
+
+[tool.coverage.xml]
+output = "coverage.xml"

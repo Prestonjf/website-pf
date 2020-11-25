@@ -2,18 +2,18 @@
 
 ### Live Version: [https://prestonfrazier.net](https://prestonfrazier.net)
 
-This README file describes how to configure and deploy the website-pf application. This is a personal portfolio and blog site. It is built on an AWS serverless architecture using ReactJS as the front-end webapp and NodeJS as the back-end server. See AWS Services used for full tech stack. It is deployed using serverless framework.
+This README file describes how to configure and deploy the website-pf application. This is a personal portfolio and blog site. It is built on an AWS serverless architecture using ReactJS as the front-end webapp and Python with Flask framework as the back-end server. See AWS services used for full tech stack. It is deployed using serverless framework.
 
 ### Prerequisites
 Before you begin, ensure you have met the following requirements:
 
-- 	AWS Account Console Access
+- 	AWS CLI & AWS Account Console Access
 
 -   NPM
 
 - 	Serverless framework environment
 
-- 	Plugins: Serverless-s3-deploy, Serverless-s3-sync, serverless-plugin-scripts
+- 	Serverless Plugins: serverless-plugin-scripts, serverless-wsgi serverless-python-requirements
 
 
 ### Deployment Instructions
@@ -30,8 +30,10 @@ $ git clone https://github.com/Prestonjf/website-pf.git
 **2\.** Run the following commands to compile the React webapp
 
 ```
-$ cd website-pf/s3-webapp
-$ npm run-script build
+$ cd website-pf
+$ sls webappbuild
+$ sls functionlayer
+$ sls fulldeploy
 ```
 
 **3\.** Website-pf uses AWS secrets to store credentials and URLS. Create a new Secrets for the desired environment. Use the plaintext example below and enter to correct environment specific credentials. Copy the Secret ARN for the next step.

@@ -1,0 +1,18 @@
+stage: prod
+
+accountId: ""
+acmCertificateArn: ""
+vpcId: ""
+subnetId:
+  - ""
+securityGroupId:
+  - ""
+
+logLevel: "INFO"
+websiteUrl: ""
+version: "0.1.13"
+
+databaseUrl: ""
+databaseSchema: ""
+databaseUsername: ""
+databasePassword: ""

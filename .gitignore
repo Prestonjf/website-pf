@@ -1,17 +1,21 @@
 build/*
+config/prod.yml
+config/local.yml
 node_modules/*
-
-/lambda-backend/node_modules/*
-/lambda-backend/website-pf/lambda-layer*
-
-/s3-webapp/build/*
-/s3-webapp/node_modules/*
-/s3-webapp/.env
 
 .serverless/*
 .serverless-wsgi
 .vscode/*
 
-package-lock.json
 serverless_wsgi.py
 wsgi_handler.py
+*.pyc
+
+/lambda_backend/node_modules/*
+/lambda_backend/website_pf/lambda_layer/*
+
+
+/s3-webapp/build/*
+/s3-webapp/node_modules/*
+/s3-webapp/.env
+/s3-webapp/public/posts/*

@@ -1,25 +1,20 @@
+/*
+  Website-PF CCS
+
+  BASE STYLES
+*/
+
+@font-face {
+  font-family: 'DaysOne';
+  font-style: normal;
+  font-weight: 200;
+  src: url('../fonts/DaysOne-Regular.ttf');
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
-}
-
-.defaultLinkStyle, .defaultLinkStyle:hover  {
-  text-decoration: none;
-  color: #ddffaa;
-}
-
-.defaultPageStyle {
-  background-color: #343a40;
-  color: #ddffaa;
 }
 
 .wrap {
@@ -39,19 +34,60 @@ code {
 }
 
 .content {
-  margin-left: 5%;
-  margin-right: 5%;
+  margin-left: 2%;
+  margin-right: 2%;
   margin-top: 30px;
   background-color: #FFFFFF;
   text-align: center;
 }
 
-.post {
-  max-width: 1150px;
-  margin-left: auto;
-  margin-right: auto;
+code {
+  font-family: "Courier New", monospace;
 }
 
+.main-link-style {
+  text-decoration: none;
+  color: #ddffaa;
+  font-family: "DaysOne";
+}
+
+.main-link-style:Hover {
+  text-decoration: none;
+  color: #ddffaa;
+}
+
+.main-link-style-dark {
+  text-decoration: none;
+  color: #343a40;
+  font-family: "DaysOne";
+}
+
+.secondary-link-style, .secondary-link-style:active {
+  text-decoration: none;
+  color: #ddffaa;
+  font-family: "Arial";
+}
+
+.secondary-link-style:hover {
+  text-decoration: none;
+  color: #ddffaa;
+}
+
+.main-navbar {
+  background-color: #e8e8e8;
+  z-index: 2000;
+}
+
+.secondary-navbar {
+  background-color: #ddffaa;
+  z-index: 3000;
+  color: #000000;
+  text-align: center;
+}
+
+/*
+  FOOTER STYLES
+*/
 .app-footer {
   bottom: 0;
   width: 100%;
@@ -68,6 +104,43 @@ code {
   color: white;
 }
 
+/*
+ POST STYLES
+*/
+.post {
+  max-width: 1150px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.post .post-title {
+  font-family: "DaysOne", "Arial", sans-serif;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.post .post-body {
+  font-family: "Arial", "Times New Roman", "Times", serif;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.post .post-body h1, h2, h3, h4, h5, h6 {
+  font-family: "Arial", "Times New Roman", "Times", serif;
+}
+
+/*
+POPUP MODAL STYLES
+*/
+.modal-header {
+  background-color: #343a40;
+  color: #ddffaa;
+}
+
+
+/*
+COOKIE POLICY STYLES
+*/
 #cookiePolicyNotification {
   position: fixed;
   bottom: 0;

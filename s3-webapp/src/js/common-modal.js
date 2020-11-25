@@ -1,9 +1,9 @@
 import React from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import {Link} from "react-router-dom";
-import logo from '../../img/preston192x192.png';
+import logo from '../img/preston192x192.png';
 
-import '../../css/app.css';
+import '../css/app.css';
 
 class CommonModal extends React.Component {
 
@@ -32,9 +32,9 @@ class CommonModal extends React.Component {
    loadCookiePreferencesModal() {
      return(
        <span>
-         <Link className="small defaultLinkStyle" to="/" onClick={e => this.handleModalShowHide(e)}>Cookie Preferences</Link>
+         <Link className="secondary-link-style small" to="/" onClick={e => this.handleModalShowHide(e)}>Cookie Preferences</Link>
            <Modal show={this.state.showHide} onHide={() => this.handleModalShowHide()} aria-labelledby="contained-modal-title-vcenter" centered>
-               <Modal.Header className="defaultPageStyle" closeButton onClick={() => this.handleModalShowHide()}>
+               <Modal.Header className="modal-header " closeButton onClick={() => this.handleModalShowHide()}>
                <Modal.Title><img alt="prestonfraziernetlogo" src={logo} height="30" wdith="30"/> Cookie Preferences</Modal.Title>
                </Modal.Header>
                <Modal.Body>

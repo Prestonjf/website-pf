@@ -12,18 +12,17 @@ class CommonPost extends React.Component {
 
   render() {
 
-    const style = {
-      "textAlign":"left"
-    };
-
     return (
       <div className="post">
       <Container>
       <Row>
       <Col sm={0} md={1}></Col>
-      <Col sm={12} md={10} style={style}>
-        <div id="postContent" dangerouslySetInnerHTML={{__html: this.state.content}} />
-
+      <Col sm={12} md={10}>
+        <div className='post'>
+        <div className='post-body'>
+          <div id="postContent" dangerouslySetInnerHTML={{__html: this.state.content}} />
+        </div>
+        </div>
       </Col>
       </Row>
     </Container>

@@ -10,72 +10,41 @@ plugins:
   - serverless-plugin-scripts
   - serverless-wsgi
   - serverless-python-requirements
-
-# Custom environment variables
 custom:
     stages:
-      - dev
       - prod
-    accountId:
-      dev: 890384337971
-      prod: 890384337971
-    acmCertificateArn:
-      dev: "arn:aws:acm:us-east-1:890384337971:certificate/62ab5b7e-a3fa-4598-b6e3-d1eecadf4301"
-      prod: "arn:aws:acm:us-east-1:890384337971:certificate/62ab5b7e-a3fa-4598-b6e3-d1eecadf4301"
-    secretsArn:
-      dev: ""
-      prod: ""
-    subnetId:
-      dev: ""
-      prod:
-        - subnet-bf021290
-    securityGroupId:
-      dev: ""
-      prod:
-        - sg-072fbfb9b319fbfce
+    config: ${file(config/${self:provider.stage}.yml)}
 
     # Python Flask Lmabda Config
     wsgi:
-      app: lambda-backend/website-pf/src/app.app
+      app: lambda_backend/website_pf/app.app
       pythonBin: python3
       packRequirements: false
     pythonRequirements:
-      dockerizePip: non-linux
+      usePoetry: true
+      layer:
+        name: website-pf-lambda-layer-${self:provider.stage}
+        description: Lambda Layer for Website-PF application.
+        compatibleRuntimes:
+          - python3.7
+          - python3.8
 
-    # Clear S3 Files with S3Deploy
-    assets:
-      targets:
-        - bucket: website-pf-${self:provider.stage}
-          empty: true
-          prefix: site
-          files:
-            - source: s3-webapp/build/
-              globs: "posts/**"
-        - bucket: website-pf-${self:provider.stage}
-          files:
-            - source: s3-webapp/build/
-              globs:
-                 - "sitemap.xml"
-                 - "robots.txt"
-                 - "rss.xml"
-    # Upload S3 Files with S3Sync
-    s3Sync:
-      - bucketName: website-pf-${self:provider.stage}
-        bucketPrefix: site/${self:functions.website-pf.environment.VERSION}
-        localDir: s3-webapp/build/
     # Additional cli scripts to run for deployments
-    # Add Cache-Control metadata with S3Meta
     scripts:
       commands:
-        fulldeploy: 'serverless deploy --nos3sync -s ${self:provider.stage}; sls s3deploy -s ${self:provider.stage}; sls s3sync -s ${self:provider.stage}; sls s3meta -s ${self:provider.stage}'
-        functiondeploy: 'serverless deploy function -f website-pf -s ${self:provider.stage}'
-        functionlayer: 'pip3 install -t lambda-backend/website-pf/lambda-layer/python/lib/python3.7/site-packages -r lambda-backend/website-pf/requirements.txt'
-        s3meta: 'aws s3 cp s3://website-pf-${self:provider.stage}/ s3://website-pf-${self:provider.stage}/ --recursive --exclude "site/*" --exclude "posts/*" --cache-control max-age=86400,s-maxage=86400;
-        aws s3 cp s3://website-pf-${self:provider.stage}/site/ s3://website-pf-${self:provider.stage}/site/ --recursive --cache-control max-age=31536000,s-maxage=2592000'
+        fulldeploy: 'serverless deploy -s ${self:provider.stage}; sls s3Clear -s ${self:provider.stage}; sls s3UploadApp -s ${self:provider.stage}'
+        functiondeploy: 'serverless deploy function -f website_pf -s ${self:provider.stage}'
+        webappbuild: 'npm run-script build --prefix s3-webapp'
+        s3Clear: aws s3 rm s3://website-pf-${self:provider.stage}/ --recursive --exclude "posts/*" --exclude "upload/*"
+        s3UploadApp: 'aws s3 cp s3-webapp/build/ s3://website-pf-${self:provider.stage}/site/${self:functions.website_pf.environment.VERSION}/ --recursive --cache-control max-age=31536000,s-maxage=2592000;
+        aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
+        aws s3 cp s3-webapp/build/rss.xml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
+        aws s3 cp s3-webapp/build/sitemap.xml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400'
 
+# Provider/Service Definition
 provider:
   name: aws
-  accountId: ${self:custom.accountId.${self:provider.stage}}
+  accountId: ${self:custom.config.accountId}
   region: us-east-1
   versionFunctions: false
   endpointType: REGIONAL
@@ -98,81 +67,67 @@ provider:
       Action:
         - "s3:*"
       Resource:
-        - "arn:aws:s3:::${self:functions.website-pf.environment.S3_WEBSITE_PF_BUCKET}"
+        - "arn:aws:s3:::${self:functions.website_pf.environment.S3_WEBSITE_PF_BUCKET}"
+    - Effect: "Allow"
+      Action:
+        - "lambda:InvokeFunction"
+      Resource:
+        - "*"
 
 # Application packaging information
 package:
   individually: true
 
-# Lambda Layers
-layers:
-  websitepf:
-    path: lambda-backend/website-pf/lambda-layer
-    name: website-pf-lambda-layer-${self:provider.stage}
-    description: Lambda Layer for Website-PF application.
-    compatibleRuntimes:
-      - python3.7
-      - python3.8
-
 # Lambda backend configuration
 functions:
-  website-pf:
+  website_pf:
     runtime: python3.7
     handler: wsgi_handler.handler
     name: website-pf-${self:provider.stage}
-    description: Website-PF backend for querying and retrieving transitions of care information.
-    memorySize: 512
+    description: Website-PF backend for querying and retrieving post information.
+    memorySize: 256
     timeout: 10
-    provisionedConcurrency: 0
-
     layers:
-      - Ref: WebsitepfLambdaLayer
-
+      - Ref: PythonRequirementsLambdaLayer
     package:
       exclude:
       - documentation/**
+      - config/**
+      - lambda_backend/**
       - rds-mysql-db/**
       - node_modules/**
       - s3-webapp/**
       - README.md
       - LICENSE
+      - poetry.lock
+      - run.sh
       - package-lock.json
       include:
-        - lamba-backend/**
-
-    events:
-      # API Gateway configuration
-      - http:
-          path: /{proxy+}
-          method: any
-          private: true
-          integration: lambda_proxy
-          cors:
-            origin: '*'
-            headers:
-              - Content-Type
-              - X-Amz-Date
-              - Authorization
-              - X-Api-Key
-              - X-Amz-Security-Token
-              - X-Amz-User-Agent
-            allowCredentials: true
+        - lambda_backend/website_pf/src/**
+        - lambda_backend/website_pf/tests/**
+        - lambda_backend/website_pf/app.py
+        - lambda_backend/website_pf/config.py
+    events: ${file(config/events.yml)}
     vpc:
-      securityGroupIds: ${self:custom.securityGroupId.${self:provider.stage}}
-      subnetIds: ${self:custom.subnetId.${self:provider.stage}}
-
+      securityGroupIds: ${self:custom.config.securityGroupId}
+      subnetIds: ${self:custom.config.subnetId}
     environment:
-      LOG_LEVEL: INFO
+      LOG_LEVEL: ${self:custom.config.logLevel}
       ENVIRONMENT: ${self:provider.stage}
-      S3_WEBSITE_PF_BUCKET: website-pf-${self:provider.stage}
-      CLOUDFRONT_URL: { "Fn::GetAtt" : [ WebAppCloudFrontDistribution, DomainName ] }
-      VERSION: 0.1.9
-
+      REGION: ${self:provider.region}
+      VERSION: ${file(package.json):version}
+      WEBSITE_URL: ${self:custom.config.websiteUrl}
+      S3_WEBSITE_PF_BUCKET: 'website-pf-${self:provider.stage}'
+      DATABASE_URL: ${self:custom.config.databaseUrl}
+      DATABASE_SCHEMA: ${self:custom.config.databaseSchema}
+      DATABASE_USERNAME: ${self:custom.config.databaseUsername}
+      DATABASE_PASSWORD: ${self:custom.config.databasePassword}
 
 # CloudFormation resources
 resources:
   Description: Website-PF CloudFormation Stack using serverless
   Resources:
+    # S3 Bucket for webapp / posts
     WebsitePFBucket:
       Type: AWS::S3::Bucket
       Properties:
@@ -181,7 +136,13 @@ resources:
         WebsiteConfiguration:
           IndexDocument: index.html
           ErrorDocument: index.html
-    # S3 Bucket for webapp configuration
+        CorsConfiguration:
+          CorsRules:
+            - AllowedMethods: 
+                - GET
+              AllowedOrigins: 
+                - "*"
+    # S3 Bucket for webapp / posts Policy
     WebAppS3BucketPolicy:
       Type: AWS::S3::BucketPolicy
       Properties:
@@ -195,27 +156,72 @@ resources:
               Principal:
                 AWS:
                 - { "Fn::Join" : [" ", ["arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity", { Ref: WebAppCloudFrontOriginAccessIdentity } ] ] }
-                - "arn:aws:iam::${self:custom.accountId.${self:provider.stage}}:role/website-pf-${self:provider.stage}-${self:provider.region}-lambdaRole"
+                - "arn:aws:iam::${self:custom.config.accountId}:role/website-pf-${self:provider.stage}-${self:provider.region}-lambdaRole"
               Action:
               - s3:GetObject
               Resource:
                 - "arn:aws:s3:::website-pf-${self:provider.stage}/*"
-            # Cloudfront Bucket Deny
-            - Sid: OAIDenyObjects
+            - Sid: WebsitePFBucketVPCBucketAccess
+              Effect: Allow
+              Principal: "*"
+              Action:
+              - s3:GetObject
+              Resource:
+                - "arn:aws:s3:::website-pf-${self:provider.stage}/*"
+              Condition:
+                StringEquals:
+                  aws:sourceVpce: ${self:custom.config.vpcId}
+            - Sid: OAIDenyGetObjects
               Effect: Deny
               Principal:
                 AWS:
                 - { "Fn::Join" : [" ", ["arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity", { Ref: WebAppCloudFrontOriginAccessIdentity } ] ] }
               Action:
-              - s3:*
+              - s3:GetObject
               Resource:
-                - "arn:aws:s3:::website-pf-${self:provider.stage}/posts/*.html"
-    # Cloudfront distribution configuration
+                - "arn:aws:s3:::website-pf-${self:provider.stage}/upload/*"
+
+    # Cloudfront Origin Access Identity
     WebAppCloudFrontOriginAccessIdentity:
       Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
       Properties:
         CloudFrontOriginAccessIdentityConfig:
           Comment: ${self:service}-${self:provider.stage}-access-identity
+    # Cloudfront cache Policy
+    WebAppCloudFrontCachePolicy:
+      Type: AWS::CloudFront::CachePolicy
+      Properties: 
+        CachePolicyConfig:
+          Name: ${self:service}-${self:provider.stage}-cache-policy
+          DefaultTTL: 86400
+          MaxTTL: 31536000
+          MinTTL: 1
+          ParametersInCacheKeyAndForwardedToOrigin:
+            CookiesConfig: 
+              CookieBehavior: "none"
+            HeadersConfig:
+              HeaderBehavior: "none"
+            QueryStringsConfig: 
+              QueryStringBehavior: "none"
+            EnableAcceptEncodingBrotli: true
+            EnableAcceptEncodingGzip: true
+    # Cloudfront Origin Request Policy
+    WebAppCloudFrontOriginRequestPolicy:
+      Type: AWS::CloudFront::OriginRequestPolicy
+      Properties: 
+        OriginRequestPolicyConfig:
+          Name: ${self:service}-${self:provider.stage}-origin-request-policy
+          CookiesConfig: 
+            CookieBehavior: "none"
+          HeadersConfig: 
+            HeaderBehavior: "whitelist"
+            Headers:
+              - "origin"
+              - "access-control-request-headers"
+              - "access-control-request-method"
+          QueryStringsConfig: 
+            QueryStringBehavior: "none"
+    # Cloudfront distribution configuration
     WebAppCloudFrontDistribution:
       Type: AWS::CloudFront::Distribution
       Properties:
@@ -228,29 +234,31 @@ resources:
               S3OriginConfig:
                 OriginAccessIdentity: { "Fn::Join" : ["", ["origin-access-identity/cloudfront/", { Ref: WebAppCloudFrontOriginAccessIdentity } ] ]  }
           Enabled: 'true'
-          DefaultRootObject: site/${self:functions.website-pf.environment.VERSION}/index.html
+          DefaultRootObject: site/${self:functions.website_pf.environment.VERSION}/index.html
           CustomErrorResponses:
             - ErrorCode: 403
               ResponseCode: 200
-              ResponsePagePath: /site/${self:functions.website-pf.environment.VERSION}/index.html
+              ResponsePagePath: /site/${self:functions.website_pf.environment.VERSION}/index.html
             - ErrorCode: 404
               ResponseCode: 200
-              ResponsePagePath: /site/${self:functions.website-pf.environment.VERSION}/index.html
+              ResponsePagePath: /site/${self:functions.website_pf.environment.VERSION}/index.html
           DefaultCacheBehavior:
             AllowedMethods:
               - GET
               - HEAD
               - OPTIONS
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
             TargetOriginId: s3-website-pf-${self:provider.stage}
-            ForwardedValues:
-              QueryString: 'false'
-              Cookies:
-                Forward: none
+            CachePolicyId: { Ref: WebAppCloudFrontCachePolicy }
+            OriginRequestPolicyId: { Ref: WebAppCloudFrontOriginRequestPolicy }
             ViewerProtocolPolicy: redirect-to-https
           Aliases:
             - "prestonfrazier.net"
-            - "*.prestonfrazier.net"
+            - "www.prestonfrazier.net"
           ViewerCertificate:
-            AcmCertificateArn: ${self:custom.acmCertificateArn.${self:provider.stage}}
-            MinimumProtocolVersion: "TLSv1.2_2018"
+            AcmCertificateArn: ${self:custom.config.acmCertificateArn}
+            MinimumProtocolVersion: "TLSv1.2_2019"
             SslSupportMethod: "sni-only"

@@ -1,53 +1,42 @@
 import React from 'react';
+import { withRouter } from 'react-router';
 import { Navbar, Nav, Form, FormControl } from 'react-bootstrap';
 import {Link} from "react-router-dom";
-import logo from '../../img/preston192x192.png';
+import logo from '../img/preston192x192.png';
 import { SocialIcon } from 'react-social-icons';
 
 class AppNavbar extends React.Component {
+  
+  constructor(props) {
+    super();
+    this.state = {searchValue: ''};
+    this.handleSearchChange = this.handleSearchChange.bind(this);
+  }
 
   render() {
-    const style = {
-      "backgroundColor": "#e8e8e8",
-      "zIndex": "2000"
-    };
-
-    const altNavStyle = {
-      "backgroundColor": "#ddffaa",
-      "zIndex": "3000",
-      "color": "#000000",
-      "textAlign": "center"
-    };
-
-    const searchBoxStyle = {
-      "fontWeight": "bold",
-      "color": "#343a40"
-    };
-
-    const linkStyle = {
-      "textDecoration": "none",
-      "color": "#ddffaa"
-    };
 
     return (
       <div>
-      <Navbar  bg="dark" variant="dark" expand="lg" style={style}>
+      <Navbar  bg="dark" variant="dark" expand="lg" className="main-navbar">
         <Navbar.Brand >
-        <Link to="/" style={linkStyle}>
+        <Link to="/" className="main-link-style">
         <img alt="prestonfraziernetlogo" src={logo} height="30" wdith="30"/>&nbsp;prestonfrazier.net
         </Link>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
-            <Form inline>
-              <FormControl type="text" placeholder="Search" size="sm" style={searchBoxStyle}/>
+            <Form inline onSubmit={this.submitSearchForm.bind(this)} >
+              <FormControl type="text" placeholder="Search" size="sm" value={this.state.searchValue} onChange={this.handleSearchChange} />
             </Form>
             <Nav.Item className="nav-link">
-              <Link style={linkStyle}  to="/tags"><b>Tags</b></Link>
+              <Link className="main-link-style"  to="/tags"><b>Tags</b></Link>
             </Nav.Item>
             <Nav.Item className="nav-link">
-              <Link style={linkStyle}  to="/post"><b>About</b></Link>
+              <Link className="main-link-style" to="/post/portfolio"><b>Portfolio</b></Link>
+            </Nav.Item>
+            <Nav.Item className="nav-link">
+              <Link className="main-link-style"  to="/post/about"><b>About</b></Link>
             </Nav.Item>
             <Nav.Item className="nav-link">
               <SocialIcon url="https://github.com/Prestonjf" style={{ height: 25, width: 25 }} bgColor="#ddffaa" target="_blank"/>
@@ -63,24 +52,31 @@ class AppNavbar extends React.Component {
         <br />
       </Navbar>
 
-      <Navbar style={altNavStyle}>
+      <Navbar className="secondary-navbar">
         <Nav className="mx-auto">
-          <div>#BlackLivesMatter</div>
+          <div className="main-link-style-dark">#BlackLivesMatter</div>
         </Nav>
       </Navbar>
     </div>
     );
   }
 
-  componentDidMount() {
-
+  handleSearchChange(e) {
+    this.setState({searchValue: e.target.value});
   }
 
-  componentWillUnmount() {
+  submitSearchForm(e) {
+    const value = encodeURIComponent(this.state.searchValue);
+    this.setState({searchValue: ""});
+    this.props.history.push("/search?q=" + value);
+    e.preventDefault();
+  }
+
+  componentDidMount() {
 
   }
 
 }
 
 
-export default AppNavbar;
+export default withRouter(AppNavbar);

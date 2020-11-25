@@ -1,0 +1,11 @@
+{
+  "name": "website-pf",
+  "description": "Website-PF Application",
+  "version": "0.1.13",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless-plugin-scripts": "^1.0.2",
+    "serverless-python-requirements": "^5.1.0",
+    "serverless-wsgi": "^1.7.5"
+  }
+}

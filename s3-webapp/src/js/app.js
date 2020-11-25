@@ -2,12 +2,13 @@ import React from 'react';
 import {Route, Switch} from "react-router-dom";
 import { Button } from 'react-bootstrap';
 
-import AppNavbar from './common/navbar.js';
-import AppFooter from './common/footer.js';
-import Post from './common/post.js';
-import Home from './common/home.js';
-import Tags from './common/tags.js';
-import CommonPost from './common/common-post.js';
+import AppNavbar from './navbar.js';
+import AppFooter from './footer.js';
+import Post from './post.js';
+import Home from './home.js';
+import Tags from './tags.js';
+import Search from './search.js';
+import CommonPost from './common-post.js';
 
 import '../css/app.css';
 
@@ -26,7 +27,8 @@ class App extends React.Component {
           <Switch>
             <Route path="/" exact= {true} component={Home} />
             <Route path="/tags" exact= {true} component={Tags} />
-            <Route path="/post" exact= {true} component={Post} />
+            <Route path="/search" exact= {true} component={Search} />
+            <Route path="/post" exact= {true} component={props => (<Post {...props}/>)} />
             <Route path="/privacypolicy" exact= {true} component={CommonPost} />
             <Route path={["/sitemap"]} component={() => {
                window.location.href = '/sitemap.xml';
