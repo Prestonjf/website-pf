@@ -30,7 +30,7 @@ def search():
     return post_service.search_posts()
 
 
-@app.route('/tags', methods=['POST'])
+@app.route('/tags', methods=['GET'])
 @basic_request_logging
 def tags():
     return 'tags !'

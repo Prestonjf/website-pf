@@ -1,6 +1,51 @@
 - http:
-    path: /{proxy+}
-    method: any
+    path: /search
+    method: get
+    private: true
+    integration: lambda_proxy
+    cors:
+      origin: '*'
+      headers:
+        - Content-Type
+        - X-Amz-Date
+        - Authorization
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Amz-User-Agent
+      allowCredentials: true
+- http:
+    path: /home
+    method: get
+    private: true
+    integration: lambda_proxy
+    cors:
+      origin: '*'
+      headers:
+        - Content-Type
+        - X-Amz-Date
+        - Authorization
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Amz-User-Agent
+      allowCredentials: true
+- http:
+    path: /tags
+    method: get
+    private: true
+    integration: lambda_proxy
+    cors:
+      origin: '*'
+      headers:
+        - Content-Type
+        - X-Amz-Date
+        - Authorization
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Amz-User-Agent
+      allowCredentials: true
+- http:
+    path: /post
+    method: get
     private: true
     integration: lambda_proxy
     cors:

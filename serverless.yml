@@ -142,6 +142,8 @@ resources:
                 - GET
               AllowedOrigins: 
                 - "*"
+              AllowedHeaders:
+                - "*"
     # S3 Bucket for webapp / posts Policy
     WebAppS3BucketPolicy:
       Type: AWS::S3::BucketPolicy

@@ -27,7 +27,7 @@ class AppNavbar extends React.Component {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
             <Form inline onSubmit={this.submitSearchForm.bind(this)} >
-              <FormControl type="text" placeholder="Search" size="sm" value={this.state.searchValue} onChange={this.handleSearchChange} />
+              <FormControl type="text" placeholder="Search..." size="sm" value={this.state.searchValue} onChange={this.handleSearchChange} />
             </Form>
             <Nav.Item className="nav-link">
               <Link className="main-link-style"  to="/tags"><b>Tags</b></Link>
@@ -68,7 +68,7 @@ class AppNavbar extends React.Component {
   submitSearchForm(e) {
     const value = encodeURIComponent(this.state.searchValue);
     this.setState({searchValue: ""});
-    this.props.history.push("/search?q=" + value);
+    this.props.history.push("/search?d=" + Date.now() + "&q=" + value);
     e.preventDefault();
   }
 

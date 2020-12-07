@@ -1,39 +1,39 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
+import Spinner from 'react-bootstrap/Spinner'
+import PostList from './post-list.js';
 
 class Search extends React.Component {
 
   constructor(props) {
     super();
-    this.state = {searchValue: '', results: ''};
+    this.state = {searchValue: getSearchValue(), results: ''};
     this.fetchPosts = this.fetchPosts.bind(this);
   }
 
   render() {
 
-    let results = "";
+    let loader = <Spinner animation="border" variant="dark" />;
     if (this.state.results && this.state.results.posts) {
-      
-      results = this.state.results.posts.length;
+      loader = "";
     }
 
     return (
       <Container fluid="md">
-      <Row>
-      <Col sm={0} md={1}></Col>
-      <Col sm={12} md={10} >
       <div className="post">
+      <Row>
+      <Col sm={12} md={12} >
         <div className="post-title">
           Post Search Results
           <br />
           <h5>Search: {this.state.searchValue}</h5>
+          <hr />
+          {loader}
         </div>
-        <div className="post-body">
-          {results}
-        </div>
-      </div>
       </Col>
       </Row>
+      <PostList posts={this.state.results.posts}  />
+      </div>
       </Container>
     );
   }
@@ -57,7 +57,7 @@ class Search extends React.Component {
   }
 
   fetchPosts(search) {
-    const url = process.env.REACT_APP_API_URL+'/search?'+encodeURIComponent(search);
+    const url = process.env.REACT_APP_API_URL+'/search?q='+encodeURIComponent(search);
     return fetch(url, {
       method: 'get', 
       headers: new Headers({
@@ -86,6 +86,5 @@ function getSearchValue() {
   }
   return '';
 }
-
 
 export default Search;
