@@ -9,6 +9,8 @@ logger.setLevel(config.LOG_LEVEL)
 
 def mysql_select(query, params):
     records = []
+    logger.debug(query)
+    logger.debug(params)
     try:
         cnx = mysql.connector.connect(
             host=config.DATABASE_URL,
@@ -19,9 +21,9 @@ def mysql_select(query, params):
         cursor.execute(query, params)
         for r in cursor:
             records.append(r)
-        logger.debug(records)
         cursor.close()
         cnx.close()
+        logger.debug('Results: %d', len(records))
     except Exception:
         logger.error('Error connecting to database', exc_info=True)
     return records

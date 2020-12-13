@@ -17,7 +17,7 @@ class AppNavbar extends React.Component {
 
     return (
       <div>
-      <Navbar  bg="dark" variant="dark" expand="lg" className="main-navbar">
+      <Navbar collapseOnSelect bg="dark" variant="dark" expand="lg" className="main-navbar">
         <Navbar.Brand >
         <Link to="/" className="main-link-style">
         <img alt="prestonfraziernetlogo" src={logo} height="30" wdith="30"/>&nbsp;prestonfrazier.net

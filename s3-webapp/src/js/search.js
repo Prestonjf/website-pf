@@ -57,7 +57,7 @@ class Search extends React.Component {
   }
 
   fetchPosts(search) {
-    const url = process.env.REACT_APP_API_URL+'/search?q='+encodeURIComponent(search);
+    const url = process.env.REACT_APP_API_URL+'/posts/search?q='+encodeURIComponent(search);
     return fetch(url, {
       method: 'get', 
       headers: new Headers({

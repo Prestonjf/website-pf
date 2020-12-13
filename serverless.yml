@@ -5,8 +5,6 @@
 service: website-pf
 
 plugins:
-  - serverless-s3-deploy
-  - serverless-s3-sync
   - serverless-plugin-scripts
   - serverless-wsgi
   - serverless-python-requirements
@@ -32,10 +30,9 @@ custom:
     # Additional cli scripts to run for deployments
     scripts:
       commands:
-        fulldeploy: 'serverless deploy -s ${self:provider.stage}; sls s3Clear -s ${self:provider.stage}; sls s3UploadApp -s ${self:provider.stage}'
         functiondeploy: 'serverless deploy function -f website_pf -s ${self:provider.stage}'
         webappbuild: 'npm run-script build --prefix s3-webapp'
-        s3Clear: aws s3 rm s3://website-pf-${self:provider.stage}/ --recursive --exclude "posts/*" --exclude "upload/*"
+        s3RemoveApp: aws s3 rm s3://website-pf-${self:provider.stage}/ --recursive --exclude "posts/*" --exclude "upload/*"
         s3UploadApp: 'aws s3 cp s3-webapp/build/ s3://website-pf-${self:provider.stage}/site/${self:functions.website_pf.environment.VERSION}/ --recursive --cache-control max-age=31536000,s-maxage=2592000;
         aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
         aws s3 cp s3-webapp/build/rss.xml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
@@ -44,11 +41,12 @@ custom:
 # Provider/Service Definition
 provider:
   name: aws
-  accountId: ${self:custom.config.accountId}
-  region: us-east-1
+  region: ${self:custom.config.region}
   versionFunctions: false
   endpointType: REGIONAL
   stage: ${opt:stage, 'prod'}
+  apiGateway:
+    shouldStartNameWithService: true
   apiKeys:
     - name: website-pf-${self:provider.stage}-client-key-111111
       description: Client key for website-pf api application.

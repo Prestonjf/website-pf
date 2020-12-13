@@ -1,6 +1,4 @@
 build/*
-config/prod.yml
-config/local.yml
 node_modules/*
 
 .serverless/*
@@ -17,5 +15,4 @@ wsgi_handler.py
 
 /s3-webapp/build/*
 /s3-webapp/node_modules/*
-/s3-webapp/.env
 /s3-webapp/public/posts/*

@@ -12,25 +12,31 @@ CORS(app)
 app.logger.setLevel(config.LOG_LEVEL)
 
 
-@app.route('/home', methods=['GET'])
+@app.route('/posts/recent', methods=['GET'])
 @basic_request_logging
-def home():
+def get_recent_posts():
     return post_service.get_recent_posts()
+
+
+@app.route('/posts/search', methods=['GET'])
+@basic_request_logging
+def search_posts():
+    return post_service.search_posts()
+
+
+@app.route('/posts/tags', methods=['GET'])
+@basic_request_logging
+def get_tags():
+    return post_service.get_tags()
+
+
+@app.route('/posts/tags/<tag>', methods=['GET'])
+@basic_request_logging
+def get_tag_posts(tag):
+    return post_service.get_tag_posts(escape(tag))
 
 
 @app.route('/post/<post_name>', methods=['GET'])
 @basic_request_logging
-def post(post_name):
+def get_post(post_name):
     return post_service.get_post(escape(post_name))
-
-
-@app.route('/search', methods=['GET'])
-@basic_request_logging
-def search():
-    return post_service.search_posts()
-
-
-@app.route('/tags', methods=['GET'])
-@basic_request_logging
-def tags():
-    return 'tags !'

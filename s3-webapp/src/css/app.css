@@ -36,7 +36,7 @@ body {
 .content {
   margin-left: 1%;
   margin-right: 1%;
-  margin-top: 1%;
+  margin-top: 10px;
   background-color: #FFFFFF;
   text-align: center;
 }
@@ -73,14 +73,17 @@ code {
   color: #ddffaa;
 }
 
+.secondary-link-style-background {
+  background-color: #343a40;;
+}
+
 .main-navbar {
   background-color: #e8e8e8;
-  z-index: 2000;
 }
 
 .secondary-navbar {
   background-color: #ddffaa;
-  z-index: 3000;
+  z-index: 1000;
   color: #000000;
   text-align: center;
 }
@@ -117,6 +120,7 @@ code {
   font-family: "DaysOne", "Arial", sans-serif;
   font-size: 2rem;
   text-align: center;
+  margin-bottom: 10px;
 }
 
 .post .post-body {

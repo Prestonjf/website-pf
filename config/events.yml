@@ -1,5 +1,5 @@
 - http:
-    path: /search
+    path: /posts/recent
     method: get
     private: true
     integration: lambda_proxy
@@ -14,7 +14,7 @@
         - X-Amz-User-Agent
       allowCredentials: true
 - http:
-    path: /home
+    path: /posts/search
     method: get
     private: true
     integration: lambda_proxy
@@ -29,7 +29,7 @@
         - X-Amz-User-Agent
       allowCredentials: true
 - http:
-    path: /tags
+    path: /posts/tags
     method: get
     private: true
     integration: lambda_proxy
@@ -44,7 +44,7 @@
         - X-Amz-User-Agent
       allowCredentials: true
 - http:
-    path: /post
+    path: /posts/tags/{proxy+}
     method: get
     private: true
     integration: lambda_proxy
@@ -58,3 +58,19 @@
         - X-Amz-Security-Token
         - X-Amz-User-Agent
       allowCredentials: true
+- http:
+    path: /post/{proxy+}
+    method: get
+    private: true
+    integration: lambda_proxy
+    cors:
+      origin: '*'
+      headers:
+        - Content-Type
+        - X-Amz-Date
+        - Authorization
+        - X-Api-Key
+        - X-Amz-Security-Token
+        - X-Amz-User-Agent
+      allowCredentials: true
+      

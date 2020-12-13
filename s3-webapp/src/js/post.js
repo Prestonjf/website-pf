@@ -1,16 +1,18 @@
 import React from 'react';
 import yaml from 'js-yaml';
-import { Container, Row, Col } from 'react-bootstrap';
+import {Link} from "react-router-dom";
+import { Container, Row, Col, Badge} from 'react-bootstrap';
+import { formatTimeStamp } from './utils';
 
 class Post extends React.Component {
   constructor(props) {
     super();
-    this.state = {post: null};
+    this.state = { post: null };
     this.fetchPosts = this.fetchPosts.bind(this);
   }
 
   render() {
-    if (this.state.post && this.state.post.url && JSON.stringify(this.state.post.url).length > 0) {
+    if (this.state.post && this.state.post.id && JSON.stringify(this.state.post.id).length > 0) {
       const post = this.state.post;
       const updatedDate = getUpdatedTime(post.createdDate, post.updatedDate);
       return (
@@ -22,8 +24,7 @@ class Post extends React.Component {
           <div className="post-title">
             {post.name}
             <br />
-            {post.primaryImageFile.length > 0 && <img alt="primary-post-img" src={post.primaryImageFile} />}
-            <br /><br />
+            {post.primaryImageFile.length > 0 && <img alt="primary-post-img" src={this.state.postFolder + post.primaryImageFile} />}
           </div>
     
           <div className="post-body">
@@ -33,7 +34,14 @@ class Post extends React.Component {
             </div>
             <br />
             <div dangerouslySetInnerHTML={{ __html: post.html }} />
-            <br />
+
+            {post.tags && post.tags.map((tag, index) => {
+              return (
+                <span key={index}><Badge pill className="secondary-link-style-background">
+                  <Link className="secondary-link-style" to={'/tags?tag=' + tag}>{tag}</Link>
+                </Badge>&nbsp;</span>
+              );
+            })} 
           </div>
         </div>
         </Col>
@@ -56,7 +64,8 @@ class Post extends React.Component {
     const path = this.props.location.pathname;
     if (path && path.startsWith("/post/"))
       this.fetchPosts(path).then(response => {
-        this.setState({post: response});
+        const postFolder = process.env.REACT_APP_WEB_URL + '/posts/' + response.id + '/';
+        this.setState({post: response, postFolder: postFolder});
       });
     else {
       this.setState({post: {}});
@@ -68,7 +77,8 @@ class Post extends React.Component {
     if ((path !== prevProps.location.pathname) && path.startsWith("/post/")) {
       this.setState({post: {}});
       this.fetchPosts(this.props.location.pathname).then(response => {
-        this.setState({post: response});
+        const postFolder = process.env.REACT_APP_WEB_URL + '/posts/' + response.id + '/';
+        this.setState({post: response, postFolder: postFolder});
       });
     }
   }
@@ -85,7 +95,7 @@ class Post extends React.Component {
       .then((result) => {
           if (result) {
             const doc = yaml.load(result);
-            if (doc.s3Path)
+            if (doc.htmlFile)
               return doc;
             } 
           return null;
@@ -96,6 +106,7 @@ class Post extends React.Component {
             .then(res => res.text())
             .then((result) => {
               data.html = result;
+              data.page = page;
               return data;
             })
           }
@@ -118,16 +129,6 @@ function getUpdatedTime(date1, date2) {
   } else {
     return null;
   }
-}
-
-function formatTimeStamp(str) {
-  let time = '';
-  var options = {year: 'numeric', month: 'long', day: 'numeric' };
-  if (str) {
-    time = new Date(str);
-    return time.toLocaleTimeString('en-US', options)
-  }
-  return time;
 }
 
 export default Post;

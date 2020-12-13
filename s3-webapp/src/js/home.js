@@ -16,6 +16,7 @@ class Home extends React.Component {
       <div className="post">
         <div className="post-title">
         <h1>A Tech Blog and Portfolio</h1>
+
         </div>
         <Container fluid="md">
         <Row>
@@ -55,7 +56,7 @@ class Home extends React.Component {
   }
 
   fetchPosts() {
-    const url = process.env.REACT_APP_API_URL+'/search?q=about';
+    const url = process.env.REACT_APP_API_URL+'/posts/recent';
     return fetch(url, {
       method: 'get', 
       headers: new Headers({
@@ -69,7 +70,7 @@ class Home extends React.Component {
       },
       (error) => {
         console.error(error);
-        return error;
+        return [];
       }
     );
   }
