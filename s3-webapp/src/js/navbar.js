@@ -9,7 +9,7 @@ class AppNavbar extends React.Component {
   
   constructor(props) {
     super();
-    this.state = {searchValue: ''};
+    this.state = {searchValue: '' };
     this.handleSearchChange = this.handleSearchChange.bind(this);
   }
 
@@ -17,7 +17,7 @@ class AppNavbar extends React.Component {
 
     return (
       <div>
-      <Navbar collapseOnSelect bg="dark" variant="dark" expand="lg" className="main-navbar">
+      <Navbar bg="dark" variant="dark" expand="lg" className="main-navbar" >
         <Navbar.Brand >
         <Link to="/" className="main-link-style">
         <img alt="prestonfraziernetlogo" src={logo} height="30" wdith="30"/>&nbsp;prestonfrazier.net
@@ -30,7 +30,7 @@ class AppNavbar extends React.Component {
               <FormControl type="text" placeholder="Search..." size="sm" value={this.state.searchValue} onChange={this.handleSearchChange} />
             </Form>
             <Nav.Item className="nav-link">
-              <Link className="main-link-style"  to="/tags"><b>Tags</b></Link>
+              <Link className="main-link-style" to="/tags"><b>Tags</b></Link>
             </Nav.Item>
             <Nav.Item className="nav-link">
               <Link className="main-link-style" to="/post/portfolio"><b>Portfolio</b></Link>

@@ -9,10 +9,14 @@ serverless_wsgi.py
 wsgi_handler.py
 *.pyc
 
+config/local.yml
+config/prod.yml
+
 /lambda_backend/node_modules/*
 /lambda_backend/website_pf/lambda_layer/*
-
 
 /s3-webapp/build/*
 /s3-webapp/node_modules/*
 /s3-webapp/public/posts/*
+s3-webapp/.env
+s3-webapp/.env.development

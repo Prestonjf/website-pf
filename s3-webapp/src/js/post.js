@@ -86,7 +86,7 @@ class Post extends React.Component {
   fetchPosts(path) {
     try {
       const page = path.split("/post/");
-      return fetch(process.env.REACT_APP_WEB_URL + '/posts/' + page[1] + '/config.yml')
+      return fetch(process.env.REACT_APP_WEB_URL + '/posts/' + page[1] + '/config.yml', {cache: 'reload'})
       .then(res => res.text(),
         (error) => {
           // console.log(error);
@@ -102,7 +102,7 @@ class Post extends React.Component {
         })
         .then(function(data) {
           if (data) {
-            return fetch(process.env.REACT_APP_WEB_URL + '/posts/' + page[1] + '/post.html')
+            return fetch(process.env.REACT_APP_WEB_URL + '/posts/' + page[1] + '/post.html', {cache: 'reload'})
             .then(res => res.text())
             .then((result) => {
               data.html = result;
