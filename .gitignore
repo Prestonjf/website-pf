@@ -11,6 +11,7 @@ wsgi_handler.py
 
 config/local.yml
 config/prod.yml
+config/bk/*
 
 /lambda_backend/node_modules/*
 /lambda_backend/website_pf/lambda_layer/*
@@ -20,3 +21,6 @@ config/prod.yml
 /s3-webapp/public/posts/*
 s3-webapp/.env
 s3-webapp/.env.development
+config/local.yml
+config/prod.yml
+s3-webapp/.env
