@@ -13,6 +13,8 @@ class Tags extends React.Component {
   }
 
   render() {
+    const marginBottom = {'marginBottom': '10px'};
+
     return (
       <div className="post">
         <div className="post-title">
@@ -29,7 +31,7 @@ class Tags extends React.Component {
         <Row className="justify-content-md-center">
         {this.state.tags && Object.entries(this.state.tags).map(([key, value]) =>{
             return (
-              <Col md="auto" key={key}>
+              <Col sm="auto" key={key} className="d-flex justify-content-center" style={marginBottom}>
                 <Badge pill className="secondary-link-style-background">
                 <Link className="secondary-link-style" to={'/tags?tag=' + key + '&d=' + Date.now() }>{key}</Link>
                   &nbsp;&nbsp;<Badge variant="light">{value}</Badge>
