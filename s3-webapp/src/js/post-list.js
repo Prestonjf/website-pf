@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from "react-router-dom";
 import { Row, Col, Badge} from 'react-bootstrap';
-import { formatTimeStamp } from './utils';
+import { formatTimeStamp, getPostFileUrl , getPostPath} from './utils';
 
 class PostList extends React.Component {
   
@@ -17,14 +17,16 @@ class PostList extends React.Component {
                 <div key={index}>
                 <Row>
                 <Col sm="auto">
-                <img src={post.primary_image_path} alt={index} height={100} width={100} />
+                <Link className="main-link-style-dark" to={getPostPath(post.id)}>
+                  <img src={getPostFileUrl(post.id, post.primaryImageFile)} alt={index} height={100} width={100} />
+                </Link>
                 </Col>
                 <Col >
-                  <Link className="main-link-style-dark" to={post.post_url}>{post.post_name}</Link>
+                  <Link className="main-link-style-dark" to={getPostPath(post.id)}>{post.name}</Link>
                   <br />
-                  <div className="small">{post.author_name} | {formatTimeStamp(post.post_created_date)}</div>
-                  <div className="">{post.post_summary}</div>
-                  {post.post_tags && post.post_tags.map((tag, index2) => {
+                  <div className="small">{post.author.name} | {formatTimeStamp(post.createdDate)}</div>
+                  <div className="">{post.summary}</div>
+                  {post.tags && post.tags.map((tag, index2) => {
                     return (
                       <span key={index2}><Badge pill className="secondary-link-style-background">
                         <Link className="secondary-link-style" to={'/tags?tag=' + tag}>{tag}</Link>

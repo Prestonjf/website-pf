@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from "react-router-dom";
 import { Container, Row, Col, Badge } from 'react-bootstrap';
+import Spinner from 'react-bootstrap/Spinner';
 import PostList from './post-list.js';
 
 class Tags extends React.Component {
@@ -14,14 +15,19 @@ class Tags extends React.Component {
 
   render() {
     const marginBottom = {'marginBottom': '10px'};
+    let loader = <Spinner animation="border" variant="dark" />;
+    if (this.state.posts || this.state.tags) {
+      loader = "";
+    }
 
     return (
       <div className="post">
         <div className="post-title">
           Tags
-          {this.state.posts && <span><br/><h5>Tag: {this.state.tag}</h5><hr /></span>}
+          {this.state.tag && <span><br/><h5>Tag: {this.state.tag}</h5></span>}
+          <hr />
+          {loader}
         </div>
-        <br />
         
         <div className="post-body">
         <Container fluid="md">

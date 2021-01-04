@@ -25,7 +25,7 @@ class AppNavbar extends React.Component {
         <img alt="prestonfraziernetlogo" src={logo} height="30" wdith="30"/>&nbsp;prestonfrazier.net
         </Link>
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => this.setExpanded(expanded ? false : "expanded")} className="float-right" />
+        <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => this.setExpanded(expanded ? false : "expanded")}  className="ml-auto" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
             <Form inline onSubmit={this.submitSearchForm.bind(this)} >

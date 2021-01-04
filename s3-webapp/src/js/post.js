@@ -75,7 +75,7 @@ class Post extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     const path = this.props.location.pathname;
     if ((path !== prevProps.location.pathname) && path.startsWith("/post/")) {
-      this.setState({post: {}});
+      this.setState({post: null});
       this.fetchPosts(this.props.location.pathname).then(response => {
         const postFolder = process.env.REACT_APP_WEB_URL + '/posts/' + response.id + '/';
         this.setState({post: response, postFolder: postFolder});

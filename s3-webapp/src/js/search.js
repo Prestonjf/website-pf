@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import Spinner from 'react-bootstrap/Spinner'
+import Spinner from 'react-bootstrap/Spinner';
 import PostList from './post-list.js';
 
 class Search extends React.Component {

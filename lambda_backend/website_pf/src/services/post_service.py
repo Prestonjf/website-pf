@@ -7,6 +7,7 @@ import logging
 import json
 from src.utils import utils
 from src.models.post import Post
+from src.models.author import Author
 
 logger = logging.getLogger('app.services.post_service')
 logger.setLevel(config.LOG_LEVEL)
@@ -89,16 +90,17 @@ def format_posts_response(data):
     posts = []
     for d in data:
         p = Post()
-        p.post_name = d[0]
-        p.post_url = '/post/' + d[1]
-        p.primary_image_path = utils.get_s3_public_url(config.WEBSITE_URL, d[2])
-        p.post_html = '  '
-        p.post_summary = d[3]
-        p.post_created_date = d[4]
-        p.post_updated_date = d[5]
-        p.author_username = ' '
-        p.author_name = d[6]
-        p.post_tags = json.loads(d[7])['tags']
+        p.name = d[0]
+        p.id = d[1]
+        p.primaryImageFile = d[2]
+        p.htmlFile = ''
+        p.summary = d[3]
+        p.createdDate = d[4]
+        p.updatedDate = d[5]
+        p.tags = json.loads(d[7])['tags']
+        a = Author()
+        a.name = d[6]
+        p.author = a
         posts.append(p)
     return posts
 
@@ -107,17 +109,19 @@ def format_single_post_response(data) -> Post:
     p = Post()
     if (data and len(data) > 0):
         d = data[0]
-        p.post_name = d[0]
-        p.post_url = '/post/' + d[1]
-        p.post_slug = d[1]
-        p.primary_image_path = utils.get_s3_public_url(config.WEBSITE_URL, d[2])
-        p.post_html = utils.get_s3_object(d[3])
-        p.post_summary = d[4]
-        p.post_created_date = d[5]
-        p.post_updated_date = d[6]
-        p.author_username = d[7]
-        p.author_name = d[8]
-        p.post_tags = json.loads(d[9])['tags']
+        p.name = d[0]
+        p.id = d[1]
+        p.idName = d[1]
+        p.primaryImageFile = d[2]
+        p.htmlFile = d[3]
+        p.summary = d[4]
+        p.createdDate = d[5]
+        p.updatedDate = d[6]
+        p.tags = json.loads(d[9])['tags']
+        a = Author()
+        a.username = d[7]
+        a.name = d[8]
+        p.author = a
     return p
 
 

@@ -11,4 +11,16 @@ function formatTimeStamp(str) {
     return time;
   }
 
-export { formatTimeStamp }
+function getPostFileUrl(path, file) {
+  let p = process.env.REACT_APP_WEB_URL + '/posts/' + path;
+  if (file) p += "/" + file;
+  return p;
+}
+
+
+function getPostPath(path) {
+  let p = '/post/' + path;
+  return p;
+}
+
+export { formatTimeStamp, getPostFileUrl, getPostPath }

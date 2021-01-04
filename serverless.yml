@@ -33,9 +33,12 @@ custom:
         functiondeploy: 'serverless deploy function -f website_pf -s ${self:provider.stage}'
         webappbuild: 'npm run-script build --prefix s3-webapp'
         s3RemoveApp: aws s3 rm s3://website-pf-${self:provider.stage}/ --recursive --exclude "posts/*" --exclude "upload/*"
-        s3UploadApp: 'aws s3 cp s3-webapp/build/ s3://website-pf-${self:provider.stage}/site/${self:functions.website_pf.environment.VERSION}/ --recursive --cache-control max-age=31536000,s-maxage=2592000;
+        s3UploadApp: 'aws s3 cp s3-webapp/build/ s3://website-pf-${self:provider.stage}/site/${self:functions.website_pf.environment.VERSION}/ 
+          --exclude "posts/*" --exclude "featured.yml" --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml" 
+          --recursive --cache-control max-age=31536000,s-maxage=2592000;
         aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
         aws s3 cp s3-webapp/build/rss.xml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
+        aws s3 cp s3-webapp/build/featured.yml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
         aws s3 cp s3-webapp/build/sitemap.xml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400'
         s3CreateFolders: 'aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/posts/ --cache-control max-age=31536000,s-maxage=2592000;
         aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/upload/ --cache-control max-age=31536000,s-maxage=2592000'
