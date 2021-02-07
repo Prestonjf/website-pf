@@ -1,7 +1,9 @@
 import React from 'react';
 import yaml from 'js-yaml';
 import {Link} from "react-router-dom";
+import {Helmet} from "react-helmet";
 import { Container, Row, Col, Badge} from 'react-bootstrap';
+
 import { formatTimeStamp } from './utils';
 
 class Post extends React.Component {
@@ -16,7 +18,11 @@ class Post extends React.Component {
       const post = this.state.post;
       const updatedDate = getUpdatedTime(post.createdDate, post.updatedDate);
       return (
+        
         <Container fluid="md">
+        <Helmet>
+            <title>{post.name} - PrestonFrazier.net</title>
+        </Helmet>
         <Row>
         <Col sm={0} md={1}></Col>
         <Col sm={12} md={10} >
@@ -24,7 +30,7 @@ class Post extends React.Component {
           <div className="post-title">
             {post.name}
             <br />
-            {post.primaryImageFile.length > 0 && <img alt="primary-post-img" src={this.state.postFolder + post.primaryImageFile} />}
+            {post.primaryImageFile.length > 0 && <img alt="primary-post-img" src={this.state.postFolder + post.primaryImageFile} width="100%" />}
           </div>
     
           <div className="post-body">

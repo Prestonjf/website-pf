@@ -18,10 +18,8 @@ class PostList extends React.Component {
                 <Row>
                 <Col sm="auto">
                 <Link className="main-link-style-dark" to={getPostPath(post.id)}>
-                  <img src={getPostFileUrl(post.id, post.primaryImageFile)} alt={index} height={100} width={100} />
+                  <img src={getPostFileUrl(post.id, post.primaryImageFile)} alt={index} height={100} width={150} className="post-list-img" />
                 </Link>
-                </Col>
-                <Col >
                   <Link className="main-link-style-dark" to={getPostPath(post.id)}>{post.name}</Link>
                   <br />
                   <div className="small">{post.author.name} | {formatTimeStamp(post.createdDate)}</div>

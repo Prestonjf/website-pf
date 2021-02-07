@@ -17,7 +17,7 @@ class Home extends React.Component {
       <Container fluid="md">
       <div className="post">
         <div className="post-title">
-          <h1>A Tech Blog and Portfolio</h1>
+          A Tech Blog and Portfolio
         </div>
         <Row>
         <Col>

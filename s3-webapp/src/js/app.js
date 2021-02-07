@@ -1,6 +1,7 @@
 import React from 'react';
 import {Route, Switch} from "react-router-dom";
 import { Button } from 'react-bootstrap';
+import {Helmet} from "react-helmet";
 
 import AppNavbar from './navbar.js';
 import AppFooter from './footer.js';
@@ -22,6 +23,9 @@ class App extends React.Component {
       return (
         <div id="wrap" className="wrap">
         <div className="app">
+        <Helmet>
+            <title>PrestonFrazier.net</title>
+        </Helmet>
         <AppNavbar />
           <main id="content" className="content">
           <Switch>

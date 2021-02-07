@@ -2,6 +2,7 @@ import React from 'react';
 import {Link} from "react-router-dom";
 import { Container, Row, Col, Badge } from 'react-bootstrap';
 import Spinner from 'react-bootstrap/Spinner';
+import {Helmet} from "react-helmet";
 import PostList from './post-list.js';
 
 class Tags extends React.Component {
@@ -22,6 +23,9 @@ class Tags extends React.Component {
 
     return (
       <div className="post">
+        <Helmet>
+            <title>Tags - PrestonFrazier.net</title>
+        </Helmet>
         <div className="post-title">
           Tags
           {this.state.tag && <span><br/><h5>Tag: {this.state.tag}</h5></span>}

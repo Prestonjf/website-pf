@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import Spinner from 'react-bootstrap/Spinner';
+import {Helmet} from "react-helmet";
 import PostList from './post-list.js';
 
 class Search extends React.Component {
@@ -21,6 +22,9 @@ class Search extends React.Component {
     return (
       <Container fluid="md">
       <div className="post">
+      <Helmet>
+            <title>Search - PrestonFrazier.net</title>
+        </Helmet>
       <Row>
       <Col sm={12} md={12} >
         <div className="post-title">
