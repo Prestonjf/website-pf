@@ -1,7 +1,7 @@
 {
   "name": "website-pf",
   "description": "Website-PF Application",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "dependencies": {},
   "devDependencies": {
     "serverless-plugin-scripts": "^1.0.2",
