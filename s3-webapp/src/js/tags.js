@@ -11,7 +11,7 @@ class Tags extends React.Component {
     super();
     this.fetchTags = this.fetchTags.bind(this);
     this.fetchTagsPosts = this.fetchTagsPosts.bind(this);
-    this.state = { tags: {}, tag: getSearchTag() }
+    this.state = { tags: null, tag: getSearchTag() }
   }
 
   render() {

@@ -32,7 +32,7 @@ class Post extends React.Component {
             <br />
             {post.primaryImageFile.length > 0 && <img alt="primary-post-img" src={this.state.postFolder + post.primaryImageFile} width="100%" />}
           </div>
-    
+          <br />
           <div className="post-body">
             <div className="small">
             By: {post.author.name} | {formatTimeStamp(post.createdDate)}

@@ -18,7 +18,7 @@ class PostList extends React.Component {
                 <Row>
                 <Col sm="">
                 <Link className="main-link-style-dark" to={getPostPath(post.id)}>
-                  <img src={getPostFileUrl(post.id, post.primaryImageFile)} alt={index} height={90} width={160} className="post-list-img" />
+                  <img src={getPostFileUrl(post.id, post.primaryImageFile)} alt={index} width={160} className="post-list-img" />
                 </Link>
                   <Link className="main-link-style-dark" to={getPostPath(post.id)}>{post.name}</Link>
                   <br />
