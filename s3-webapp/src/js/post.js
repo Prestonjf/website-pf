@@ -108,7 +108,7 @@ class Post extends React.Component {
         })
         .then(function(data) {
           if (data) {
-            return fetch(process.env.REACT_APP_WEB_URL + '/posts/' + page[1] + '/post.html', {cache: 'reload'})
+            return fetch(process.env.REACT_APP_WEB_URL + '/posts/' + page[1] + '/' + data.htmlFile, {cache: 'reload'})
             .then(res => res.text())
             .then((result) => {
               data.html = result;

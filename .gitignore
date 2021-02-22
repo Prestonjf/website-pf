@@ -24,3 +24,6 @@ s3-webapp/.env.development
 config/local.yml
 config/prod.yml
 s3-webapp/.env
+s3-webapp/.env
+config/prod.yml
+config/local.yml

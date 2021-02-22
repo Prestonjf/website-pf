@@ -9,6 +9,7 @@ class Post:
         self.summary: str = ''
         self.htmlFile: str = ''
         self.primaryImageFile: str = ''
+        self.primaryImageThumbnail: str = ''
         self.views: int = 0
         self.createdDate: str = ''
         self.updatedDate: str = ''

@@ -15,7 +15,7 @@ logger.setLevel(config.LOG_LEVEL)
 
 def get_recent_posts():
     try:
-        query = 'SELECT p.post_name, p.post_url, p.primary_image_path, p.post_summary, p.created_date, p.updated_date, a.display_name, p.meta \
+        query = 'SELECT p.post_name, p.post_url, p.thumbnail_image_path, p.post_summary, p.created_date, p.updated_date, a.display_name, p.meta \
         FROM post p \
         INNER JOIN author a on p.author_id=a.id \
         order by p.created_date desc limit 5'
@@ -30,7 +30,7 @@ def get_recent_posts():
 
 def search_posts():
     try:
-        query = 'SELECT p.post_name, p.post_url, p.primary_image_path, p.post_summary, p.created_date, p.updated_date, a.display_name, p.meta \
+        query = 'SELECT p.post_name, p.post_url, p.thumbnail_image_path, p.post_summary, p.created_date, p.updated_date, a.display_name, p.meta \
         FROM post p \
         INNER JOIN author a on p.author_id=a.id \
         where p.post_name like %s order by p.created_date desc '
@@ -45,7 +45,7 @@ def search_posts():
 
 def get_tag_posts(tag):
     try:
-        query = 'SELECT p.post_name, p.post_url, p.primary_image_path, p.post_summary, p.created_date, p.updated_date, a.display_name, p.meta \
+        query = 'SELECT p.post_name, p.post_url, p.thumbnail_image_path, p.post_summary, p.created_date, p.updated_date, a.display_name, p.meta \
         FROM post p \
         INNER JOIN author a on p.author_id=a.id \
         where JSON_SEARCH(meta->"$.tags", "one", %s) is not null order by p.created_date desc '
@@ -72,7 +72,7 @@ def get_tags():
 
 def get_post(post_name):
     try:
-        sql = 'SELECT p.post_name, p.post_url, p.primary_image_path, p.post_html_path, ' \
+        sql = 'SELECT p.post_name, p.post_url, p.thumbnail_image_path, p.post_html_path, ' \
             ' p.post_summary, p.created_date, p.updated_date, ' \
             ' a.username, a.display_name, p.meta FROM post p ' \
             ' inner join author a on a.id=p.author_id where p.post_url=%s '
@@ -93,6 +93,7 @@ def format_posts_response(data):
         p.name = d[0]
         p.id = d[1]
         p.primaryImageFile = d[2]
+        p.primaryImageThumbnail = d[2]
         p.htmlFile = ''
         p.summary = d[3]
         p.createdDate = d[4]
@@ -113,6 +114,7 @@ def format_single_post_response(data) -> Post:
         p.id = d[1]
         p.idName = d[1]
         p.primaryImageFile = d[2]
+        p.primaryImageThumbnail = d[2]
         p.htmlFile = d[3]
         p.summary = d[4]
         p.createdDate = d[5]

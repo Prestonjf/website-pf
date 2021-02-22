@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "website-react-pf"
-version = "0.3.2"
+version = "0.3.3"
 description = "Website-PF Application"
 authors = ["Preston Frazier <preston@prestonfrazier.net>"]
 

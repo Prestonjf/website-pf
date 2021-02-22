@@ -32,13 +32,14 @@ custom:
       commands:
         functiondeploy: 'serverless deploy function -f website_pf -s ${self:provider.stage}'
         webappbuild: 'npm run-script build --prefix s3-webapp'
-        s3RemoveApp: aws s3 rm s3://website-pf-${self:provider.stage}/ --recursive --exclude "posts/*" --exclude "upload/*"
+        s3RemoveApp: 'aws s3 rm s3://website-pf-${self:provider.stage}/ --recursive --exclude "posts/*" --exclude "upload/*" --exclude "featured.yml" 
+          --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml" '
         s3UploadApp: 'aws s3 cp s3-webapp/build/ s3://website-pf-${self:provider.stage}/site/${self:functions.website_pf.environment.VERSION}/ 
           --exclude "posts/*" --exclude "featured.yml" --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml" 
           --recursive --cache-control max-age=31536000,s-maxage=2592000'
         s3UploadDynamicFiles: 'aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
         aws s3 cp s3-webapp/build/rss.xml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
-        aws s3 cp s3-webapp/build/featured.yml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
+        aws s3 cp s3-webapp/build/featured.yml s3://website-pf-${self:provider.stage}/ --cache-control max-age=0,s-maxage=0;
         aws s3 cp s3-webapp/build/sitemap.xml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400'
         s3CreateFolders: 'aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/posts/ --cache-control max-age=31536000,s-maxage=2592000;
         aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/upload/ --cache-control max-age=31536000,s-maxage=2592000'
@@ -94,23 +95,46 @@ functions:
       - Ref: PythonRequirementsLambdaLayer
     package:
       exclude:
-      - documentation/**
-      - config/**
-      - lambda_backend/**
-      - rds-mysql-db/**
-      - node_modules/**
-      - s3-webapp/**
-      - README.md
-      - LICENSE
-      - poetry.lock
-      - run.sh
-      - package-lock.json
+        - "**/**"
       include:
         - lambda_backend/website_pf/src/**
-        - lambda_backend/website_pf/tests/**
         - lambda_backend/website_pf/app.py
         - lambda_backend/website_pf/config.py
+        - lambda_backend/website_pf/__init__.py
     events: ${file(config/events.yml)}
+    vpc:
+      securityGroupIds: ${self:custom.config.securityGroupId}
+      subnetIds: ${self:custom.config.subnetId}
+    environment:
+      LOG_LEVEL: ${self:custom.config.logLevel}
+      ENVIRONMENT: ${self:provider.stage}
+      REGION: ${self:provider.region}
+      VERSION: ${file(package.json):version}
+      WEBSITE_URL: ${self:custom.config.websiteUrl}
+      S3_WEBSITE_PF_BUCKET: 'website-pf-${self:provider.stage}'
+      DATABASE_URL: ${self:custom.config.databaseUrl}
+      DATABASE_SCHEMA: ${self:custom.config.databaseSchema}
+      DATABASE_USERNAME: ${self:custom.config.databaseUsername}
+      DATABASE_PASSWORD: ${self:custom.config.databasePassword}
+
+
+  website_pf_post_loader:
+    runtime: python3.7
+    handler: lambda_backend/website_pf_post_loader/app.lambda_handler
+    name: website-pf-post-loader-${self:provider.stage}
+    description: Website-PF loader for new and existing posts.
+    memorySize: 256
+    timeout: 30
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
+    package:
+      exclude:
+      - "**/**"
+      include:
+        - lambda_backend/website_pf_post_loader/src/**
+        - lambda_backend/website_pf_post_loader/app.py
+        - lambda_backend/website_pf_post_loader/config.py
+        - lambda_backend/website_pf_post_loader/__init__.py
     vpc:
       securityGroupIds: ${self:custom.config.securityGroupId}
       subnetIds: ${self:custom.config.subnetId}
