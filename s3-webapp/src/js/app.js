@@ -64,7 +64,7 @@ class App extends React.Component {
     }
 
     showCookiePolicy() {
-      if (!localStorage.getItem('cookies-policy-notice-accepted') || localStorage.getItem('cookies-policy-notice-accepted') === false) {
+      if (!localStorage.getItem('cookies-policy-notice-accepted') || localStorage.getItem('cookies-policy-notice-accepted') === 'false') {
         return (
           <div id="cookiePolicyNotification" className="small">
                 We use cookies on our website to improve your user experience.

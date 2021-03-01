@@ -54,11 +54,11 @@ provider:
   apiGateway:
     shouldStartNameWithService: true
   apiKeys:
-    - name: website-pf-${self:provider.stage}-client-key-111111
+    - name: website-pf-${self:provider.stage}-client-key-111112
       description: Client key for website-pf api application.
   usagePlan:
     quota:
-      limit: 40000
+      limit: 40001
       offset: 0
       period: DAY
     throttle:

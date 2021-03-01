@@ -52,7 +52,7 @@ code {
 .main-link-style {
   text-decoration: none;
   color: #ddffaa;
-  font-family: "DaysOne";
+  font-family: "DaysOne", "sans-serif";
 }
 
 .main-link-style:Hover {
@@ -63,13 +63,13 @@ code {
 .main-link-style-dark {
   text-decoration: none;
   color: #343a40;
-  font-family: "DaysOne";
+  font-family: "DaysOne", "sans-serif";
 }
 
 .secondary-link-style, .secondary-link-style:active {
   text-decoration: none;
   color: #ddffaa;
-  font-family: "Arial";
+  font-family: "Arial", "sans-serif";
 }
 
 .secondary-link-style:hover {
@@ -129,8 +129,13 @@ code {
 
 .post .post-body {
   font-family: "Arial", "Times New Roman", "Times", serif;
-  font-size: .9rem;
+  font-size: 1rem;
   text-align: left;
+  line-height: 1.6;
+}
+
+.post-body p{
+  margin-bottom: 2rem;
 }
 
 .post .post-body h1, h2, h3, h4, h5, h6 {

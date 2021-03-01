@@ -13,20 +13,19 @@ class PostList extends React.Component {
     return (
         <div className="post-body">
         {this.props.posts && this.props.posts.map((post, index) => {
+            let thumbnail = getThumbnail(post, index);
             return (
                 <div key={index}>
                 <Row>
                 <Col sm="">
-                <Link className="main-link-style-dark" to={getPostPath(post.id)}>
-                  <img src={getPostFileUrl(post.id, post.primaryImageThumbnail)} alt={index} width={160} className="post-list-img" />
-                </Link>
-                  <Link className="main-link-style-dark" to={getPostPath(post.id)}>{post.name}</Link>
-                  <br />
-                  <div className="small">{post.author.name} | {formatTimeStamp(post.createdDate)}</div>
-                  <div className="">{post.summary}</div>       
+                {thumbnail}
+                <Link className="main-link-style-dark" to={getPostPath(post.id)}>{post.name} | </Link>
+                <span className="">{post.summary}</span>
+                &nbsp;|&nbsp;
+                <span className="small">{formatTimeStamp(post.createdDate)}</span>
                 </Col>
                 </Row>
-                <br />
+                <hr />
                 </div>
               );
         })}
@@ -43,5 +42,14 @@ class PostList extends React.Component {
   }
 }
 
+function getThumbnail(post, index) {
+  if (post.primaryImageThumbnail) {
+    return (
+    <Link className="main-link-style-dark" to={getPostPath(post.id)}>
+    <img src={getPostFileUrl(post.id, post.primaryImageThumbnail)} alt={index} width={160} className="post-list-img" />
+  </Link>);
+  }
+  return '';
+}
 
 export default PostList

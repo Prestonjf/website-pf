@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "website-react-pf"
-version = "0.3.3"
+version = "0.3.5"
 description = "Website-PF Application"
 authors = ["Preston Frazier <preston@prestonfrazier.net>"]
 
@@ -25,13 +25,14 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 testpaths = [
-    "lambda-backend/website-pf/tests",
+    "lambda_backend/website_pf/tests",
+    "lambda_backend/website_pf_post_loader/tests",
 ]
 
 [tool.coverage.run]
 branch = true
-source = ["lambda-backend/website-pf/", "lambda-backend/website-pf/src"]
-omit = ["lambda-backend/website-pf/tests/*"]
+source = ["lambda_backend/website_pf/", "lambda_backend/website-pf/src","lambda_backend/website_pf_post_loader/", "lambda_backend/website_pf_post_loader-pf/src"]
+omit = ["lambda_backend/website_pf/tests/*","lambda_backend/website_pf_post_loader/tests/*"]
 
 [tool.coverage.xml]
 output = "coverage.xml"
