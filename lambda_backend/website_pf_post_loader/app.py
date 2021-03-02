@@ -1,6 +1,7 @@
 # Python Lambda App
 from lambda_backend.website_pf_post_loader import config
 import logging
+import boto3
 
 
 logger = logging.getLogger('app')
@@ -9,7 +10,7 @@ logger.setLevel(config.LOG_LEVEL)
 
 def lambda_handler(event, context):
     logger.info('Begin Website-PF post processing.')
-
+    client = boto3.client('s3')
     # uploads folder: config.yml, post file, and asset files.
     # config has mode CREATE or UPDATE
 

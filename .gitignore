@@ -27,3 +27,4 @@ s3-webapp/.env
 s3-webapp/.env
 config/prod.yml
 config/local.yml
+.coverage
