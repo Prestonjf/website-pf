@@ -6,8 +6,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  sonarcloud:
-    name: SonarCloud
+  project-build-test-scan:
+    name: WebsitePfBuildTestScan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,7 +16,8 @@ jobs:
       - name: Install dependencies
         run: |
           ls
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          alias python=python3
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
           source $HOME/.poetry/env
           poetry install
       - name: Run Tests
