@@ -8,19 +8,18 @@ on:
 jobs:
   project-build-test-scan:
     name: WebsitePfBuildTestScan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Install dependencies
         run: |
+          python -V
           ls
-          alias python=python3
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
           source $HOME/.poetry/env
           poetry install
-          poetry env use python3.6
           poetry env info
       - name: Run Tests
         run: |
