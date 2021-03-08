@@ -26,7 +26,7 @@ jobs:
           sed -i.bak 's+lambda_backend/website_pf_post_loader+lambda_backend/website_pf/*+g' coverage-website.xml
 
           sed -i.bak 's+/home/runner/work/website-pf/website-pf/+/github/workspace/+g' coverage-loader.xml
-          ed -i.bak 's+lambda_backend/website_pf+lambda_backend/website_pf_post_loader/*+g' coverage-website.xml
+          sed -i.bak 's+lambda_backend/website_pf+lambda_backend/website_pf_post_loader/*+g' coverage-website.xml
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
