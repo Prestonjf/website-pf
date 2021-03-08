@@ -20,8 +20,10 @@ jobs:
           poetry install
           poetry env info
           poetry run pytest -v --cov
-          poetry run coverage xml
-          sed -i.bak 's+/home/runner/work/website-pf/website-pf/+/github/workspace/+g' coverage.xml
+          poetry run coverage xml --include="lambda_backend/website_pf/*" -o coverage-website.xml
+          poetry run coverage xml --include="lambda_backend/website_pf_post_loader/*" -o coverage-loader.xml
+          sed -i.bak 's+/home/runner/work/website-pf/website-pf/+/github/workspace/+g' coverage-website.xml
+          sed -i.bak 's+/home/runner/work/website-pf/website-pf/+/github/workspace/+g' coverage-loader.xml
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
