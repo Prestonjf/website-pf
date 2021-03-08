@@ -31,7 +31,7 @@ testpaths = [
 
 [tool.coverage.run]
 branch = true
-source = ["lambda_backend/website_pf/","lambda_backend/website_pf_post_loader/"]
+source = ["lambda_backend/"]
 omit = ["lambda_backend/website_pf/tests/*","lambda_backend/website_pf_post_loader/tests/*"]
 relative_files = false
 
