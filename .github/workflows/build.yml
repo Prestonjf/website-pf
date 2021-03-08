@@ -24,9 +24,9 @@ jobs:
           poetry run pytest -v --cov
           poetry run coverage xml
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: sonarsource/sonarcloud-github-action@master
         with:
-          projectBaseDir: "/home/runner/work/website-pf/website-pf"
+          projectBaseDir: home/runner/work/website-pf/website-pf
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
