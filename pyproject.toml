@@ -31,8 +31,9 @@ testpaths = [
 
 [tool.coverage.run]
 branch = true
-source = ["lambda_backend/website_pf/", "lambda_backend/website-pf/src","lambda_backend/website_pf_post_loader/", "lambda_backend/website_pf_post_loader-pf/src"]
-omit = ["lambda_backend/website_pf/tests/*","lambda_backend/website_pf_post_loader/tests/*"]
+source = ["lambda_backend/website_pf/", "lambda_backend/website-pf/src"]
+omit = ["lambda_backend/website_pf/tests/*"]
+relative_files = false
 
 [tool.coverage.xml]
 output = "coverage.xml"
