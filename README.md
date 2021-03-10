@@ -1,4 +1,10 @@
 # website-pf
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Prestonjf_website-pf&metric=alert_status)](https://sonarcloud.io/dashboard?id=Prestonjf_website-pf)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Prestonjf_website-pf&metric=bugs)](https://sonarcloud.io/dashboard?id=Prestonjf_website-pf)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Prestonjf_website-pf&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=Prestonjf_website-pf)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Prestonjf_website-pf&metric=code_smells)](https://sonarcloud.io/dashboard?id=Prestonjf_website-pf)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Prestonjf_website-pf&metric=coverage)](https://sonarcloud.io/dashboard?id=Prestonjf_website-pf)
+
 
 ### Live Version: [https://prestonfrazier.net](https://prestonfrazier.net)
 

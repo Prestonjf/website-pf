@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# test
-poetry run pytest --cov
-poetry run coverage xml
-
-
 # build
 sls webappbuild -s $1
 

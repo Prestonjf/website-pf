@@ -1,6 +1,6 @@
-stage: prod
+stage: local
 accountId: ""
-region: us-east-1
+region: ""
 acmCertificateArn: ""
 vpcId: ""
 subnetId:
@@ -8,8 +8,8 @@ subnetId:
 securityGroupId:
   - ""
 
-logLevel: INFO
-websiteUrl: 
+logLevel: "DEBUG"
+websiteUrl: ""
 
 databaseUrl: ""
 databaseSchema: ""
