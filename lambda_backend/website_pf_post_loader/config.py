@@ -3,7 +3,7 @@ import os
 from ruamel.yaml import YAML
 
 if 'ENVIRONMENT' not in os.environ:
-    with open(os.getcwd() + '/config/local.yml') as f:
+    with open(os.getcwd() + '/config/local-example.yml') as f:
         yaml = YAML(typ='safe')
         data = yaml.load(f)
         LOG_LEVEL = data['logLevel']
