@@ -11,11 +11,12 @@ class PostList extends React.Component {
 
   render() {
     return (
-        <div className="post-body">
+        <div className="post-list-body">
         {this.props.posts && this.props.posts.map((post, index) => {
             let thumbnail = getThumbnail(post, index);
             return (
-                <div key={index}>
+                <div key={index} >
+                <div className="post-list-item">
                 <Row>
                 <Col sm="">
                 {thumbnail}
@@ -25,8 +26,9 @@ class PostList extends React.Component {
                 <span className="small">{formatTimeStamp(post.createdDate)}</span>
                 </Col>
                 </Row>
-                <hr />
                 </div>
+                </div>
+                
               );
         })}
         </div>

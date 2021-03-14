@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col, Form } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import yaml from 'js-yaml';
 import PostList from './post-list.js';
 
@@ -19,6 +19,13 @@ class Home extends React.Component {
         <div className="post-title">
           A Tech Blog and Portfolio
         </div>
+
+
+        <PostList posts={this.state.posts}  />
+      </div>
+      </Container>
+    );
+    /*
         <Row>
         <Col>
           <Form onSubmit={this.submitSearchForm.bind(this)} > 
@@ -28,11 +35,7 @@ class Home extends React.Component {
           </Form>
         </Col>
         </Row>
-
-        <PostList posts={this.state.posts}  />
-      </div>
-      </Container>
-    );
+    */
   }
   
   handleSearchChange(e) {

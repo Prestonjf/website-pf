@@ -1,16 +1,5 @@
-stage: local
-accountId: ""
-region: ""
-acmCertificateArn: ""
-vpcId: ""
-subnetId:
-  - ""
-securityGroupId:
-  - ""
-
 logLevel: "DEBUG"
 websiteUrl: ""
-
 databaseUrl: ""
 databaseSchema: ""
 databaseUsername: ""

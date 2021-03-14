@@ -54,13 +54,16 @@ class AppNavbar extends React.Component {
         <br />
       </Navbar>
 
+
+    </div>
+    );
+    /*
       <Navbar className="secondary-navbar">
         <Nav className="mx-auto">
           <div className="main-link-style-dark">#BlackLivesMatter</div>
         </Nav>
       </Navbar>
-    </div>
-    );
+      */
   }
 
   handleSearchChange(e) {

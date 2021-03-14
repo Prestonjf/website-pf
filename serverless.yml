@@ -11,7 +11,6 @@ plugins:
 custom:
     stages:
       - prod
-    config: ${file(config/${self:provider.stage}.yml)}
 
     # Python Flask Lmabda Config
     wsgi:
@@ -34,7 +33,7 @@ custom:
         webappbuild: 'npm run-script build --prefix s3-webapp'
         s3RemoveApp: 'aws s3 rm s3://website-pf-${self:provider.stage}/ --recursive --exclude "posts/*" --exclude "upload/*" --exclude "featured.yml" 
           --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml" '
-        s3UploadApp: 'aws s3 cp s3-webapp/build/ s3://website-pf-${self:provider.stage}/site/${self:functions.website_pf.environment.VERSION}/ 
+        s3UploadApp: 'aws s3 cp s3-webapp/build/ s3://website-pf-${self:provider.stage}/site/${self:provider.environment.VERSION}/ 
           --exclude "posts/*" --exclude "featured.yml" --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml" 
           --recursive --cache-control max-age=31536000,s-maxage=2592000'
         s3UploadDynamicFiles: 'aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
@@ -47,7 +46,7 @@ custom:
 # Provider/Service Definition
 provider:
   name: aws
-  region: ${self:custom.config.region}
+  region: us-east-1
   versionFunctions: false
   endpointType: REGIONAL
   stage: ${opt:stage, 'prod'}
@@ -65,13 +64,26 @@ provider:
       burstLimit: 10
       rateLimit: 20
 
+  # Environment variables
+  environment:
+    LOG_LEVEL: INFO
+    ENVIRONMENT: ${self:provider.stage}
+    REGION: ${self:provider.region}
+    VERSION: ${file(package.json):version}
+    WEBSITE_URL: ${ssm:/${self:provider.stage}/${self:service}/acm/url}
+    S3_WEBSITE_PF_BUCKET: "website-pf-${self:provider.stage}"
+    DATABASE_URL: ${ssm:/${self:provider.stage}/${self:service}/rds/hostname}
+    DATABASE_SCHEMA: ${ssm:/${self:provider.stage}/${self:service}/rds/schema}
+    DATABASE_USERNAME: ${ssm:/${self:provider.stage}/${self:service}/rds/username}
+    DATABASE_PASSWORD: ${ssm:/${self:provider.stage}/${self:service}/rds/password~true}
+
   # IAM Role for Lambda configuration
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "s3:*"
       Resource:
-        - "arn:aws:s3:::${self:functions.website_pf.environment.S3_WEBSITE_PF_BUCKET}"
+        - "arn:aws:s3:::website-pf-${self:provider.stage}"
     - Effect: "Allow"
       Action:
         - "lambda:InvokeFunction"
@@ -103,20 +115,11 @@ functions:
         - lambda_backend/website_pf/__init__.py
     events: ${file(config/events.yml)}
     vpc:
-      securityGroupIds: ${self:custom.config.securityGroupId}
-      subnetIds: ${self:custom.config.subnetId}
-    environment:
-      LOG_LEVEL: ${self:custom.config.logLevel}
-      ENVIRONMENT: ${self:provider.stage}
-      REGION: ${self:provider.region}
-      VERSION: ${file(package.json):version}
-      WEBSITE_URL: ${self:custom.config.websiteUrl}
-      S3_WEBSITE_PF_BUCKET: 'website-pf-${self:provider.stage}'
-      DATABASE_URL: ${self:custom.config.databaseUrl}
-      DATABASE_SCHEMA: ${self:custom.config.databaseSchema}
-      DATABASE_USERNAME: ${self:custom.config.databaseUsername}
-      DATABASE_PASSWORD: ${self:custom.config.databasePassword}
-
+      securityGroupIds:
+        - ${ssm:/${self:provider.stage}/${self:service}/vpc/sg/id}
+      subnetIds:
+        - ${ssm:/${self:provider.stage}/${self:service}/vpc/subnet/id}
+    environment:  
 
   website_pf_post_loader:
     runtime: python3.7
@@ -136,19 +139,11 @@ functions:
         - lambda_backend/website_pf_post_loader/config.py
         - lambda_backend/website_pf_post_loader/__init__.py
     vpc:
-      securityGroupIds: ${self:custom.config.securityGroupId}
-      subnetIds: ${self:custom.config.subnetId}
+      securityGroupIds: 
+        - ${ssm:/${self:provider.stage}/${self:service}/vpc/sg/id}
+      subnetIds: 
+        - ${ssm:/${self:provider.stage}/${self:service}/vpc/subnet/id}
     environment:
-      LOG_LEVEL: ${self:custom.config.logLevel}
-      ENVIRONMENT: ${self:provider.stage}
-      REGION: ${self:provider.region}
-      VERSION: ${file(package.json):version}
-      WEBSITE_URL: ${self:custom.config.websiteUrl}
-      S3_WEBSITE_PF_BUCKET: 'website-pf-${self:provider.stage}'
-      DATABASE_URL: ${self:custom.config.databaseUrl}
-      DATABASE_SCHEMA: ${self:custom.config.databaseSchema}
-      DATABASE_USERNAME: ${self:custom.config.databaseUsername}
-      DATABASE_PASSWORD: ${self:custom.config.databasePassword}
 
 # CloudFormation resources
 resources:
@@ -185,7 +180,7 @@ resources:
               Principal:
                 AWS:
                 - { "Fn::Join" : [" ", ["arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity", { Ref: WebAppCloudFrontOriginAccessIdentity } ] ] }
-                - "arn:aws:iam::${self:custom.config.accountId}:role/website-pf-${self:provider.stage}-${self:provider.region}-lambdaRole"
+                - !Sub "arn:aws:iam::${AWS::AccountId}:role/website-pf-${self:provider.stage}-${self:provider.region}-lambdaRole"
               Action:
               - s3:GetObject
               Resource:
@@ -199,7 +194,7 @@ resources:
                 - "arn:aws:s3:::website-pf-${self:provider.stage}/*"
               Condition:
                 StringEquals:
-                  aws:sourceVpce: ${self:custom.config.vpcId}
+                  aws:sourceVpce: ${ssm:/${self:provider.stage}/${self:service}/vpc/id}
             - Sid: OAIDenyGetObjects
               Effect: Deny
               Principal:
@@ -263,14 +258,14 @@ resources:
               S3OriginConfig:
                 OriginAccessIdentity: { "Fn::Join" : ["", ["origin-access-identity/cloudfront/", { Ref: WebAppCloudFrontOriginAccessIdentity } ] ]  }
           Enabled: 'true'
-          DefaultRootObject: site/${self:functions.website_pf.environment.VERSION}/index.html
+          DefaultRootObject: site/${self:provider.environment.VERSION}/index.html
           CustomErrorResponses:
             - ErrorCode: 403
               ResponseCode: 200
-              ResponsePagePath: /site/${self:functions.website_pf.environment.VERSION}/index.html
+              ResponsePagePath: /site/${self:provider.environment.VERSION}/index.html
             - ErrorCode: 404
               ResponseCode: 200
-              ResponsePagePath: /site/${self:functions.website_pf.environment.VERSION}/index.html
+              ResponsePagePath: /site/${self:provider.environment.VERSION}/index.html
           DefaultCacheBehavior:
             AllowedMethods:
               - GET
@@ -288,6 +283,6 @@ resources:
             - "prestonfrazier.net"
             - "www.prestonfrazier.net"
           ViewerCertificate:
-            AcmCertificateArn: ${self:custom.config.acmCertificateArn}
+            AcmCertificateArn: ${ssm:/${self:provider.stage}/${self:service}/acm/arn}
             MinimumProtocolVersion: "TLSv1.2_2019"
             SslSupportMethod: "sni-only"

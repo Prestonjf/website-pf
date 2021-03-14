@@ -1,9 +1,9 @@
 {
   "name": "website-pf",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "description": "Website-PF S3 Webapp",
   "private": true,
-  "homepage": "site/0.3.5",
+  "homepage": "site/0.4.0",
   "dependencies": {
     "bootstrap": "^4.5.3",
     "js-yaml": "^3.14.0",
