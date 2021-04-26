@@ -107,12 +107,14 @@ functions:
       - Ref: PythonRequirementsLambdaLayer
     package:
       exclude:
-        - "**/**"
+        - ./**
       include:
         - lambda_backend/website_pf/src/**
         - lambda_backend/website_pf/app.py
         - lambda_backend/website_pf/config.py
         - lambda_backend/website_pf/__init__.py
+        - serverless_wsgi.py
+        - wsgi_handler.py
     events: ${file(config/events.yml)}
     vpc:
       securityGroupIds:
@@ -123,7 +125,7 @@ functions:
 
   website_pf_post_loader:
     runtime: python3.7
-    handler: lambda_backend/website_pf_post_loader/app.lambda_handler
+    handler: lambda_backend/website_pf_post_loader/src/app.lambda_handler
     name: website-pf-post-loader-${self:provider.stage}
     description: Website-PF loader for new and existing posts.
     memorySize: 256
@@ -132,18 +134,16 @@ functions:
       - Ref: PythonRequirementsLambdaLayer
     package:
       exclude:
-      - "**/**"
+      - ./**
       include:
         - lambda_backend/website_pf_post_loader/src/**
-        - lambda_backend/website_pf_post_loader/app.py
-        - lambda_backend/website_pf_post_loader/config.py
-        - lambda_backend/website_pf_post_loader/__init__.py
     vpc:
       securityGroupIds: 
         - ${ssm:/${self:provider.stage}/${self:service}/vpc/sg/id}
       subnetIds: 
         - ${ssm:/${self:provider.stage}/${self:service}/vpc/subnet/id}
     environment:
+      FEATURED_POSTS: "about,portfolio"
 
 # CloudFormation resources
 resources:
@@ -252,6 +252,7 @@ resources:
         DistributionConfig:
           Comment: Website-PF serverless distribution for webapp in s3 bucket
           PriceClass: PriceClass_100
+          WebACLId: ${ssm:/${self:provider.stage}/waf/cloudfront/arn}
           Origins:
             - DomainName: website-pf-${self:provider.stage}.s3.amazonaws.com
               Id: s3-website-pf-${self:provider.stage}

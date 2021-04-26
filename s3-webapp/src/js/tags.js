@@ -22,6 +22,7 @@ class Tags extends React.Component {
     }
 
     return (
+      <Container fluid="md">
       <div className="post">
         <Helmet>
             <title>Tags - PrestonFrazier.net</title>
@@ -33,8 +34,6 @@ class Tags extends React.Component {
           {loader}
         </div>
         
-        <div className="post-body">
-        <Container fluid="md">
         {this.state.posts && <PostList posts={this.state.posts}  />} 
 
 
@@ -50,9 +49,8 @@ class Tags extends React.Component {
               );
         })}
         </Row>
-        </Container>
-        </div>
       </div>
+      </Container>
     );
   }
 
