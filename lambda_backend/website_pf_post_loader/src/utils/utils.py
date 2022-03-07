@@ -1,11 +1,11 @@
+import boto3
 import jsonpickle
 from urllib.parse import urlparse
-import boto3
-import config
 import logging
+from pythonjsonlogger import jsonlogger
+from lambda_backend.website_pf_post_loader.src import config
 
 logger = logging.getLogger(__file__)
-logger.setLevel(config.LOG_LEVEL)
 
 
 def serialize_reponse(data):
@@ -27,3 +27,23 @@ def get_s3_object(s3_path):
     except Exception:
         logger.error('Error retreiving file from s3', exc_info=True)
     return ''
+
+
+def setup_logging(logger):
+    for h in logger.handlers:
+        logger.removeHandler(h)
+    logHandler = logging.StreamHandler()
+    formatter = jsonlogger.JsonFormatter((
+        "%(levelname)s %(message)s %(funcName)s %(asctime)s %(exc_info)s %(name)s %(pathname)s %(args)s %(levelno)s"
+    ))
+    logHandler.setFormatter(formatter)
+    logger.addHandler(logHandler)
+    logger.setLevel(config.LOG_LEVEL)
+    logging.getLogger('boto3').setLevel(logging.ERROR)
+    logging.getLogger('botocore').setLevel(logging.ERROR)
+    logging.getLogger('aws_xray_sdk').setLevel(logging.ERROR)
+    logging.getLogger('urllib3').setLevel(logging.ERROR)
+    logging.getLogger('requests').setLevel(logging.ERROR)
+
+
+setup_logging(logger)

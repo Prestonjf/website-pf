@@ -13,22 +13,31 @@ This README file describes how to configure and deploy the website-pf applicatio
 ### Prerequisites
 Before you begin, ensure you have met the following requirements:
 
-- 	AWS CLI & AWS Account Console Access
-
--   NPM
-
-- 	Serverless framework environment
-
-- 	Serverless Plugins: serverless-plugin-scripts, serverless-wsgi serverless-python-requirements
+- AWS CLI & AWS Account Console Access
+- NPM/NodeJS v12+
+- Python v3.6+
+- Poetry v1.1.4+
+- Serverless Framework v2.29.0+
 
 
 ### Deployment Instructions
 To deploy website-pf, follow these steps:
 
-**1\.** The following SSM parameters need to be configured to allow deployment of website-pf
+**1\.** The following SSM parameters and subsequent services need to be configured to allow deployment of website-pf
 
 ```
+/prod/waf/cloudfront/arn  -  AWS account web application firewall (WAF) ARN for cloudfront distribution
+/prod/website-pf/vpc/id  -  AWS account vpc id where application will be deployed
+/prod/website-pf/vpc/subnet/id  -  AWS account subnet id where application will be deployed
+/prod/website-pf/vpc/sg/id  -  AWS security group id that application will be attached to
 
+/prod/website-pf/acm/arn  -  domain name certificate ARN for website-pf application
+/prod/website-pf/acm/url  - domain name where website-pf application is hosted
+
+/prod/website-pf/rds/hostname  -  mysql database hostname
+/prod/website-pf/rds/username  -  mysql database username
+/prod/website-pf/rds/password  -  mysql database password
+/prod/website-pf/rds/schema  - mysql database schema name for website-pf Application
 ```
 
 

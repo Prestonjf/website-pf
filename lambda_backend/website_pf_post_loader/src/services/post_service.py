@@ -2,11 +2,12 @@
 # from lambda_backend.website_pf_post_loader.src.repositories import mysql_repository as mysql
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
-# import xml.etree.cElementTree as ET
+import xml.etree.cElementTree as ET
 import boto3
 import os
-from lambda_backend.website_pf_post_loader.src.utils import config
+import datetime
 import logging
+from lambda_backend.website_pf_post_loader.src import config
 
 logger = logging.getLogger('app.services.post_service')
 logger.setLevel(config.LOG_LEVEL)
@@ -27,7 +28,18 @@ def generate_robots():
 
 def generate_rss():
     try:
-        data = ''
+        rss = ET.Element('rss', attrib={'version': '2.0'})
+        channel = ET.SubElement(rss, 'channel')
+        title = ET.SubElement(channel, 'title', attrib={})
+        title.text = os.environ['WEBSITE_URL']
+        link = ET.SubElement(channel, 'link', attrib={})
+        link.text = os.environ['WEBSITE_URL']
+        description = ET.SubElement(channel, 'description', attrib={})
+        description.text = 'A tech blog and portfolio'
+
+        _xml_build_rss_item(channel, 'Sitemap', f'{os.environ["WEBSITE_URL"]}/sitemap.xml', 'Website sitemap')
+        # build other rss items here
+        data = ET.dump(rss)
         _put_file_website_bucket('rss.xml', data, 'maxage=0,s-maxage=0', 'application/xml')
         return True
     except Exception:
@@ -37,7 +49,13 @@ def generate_rss():
 
 def generate_sitemap():
     try:
-        data = ''
+        sitemap = ET.Element('urlset', attrib={'xmlns': 'http://www.sitemaps.org/schemas/sitemap/0.9'})
+
+        date_now = datetime.datetime.now().strftime("%Y-%m-%d")
+        _xml_build_sitemap_url(sitemap, 'https://prestonfrazier.net/', date_now, 'monthly', '1.0')
+        _xml_build_sitemap_url(sitemap, 'https://prestonfrazier.net/about', date_now, 'monthly', '1.0')
+        # build other sitemap urls here
+        data = data = ET.dump(sitemap)
         _put_file_website_bucket('sitemap.xml', data, 'maxage=0,s-maxage=0', 'application/xml')
         return True
     except Exception:
@@ -65,3 +83,27 @@ def generate_featured():
 def _put_file_website_bucket(s3_key, data, cache_control, content_type):
     config_obj = s3_resource.Object(os.environ['S3_WEBSITE_PF_BUCKET'], s3_key)
     config_obj.put(Body=data, ContentType=content_type, CacheControl=cache_control)
+
+
+def _xml_build_rss_item(node, p_title, p_link, p_description):
+    item = ET.SubElement(node, 'item', attrib={})
+
+    title = ET.SubElement(item, 'title', attrib={})
+    title.text = p_title
+    link = ET.SubElement(item, 'link', attrib={})
+    link.text = p_link
+    description = ET.SubElement(item, 'description', attrib={})
+    description.text = p_description
+
+
+def _xml_build_sitemap_url(node, p_url, p_last_modified, p_change_frequency, p_priority):
+    url = ET.SubElement(node, 'url', attrib={})
+
+    loc = ET.SubElement(url, 'loc', attrib={})
+    loc.text = p_url
+    lastmod = ET.SubElement(url, 'lastmod', attrib={})
+    lastmod.text = p_last_modified
+    changefreq = ET.SubElement(url, 'changefreq', attrib={})
+    changefreq.text = p_change_frequency
+    priority = ET.SubElement(url, 'priority', attrib={})
+    priority.text = p_priority

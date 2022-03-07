@@ -7,7 +7,7 @@ import os
 import json
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
-from lambda_backend.website_pf_post_loader.src.utils import config
+from lambda_backend.website_pf_post_loader.src import config
 from lambda_backend.website_pf_post_loader.src.services import post_service
 from lambda_backend.website_pf_post_loader.src.repositories import mysql_repository as mysql
 

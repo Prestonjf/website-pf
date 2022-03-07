@@ -1,13 +1,13 @@
+import boto3
+from flask import request
 import jsonpickle
 from urllib.parse import urlparse
-import boto3
-import config
-import logging
 import jwt
-from flask import request
+import logging
+from pythonjsonlogger import jsonlogger
+from lambda_backend.website_pf.src import config
 
-logger = logging.getLogger(__file__)
-logger.setLevel(config.LOG_LEVEL)
+logger = logging.getLogger()
 
 
 def serialize_reponse(data):
@@ -52,3 +52,23 @@ def get_iam_role():
     except Exception:
         logger.error("ERROR: Could not retrieve IAM role from context")
     return ''
+
+
+def setup_logging(logger_conf):
+    for h in logger_conf.handlers:
+        logger_conf.removeHandler(h)
+    logHandler = logging.StreamHandler()
+    formatter = jsonlogger.JsonFormatter((
+        "%(levelname)s %(message)s %(funcName)s %(asctime)s %(exc_info)s %(name)s %(pathname)s %(args)s"
+    ))
+    logHandler.setFormatter(formatter)
+    logger_conf.addHandler(logHandler)
+    logger_conf.setLevel(config.LOG_LEVEL)
+    logging.getLogger('boto3').setLevel(logging.ERROR)
+    logging.getLogger('botocore').setLevel(logging.ERROR)
+    logging.getLogger('aws_xray_sdk').setLevel(logging.ERROR)
+    logging.getLogger('urllib3').setLevel(logging.ERROR)
+    logging.getLogger('requests').setLevel(logging.ERROR)
+
+
+setup_logging(logger)

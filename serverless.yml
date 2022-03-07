@@ -5,7 +5,6 @@
 service: website-pf
 
 plugins:
-  - serverless-plugin-scripts
   - serverless-wsgi
   - serverless-python-requirements
 custom:
@@ -14,34 +13,18 @@ custom:
 
     # Python Flask Lmabda Config
     wsgi:
-      app: lambda_backend/website_pf/app.app
+      app: lambda_backend/website_pf/src/app.app
       pythonBin: python3
       packRequirements: false
     pythonRequirements:
       usePoetry: true
+      pythonBin: python3
       layer:
         name: website-pf-lambda-layer-${self:provider.stage}
         description: Lambda Layer for Website-PF application.
         compatibleRuntimes:
           - python3.7
           - python3.8
-
-    # Additional cli scripts to run for deployments
-    scripts:
-      commands:
-        functiondeploy: 'serverless deploy function -f website_pf -s ${self:provider.stage}'
-        webappbuild: 'npm run-script build --prefix s3-webapp'
-        s3RemoveApp: 'aws s3 rm s3://website-pf-${self:provider.stage}/ --recursive --exclude "posts/*" --exclude "upload/*" --exclude "featured.yml" 
-          --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml" '
-        s3UploadApp: 'aws s3 cp s3-webapp/build/ s3://website-pf-${self:provider.stage}/site/${self:provider.environment.VERSION}/ 
-          --exclude "posts/*" --exclude "featured.yml" --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml" 
-          --recursive --cache-control max-age=31536000,s-maxage=2592000'
-        s3UploadDynamicFiles: 'aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
-        aws s3 cp s3-webapp/build/rss.xml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400;
-        aws s3 cp s3-webapp/build/featured.yml s3://website-pf-${self:provider.stage}/ --cache-control max-age=0,s-maxage=0;
-        aws s3 cp s3-webapp/build/sitemap.xml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400'
-        s3CreateFolders: 'aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/posts/ --cache-control max-age=31536000,s-maxage=2592000;
-        aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/upload/ --cache-control max-age=31536000,s-maxage=2592000'
 
 # Provider/Service Definition
 provider:
@@ -63,7 +46,6 @@ provider:
     throttle:
       burstLimit: 10
       rateLimit: 20
-
   # Environment variables
   environment:
     LOG_LEVEL: INFO
@@ -76,7 +58,6 @@ provider:
     DATABASE_SCHEMA: ${ssm:/${self:provider.stage}/${self:service}/rds/schema}
     DATABASE_USERNAME: ${ssm:/${self:provider.stage}/${self:service}/rds/username}
     DATABASE_PASSWORD: ${ssm:/${self:provider.stage}/${self:service}/rds/password~true}
-
   # IAM Role for Lambda configuration
   iamRoleStatements:
     - Effect: "Allow"
@@ -97,7 +78,7 @@ package:
 # Lambda backend configuration
 functions:
   website_pf:
-    runtime: python3.7
+    runtime: python3.8
     handler: wsgi_handler.handler
     name: website-pf-${self:provider.stage}
     description: Website-PF backend for querying and retrieving post information.
@@ -110,9 +91,6 @@ functions:
         - ./**
       include:
         - lambda_backend/website_pf/src/**
-        - lambda_backend/website_pf/app.py
-        - lambda_backend/website_pf/config.py
-        - lambda_backend/website_pf/__init__.py
         - serverless_wsgi.py
         - wsgi_handler.py
     events: ${file(config/events.yml)}
@@ -124,7 +102,7 @@ functions:
     environment:  
 
   website_pf_post_loader:
-    runtime: python3.7
+    runtime: python3.8
     handler: lambda_backend/website_pf_post_loader/src/app.lambda_handler
     name: website-pf-post-loader-${self:provider.stage}
     description: Website-PF loader for new and existing posts.

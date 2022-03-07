@@ -1,4 +1,4 @@
-from src.models.author import Author
+from lambda_backend.website_pf.src.models.author import Author
 
 
 class Post:

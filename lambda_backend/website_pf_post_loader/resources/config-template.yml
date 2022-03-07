@@ -5,8 +5,8 @@ name: "" # post display title
 idName: "" # post is without s3 path
 summary: "" # post summary display text
 htmlFile: "post.html"
-primaryImageFile: "post-logo.png"
-primaryImageThumbnail: "post-logo-alt.png"
+primaryImageFile: "post-logo.png" # full image 1280px x ?px
+primaryImageThumbnail: "post-logo-alt.png" # image preview 16:9 - 1280px x 720px
 
 author:
   name: "Preston Frazier" # author display name

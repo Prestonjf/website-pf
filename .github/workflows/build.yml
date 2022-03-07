@@ -18,8 +18,7 @@ jobs:
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
           source $HOME/.poetry/env
           poetry install
-          poetry run pytest -v --cov
-          poetry run coverage xml -o coverage.xml
+          poetry run pytest -v --cov lambda_backend/ --cov-report term --cov-report xml
           sed -i.bak 's+/home/runner/work/website-pf/website-pf/+/github/workspace/+g' coverage.xml
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master

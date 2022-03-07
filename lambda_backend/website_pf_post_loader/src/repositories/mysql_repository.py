@@ -1,7 +1,7 @@
 # MySQL Services.
-from lambda_backend.website_pf_post_loader.src.utils import config
 import logging
 import mysql.connector
+from lambda_backend.website_pf_post_loader.src import config
 
 logger = logging.getLogger('app.repositories.mysql_repository')
 logger.setLevel(config.LOG_LEVEL)
