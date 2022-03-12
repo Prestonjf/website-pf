@@ -1,10 +1,11 @@
 # MySQL Services.
 import logging
 import mysql.connector
+from lambda_backend.website_pf_post_loader.src.utils import utils
 from lambda_backend.website_pf_post_loader.src import config
 
-logger = logging.getLogger('app.repositories.mysql_repository')
-logger.setLevel(config.LOG_LEVEL)
+logger = logging.getLogger()
+utils.setup_logging(logger)
 
 
 def mysql_select(query, params):

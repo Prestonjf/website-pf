@@ -7,10 +7,10 @@ import boto3
 import os
 import datetime
 import logging
-from lambda_backend.website_pf_post_loader.src import config
+from lambda_backend.website_pf_post_loader.src.utils import utils
 
-logger = logging.getLogger('app.services.post_service')
-logger.setLevel(config.LOG_LEVEL)
+logger = logging.getLogger()
+utils.setup_logging(logger)
 s3_resource = boto3.resource('s3')
 
 
@@ -39,7 +39,7 @@ def generate_rss():
 
         _xml_build_rss_item(channel, 'Sitemap', f'{os.environ["WEBSITE_URL"]}/sitemap.xml', 'Website sitemap')
         # build other rss items here
-        data = ET.dump(rss)
+        data = ET.tostring(rss, encoding='utf8', method='xml')
         _put_file_website_bucket('rss.xml', data, 'maxage=0,s-maxage=0', 'application/xml')
         return True
     except Exception:
@@ -55,7 +55,7 @@ def generate_sitemap():
         _xml_build_sitemap_url(sitemap, 'https://prestonfrazier.net/', date_now, 'monthly', '1.0')
         _xml_build_sitemap_url(sitemap, 'https://prestonfrazier.net/about', date_now, 'monthly', '1.0')
         # build other sitemap urls here
-        data = data = ET.dump(sitemap)
+        data = ET.tostring(sitemap, encoding='utf8', method='xml')
         _put_file_website_bucket('sitemap.xml', data, 'maxage=0,s-maxage=0', 'application/xml')
         return True
     except Exception:

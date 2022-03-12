@@ -7,13 +7,13 @@ import os
 import json
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
-from lambda_backend.website_pf_post_loader.src import config
 from lambda_backend.website_pf_post_loader.src.services import post_service
+from lambda_backend.website_pf_post_loader.src.utils import utils
 from lambda_backend.website_pf_post_loader.src.repositories import mysql_repository as mysql
 
 
-logger = logging.getLogger('app')
-logger.setLevel(config.LOG_LEVEL)
+logger = logging.getLogger()
+utils.setup_logging(logger)
 s3_client = boto3.client('s3')
 s3_resource = boto3.resource('s3')
 
