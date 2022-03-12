@@ -1,16 +1,15 @@
 # Post Services
-from src.repositories import mysql_repository
 from flask import Response
 from flask import request
-import config
 import logging
 import json
-from src.utils import utils
-from src.models.post import Post
-from src.models.author import Author
+from lambda_backend.website_pf.src.repositories import mysql_repository
+from lambda_backend.website_pf.src.utils import utils
+from lambda_backend.website_pf.src.models.post import Post
+from lambda_backend.website_pf.src.models.author import Author
 
-logger = logging.getLogger('app.services.post_service')
-logger.setLevel(config.LOG_LEVEL)
+logger = logging.getLogger()
+utils.setup_logging(logger)
 
 
 def get_recent_posts():

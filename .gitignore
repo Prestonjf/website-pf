@@ -4,6 +4,7 @@ node_modules/*
 .serverless/*
 .serverless-wsgi
 .vscode/*
+.coverage
 
 serverless_wsgi.py
 wsgi_handler.py

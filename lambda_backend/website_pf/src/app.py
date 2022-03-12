@@ -2,14 +2,12 @@
 from flask import Flask
 from flask_cors import CORS
 from markupsafe import escape
-from src.services import post_service
-from src.decorators.basic_request_logging import basic_request_logging
-import config
+from lambda_backend.website_pf.src.services import post_service
+from lambda_backend.website_pf.src.decorators.basic_request_logging import basic_request_logging
 
 
 app = Flask(__name__)
 CORS(app)
-app.logger.setLevel(config.LOG_LEVEL)
 
 
 @app.route('/posts/recent', methods=['GET'])

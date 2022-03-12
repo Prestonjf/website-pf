@@ -13,78 +13,40 @@ This README file describes how to configure and deploy the website-pf applicatio
 ### Prerequisites
 Before you begin, ensure you have met the following requirements:
 
-- 	AWS CLI & AWS Account Console Access
-
--   NPM
-
-- 	Serverless framework environment
-
-- 	Serverless Plugins: serverless-plugin-scripts, serverless-wsgi serverless-python-requirements
+- AWS CLI & AWS Account Console Access
+- NPM/NodeJS v12+
+- Python v3.6+
+- Poetry v1.1.4+
+- Serverless Framework v2.29.0+
 
 
 ### Deployment Instructions
 To deploy website-pf, follow these steps:
 
+**1\.** The following SSM parameters and subsequent services need to be configured to allow deployment of website-pf
 
-**1\.** Fetch application resources:
+```
+/prod/waf/cloudfront/arn  -  AWS account web application firewall (WAF) ARN for cloudfront distribution
+/prod/website-pf/vpc/id  -  AWS account vpc id where application will be deployed
+/prod/website-pf/vpc/subnet/id  -  AWS account subnet id where application will be deployed
+/prod/website-pf/vpc/sg/id  -  AWS security group id that application will be attached to
+
+/prod/website-pf/acm/arn  -  domain name certificate ARN for website-pf application
+/prod/website-pf/acm/url  - domain name where website-pf application is hosted
+
+/prod/website-pf/rds/hostname  -  mysql database hostname
+/prod/website-pf/rds/username  -  mysql database username
+/prod/website-pf/rds/password  -  mysql database password
+/prod/website-pf/rds/schema  - mysql database schema name for website-pf Application
+```
+
+
+**2\.** Fetch application resources:
 
 ```
 $ git clone https://github.com/Prestonjf/website-pf.git
+$ ./deploy.sh prod
 ```
-
-
-**2\.** Run the following commands to compile the React webapp
-
-```
-$ cd website-pf
-$ sls webappbuild
-$ sls functionlayer
-$ sls fulldeploy
-```
-
-**3\.** Website-pf uses AWS secrets to store credentials and URLS. Create a new Secrets for the desired environment. Use the plaintext example below and enter to correct environment specific credentials. Copy the Secret ARN for the next step.
-
-```
-{
-
-}
-```
-
-**4\.** Updated the custom environment variables in serverless.yml
-
-```
-custom.accountId.${self:provider.stage} : { AWS Account Id }
-custom.acmCertificateArn.${self:provider.stage} : { ARN of your ACM Certificate for your custom domain name }
-custom.secretsArn.${self:provider.stage} : { ARN of your AWS Secret for application credentials }
-```
-
-**5\.** Deploy website-pf to AWS. Initial deployment will create AWS services via a Cloudformation Stack and subsequent deployments will update these services. Choose the desired stage (dev|prod). Use the following commands:
-
-```
-$ serverless fulldeploy -s prod
-```
-
-**6\.** If initial deployment, you will need to add the URL for the newly created API gateway to the .env file of the React webapp. Modify the file website-pf/s3-webapp/.env and update the following property. (Rename .env-example to .env first if .env does not exist):
-
-```
-REACT_APP_API_URL= { API Gateway execution URL }
-REACT_APP_API_KEY= { API Gateway API Key }
-REACT_APP_ENV= { environment name (DEV|PROD) }
-
-```
-
-Perform a new React build, and deploy the static resources:
-
-```
-$ cd website-pf/s3-webapp
-$ npm run-script build
-
-$ serverless fulldeploy -s prod
-```
-
-**7\.** Website-pf is now deployed.
-
-- The webapp can be accessed through the domain created by Cloudfront or the domain name from your certificate!
 
 ### Testing / Logging
 
@@ -93,7 +55,7 @@ $ serverless fulldeploy -s prod
 ### AWS Services Used
 - S3: Used to store react webapp static content and content related to posts. Also used for serverless framework deployment storage.
 - Lambda: NodeJS processing engine to handle dynamic data requests.
-- DynamoDB: Database used to index and store metadata about posts.
+- RDS-MySQL: Database used to index and store metadata about posts.
 - API Gateway: Endpoint to handle api calls from the webapp. Secured with API Key and configured with Usage Plan to throttle requests.
 - Cloudfront: Used to securely host and quickly deliver static webapp content to the end users.
 - Secrets: Stores credentials and urls for website-pf lambda.
@@ -102,7 +64,8 @@ $ serverless fulldeploy -s prod
 ### Built With
 
 * [Serverless](https://serverless.com/) - AWS Services Manager
-* [NPM](https://www.npmjs.com/) - Dependency Management
+* [NPM](https://www.npmjs.com/) - Node Dependency Management
+* [Poetry](https://python-poetry.org/) - Python Dependency Management
 
 ### Authors
 

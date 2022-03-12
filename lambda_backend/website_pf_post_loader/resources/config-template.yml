@@ -1,0 +1,23 @@
+# Post Config File
+
+id: "" # post s3 path - Leave Blank
+name: "" # post display title
+idName: "" # post is without s3 path
+summary: "" # post summary display text
+htmlFile: "post.html"
+primaryImageFile: "post-logo.png" # full image 1280px x ?px
+primaryImageThumbnail: "post-logo-alt.png" # image preview 16:9 - 1280px x 720px
+
+author:
+  name: "Preston Frazier" # author display name
+  username: "prestonfrazier" # author system id
+
+createdDate: "" # Post created date - Leave Blank
+updatedDate: "" # Post most recent updated date - Leave Blank
+
+tags: # tags defining the post
+  - ""
+  - ""
+
+# Post Dynamic value options
+# $$_domain_$$ : replaced with site domain name
