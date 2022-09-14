@@ -1,14 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file
 
-## [0.5.0] - 2022-03-xx
+## [0.6.0] - 2022-xx-xx
+### Added
+
+### Changed
+- Updated to flask2
+
+
+## [0.5.0] - 2022-03-30
 ### Added
 - Added CHANGELOG.md
 - Added pythonjsonlogger
-
 ### Changed
 - Updatated serverless deploy configuration and unit testing.
-
 ### Fixed
 
 
