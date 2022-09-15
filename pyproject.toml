@@ -1,18 +1,16 @@
 [tool.poetry]
 name = "website-react-pf"
-version = "0.5.0"
+version = "0.6.0"
 description = "Website-PF Application"
 authors = ["Preston Frazier <preston@prestonfrazier.net>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-werkzeug = "1.0.1"
-Flask = "1.1.2"
-Flask-Cors = "3.0.9"
-itsdangerous = "2.0.1"
+werkzeug = "2.2.2"
+Flask = "2.2.2"
+Flask-Cors = "3.0.10"
 jsonpickle = "1.4.1"
 mysql-connector-python = "8.0.21"
-MarkupSafe = "1.1.1"
 "ruamel.yaml" = "0.16.12"
 PyJWT = "^1.7.1"
 pytz = "^2021.1"
@@ -36,8 +34,8 @@ testpaths = [
 
 [tool.coverage.run]
 branch = true
-source = ["lambda_backend/"]
-omit = ["lambda_backend/website_pf/tests/*","lambda_backend/website_pf_post_loader/tests/*"]
+source = ["lambda_backend/website_pf/src/*", "lambda_backend/website_pf_post_loader/src/*"]
+omit = ["lambda_backend/website_pf/tests/*","lambda_backend/website_pf_post_loader/tests/*", "*__init.py__*"]
 relative_files = false
 
 [tool.coverage.xml]

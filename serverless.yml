@@ -23,7 +23,6 @@ custom:
         name: website-pf-lambda-layer-${self:provider.stage}
         description: Lambda Layer for Website-PF application.
         compatibleRuntimes:
-          - python3.7
           - python3.8
 
 # Provider/Service Definition
@@ -35,17 +34,17 @@ provider:
   stage: ${opt:stage, 'prod'}
   apiGateway:
     shouldStartNameWithService: true
-  apiKeys:
-    - name: website-pf-${self:provider.stage}-client-key-111112
-      description: Client key for website-pf api application.
-  usagePlan:
-    quota:
-      limit: 40001
-      offset: 0
-      period: DAY
-    throttle:
-      burstLimit: 10
-      rateLimit: 20
+    apiKeys:
+      - name: website-pf-${self:provider.stage}-client-key-111112
+        description: Client key for website-pf api application.
+    usagePlan:
+      quota:
+        limit: 40001
+        offset: 0
+        period: DAY
+      throttle:
+        burstLimit: 10
+        rateLimit: 20
   # Environment variables
   environment:
     LOG_LEVEL: INFO
@@ -57,7 +56,7 @@ provider:
     DATABASE_URL: ${ssm:/${self:provider.stage}/${self:service}/rds/hostname}
     DATABASE_SCHEMA: ${ssm:/${self:provider.stage}/${self:service}/rds/schema}
     DATABASE_USERNAME: ${ssm:/${self:provider.stage}/${self:service}/rds/username}
-    DATABASE_PASSWORD: ${ssm:/${self:provider.stage}/${self:service}/rds/password~true}
+    DATABASE_PASSWORD: ${ssm:/${self:provider.stage}/${self:service}/rds/password}
   # IAM Role for Lambda configuration
   iamRoleStatements:
     - Effect: "Allow"

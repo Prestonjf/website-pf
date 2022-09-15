@@ -2,7 +2,7 @@
 
 id: "" # post s3 path - Leave Blank
 name: "" # post display title
-idName: "" # post is without s3 path
+idName: "" # post id without s3 path
 summary: "" # post summary display text
 htmlFile: "post.html"
 primaryImageFile: "post-logo.png" # full image 1280px x ?px

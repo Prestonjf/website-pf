@@ -33,3 +33,5 @@ s3-webapp/.env
 config/prod.yml
 config/local.yml
 coverage.xml
+
+scripts/posts/*
