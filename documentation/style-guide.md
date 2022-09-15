@@ -1,7 +1,7 @@
 ## Website Style Guide
 
 ### Logo / Header Font
-"DaysOne", Arial
+"Copperplate", Arial
 
 ### Body Font
 "Times New Roman", Times, serif
