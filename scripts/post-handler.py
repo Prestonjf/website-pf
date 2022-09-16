@@ -62,7 +62,8 @@ def download_post(post_path, stage):
 
 def upload_post(post_path, stage):
     s3_client = boto3.client('s3')
-    new_post_path = post_path.replace('posts', 'upload')
+    new_post_path = post_path.replace('posts', 'upload').split("/")
+    new_post_path = f'{new_post_path[0]}/{new_post_path[len(new_post_path) - 1]}'
     logger.info(f'uploading post to {new_post_path}')
     directory = os.fsencode(post_path)
     for file in os.listdir(directory):
