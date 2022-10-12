@@ -17,6 +17,8 @@ class Post extends React.Component {
     if (this.state.post && this.state.post.id && JSON.stringify(this.state.post.id).length > 0) {
       const post = this.state.post;
       const updatedDate = getUpdatedTime(post.createdDate, post.updatedDate);
+      // Optional Photo credit
+      // <p className="photo-credit">Photo by <a href=""></a> on <a href=""></a></p>
       return (
         
         <Container fluid="md">
@@ -31,6 +33,7 @@ class Post extends React.Component {
             {post.name}
             <br />
             {post.primaryImageFile.length > 0 && <img alt="primary-post-img" src={this.state.postFolder + post.primaryImageFile} width="100%" />}
+            
           </div>
           <br />
           <div className="post-body">
