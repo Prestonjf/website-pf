@@ -21,7 +21,7 @@ class PostList extends React.Component {
                 <Col sm="">
                 {thumbnail}
                 <Link className="main-link-style-dark" to={getPostPath(post.id)}>{post.name} | </Link>
-                <span className="">{post.summary}</span>
+                <span className="post-list-text">{post.summary}</span>
                 &nbsp;|&nbsp;
                 <span className="small">{formatTimeStamp(post.createdDate)}</span>
                 </Col>

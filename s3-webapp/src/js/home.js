@@ -14,19 +14,22 @@ class Home extends React.Component {
   render() {
     
     return (
-      <Container fluid="md">
-      <div className="post">
-        <div className="post-title">
-          A Tech Blog and Portfolio
-        </div>
-        <div className="post-title">
-        <img className="post" alt="homepage" src={process.env.REACT_APP_WEB_URL + '/homepage.jpg'} width="100%"/>
-        <p className="photo-credit">Photo by <a href="https://unsplash.com/@adigold1">Adi Goldstein</a> on <a href="https://unsplash.com">Unsplash</a></p>
-        </div>
+      <div>
+      <div className="post-title">
+      <img alt="homepage" src={process.env.REACT_APP_WEB_URL + '/homepage.jpg'} />
+      <p className="photo-credit">Photo by <a href="https://unsplash.com/@adigold1">Adi Goldstein</a> on <a href="https://unsplash.com">Unsplash</a></p>
+      </div>
+      <div className="post-title">
+        A Tech Blog and Portfolio
+      </div>
+      <Container fluid="md" className="content">
 
+
+        <div className="post">
         <PostList posts={this.state.posts}  />
       </div>
       </Container>
+      </div>
     );
   }
   
