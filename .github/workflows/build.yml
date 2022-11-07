@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies, Run Tests
         run: |
           curl -sSL https://install.python-poetry.org | python -
-          source $HOME/.local/bin
+          source /home/runner/.local/bin
           poetry install
           poetry run pytest -v --cov lambda_backend/ --cov-report term --cov-report xml
           sed -i.bak 's+/home/runner/work/website-pf/website-pf/+/github/workspace/+g' coverage.xml
