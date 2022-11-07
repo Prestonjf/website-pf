@@ -17,7 +17,15 @@ class Post extends React.Component {
     if (this.state.post && this.state.post.id && JSON.stringify(this.state.post.id).length > 0) {
       const post = this.state.post;
       const updatedDate = getUpdatedTime(post.createdDate, post.updatedDate);
+      // Optional Photo credit
+      // <p className="photo-credit">Photo by <a href=""></a> on <a href=""></a></p>
       return (
+        <div>
+        <div className="post-title">
+        {post.primaryImageFile.length > 0 && <img alt="primary-post-img" src={this.state.postFolder + post.primaryImageFile} width="100%" />}
+        <br />
+        {post.name}
+        </div>
         
         <Container fluid="md">
         <Helmet>
@@ -27,12 +35,6 @@ class Post extends React.Component {
         <Col sm={0} md={1}></Col>
         <Col sm={12} md={10} >
         <div className="post">
-          <div className="post-title">
-            {post.name}
-            <br />
-            {post.primaryImageFile.length > 0 && <img alt="primary-post-img" src={this.state.postFolder + post.primaryImageFile} width="100%" />}
-          </div>
-          <br />
           <div className="post-body">
             <div className="small">
             By: {post.author.name} | {formatTimeStamp(post.createdDate)}
@@ -53,6 +55,7 @@ class Post extends React.Component {
         </Col>
         </Row>
         </Container>
+        </div>
       );
     } else if (this.state.post) {
       // post not found

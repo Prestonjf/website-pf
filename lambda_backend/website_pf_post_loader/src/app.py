@@ -108,13 +108,17 @@ def process_post(key):
             elif html_file_s3 == file:
                 # rename html file
                 content_type = 'text/html'
-                config_obj = s3_resource.Object(os.environ['S3_WEBSITE_PF_BUCKET'], f'posts/{post_data["post_config"]["id"]}/{post_data["post_config"]["htmlFile"]}')
+                html_file_s3_key = f'posts/{post_data["post_config"]["id"]}/{post_data["post_config"]["htmlFile"]}'
+                config_obj = s3_resource.Object(os.environ['S3_WEBSITE_PF_BUCKET'], html_file_s3_key)
                 config_obj.put(Body=post_data['post_html'], ContentType=content_type)
+                # Upload old html file to archive and delete from posts folder
+                archive_html_file(post_data["post_config"]["id"], html_file_s3)
             else:
                 # move files to post folder
                 s3_resource.Object(
                     os.environ['S3_WEBSITE_PF_BUCKET'],
-                    f'posts/{post_data["post_config"]["id"]}/{file}').copy_from(CopySource={'Bucket': os.environ['S3_WEBSITE_PF_BUCKET'], 'Key': f'{post_file_key}{file}'})
+                    f'posts/{post_data["post_config"]["id"]}/{file}'
+                ).copy_from(CopySource={'Bucket': os.environ['S3_WEBSITE_PF_BUCKET'], 'Key': f'{post_file_key}{file}'})
 
         post_data['status'] = 'success'
         logger.info(f'Files moved for {post_data["post_config"]["idName"]} {post_files}')
@@ -148,6 +152,21 @@ def replace_html_dynamic_values(html):
     # Replace with domain name $$_domain_$$
     html = html.replace('$$_domain_$$', os.environ['WEBSITE_URL'])
     return html
+
+
+def archive_html_file(id_name, html_file_name):
+    s3_client.copy_object(
+        Bucket=os.environ['S3_WEBSITE_PF_BUCKET'],
+        Key=f'posts/{id_name}/archive/{html_file_name}',
+        CopySource={
+            'Bucket': os.environ['S3_WEBSITE_PF_BUCKET'],
+            'Key': f'upload/{id_name}/{html_file_name}'
+        }
+    )
+    s3_client.delete_object(
+        Bucket=os.environ['S3_WEBSITE_PF_BUCKET'],
+        Key=f'posts/{id_name}/{html_file_name}',
+    )
 
 
 def get_add_author(username, displayName):

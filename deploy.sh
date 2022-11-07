@@ -54,16 +54,15 @@ fi
 # Remove old webapp content
 # Upload new webapp content
 if [[ "$deploy" = true && "$backendonly" = false ]]; then
-    aws s3 rm s3://website-pf-$1/ --recursive --exclude "posts/*" --exclude "upload/*" --exclude "featured.yml"  --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml"
-    aws s3 cp s3-webapp/build/ s3://website-pf-$1/site/$VERSION/ --exclude "posts/*" --exclude "featured.yml" --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml" --recursive --cache-control max-age=31536000,s-maxage=2592000
+    aws s3 rm s3://website-pf-$1/ --recursive --exclude "posts/*" --exclude "upload/*" --exclude "homepage.jpg" --exclude "featured.yml"  --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml"
+    aws s3 cp s3-webapp/build/ s3://website-pf-$1/site/$VERSION/ --exclude "posts/*" --exclude "homepage.jpg" --exclude "featured.yml" --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml" --recursive --cache-control max-age=31536000,s-maxage=2592000
 fi
 
 
 if [ "$uploadstatic" = true ]; then
-    #'aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/posts/ --cache-control max-age=31536000,s-maxage=2592000;
-    #aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/upload/ --cache-control max-age=31536000,s-maxage=2592000'
-    aws s3 cp s3-webapp/build/robots.txt s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400
-    aws s3 cp s3-webapp/build/rss.xml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400
-    aws s3 cp s3-webapp/build/featured.yml s3://website-pf-${self:provider.stage}/ --cache-control max-age=0,s-maxage=0
-    aws s3 cp s3-webapp/build/sitemap.xml s3://website-pf-${self:provider.stage}/ --cache-control max-age=86400,s-maxage=86400
+    aws s3 cp s3-webapp/build/robots.txt s3://website-pf-$1/ --cache-control max-age=86400,s-maxage=86400
+    aws s3 cp s3-webapp/build/rss.xml s3://website-pf-$1/ --cache-control max-age=86400,s-maxage=86400
+    aws s3 cp s3-webapp/build/featured.yml s3://website-pf-$1/ --cache-control max-age=0,s-maxage=0
+    aws s3 cp s3-webapp/build/sitemap.xml s3://website-pf-$1/ --cache-control max-age=86400,s-maxage=86400
+    aws s3 cp s3-webapp/build/homepage.jpg s3://website-pf-$1/ --cache-control max-age=86400,s-maxage=86400
 fi
