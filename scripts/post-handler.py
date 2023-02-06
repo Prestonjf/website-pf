@@ -22,7 +22,7 @@ s3_resource = boto3.resource('s3')
 
 # Download Post - python3 post-handler.py --stage prod --action download --postKey posts/portfolio
 # Upload Post - python3 post-handler.py --stage prod --action upload --postKey
-# Run Post Loader - python3 post-handler.py ---stage prod -action loader
+# Run Post Loader - python3 post-handler.py --stage prod --action loader
 
 
 def main():
@@ -68,7 +68,7 @@ def upload_post(post_path, stage):
     directory = os.fsencode(post_path)
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
-        if not filename.endswith("/"):
+        if not filename.endswith("/") and not filename.startswith('archive'):
             key = f'{new_post_path}/{filename}'
             logger.info(f'uploading {key}')
             s3_client.put_object(
