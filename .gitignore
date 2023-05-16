@@ -15,7 +15,6 @@ config/prod.yml
 config/bk/*
 
 /lambda_backend/node_modules/*
-/lambda_backend/website_pf/lambda_layer/*
 
 /s3-webapp/build/*
 /s3-webapp/node_modules/*

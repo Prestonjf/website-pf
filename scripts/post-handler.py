@@ -3,6 +3,7 @@ import logging
 import argparse
 import boto3
 import os
+import shutil
 
 parser = argparse.ArgumentParser(description='Read in a file containing HL7 messages and send them somewhere. Ask developer for usage help.')
 parser.add_argument('--action', type=str, required=True, help='Action for the post handler')
@@ -21,7 +22,7 @@ logger.addHandler(handler)
 s3_resource = boto3.resource('s3')
 
 # Download Post - python3 post-handler.py --stage prod --action download --postKey posts/portfolio
-# Upload Post - python3 post-handler.py --stage prod --action upload --postKey
+# Upload Post - python3 post-handler.py --stage prod --action upload --postKey posts/portfolio
 # Run Post Loader - python3 post-handler.py --stage prod --action loader
 
 
@@ -43,6 +44,9 @@ def main():
             elif 'upload' == action:
                 upload_post(post_key, stage)
 
+            elif 'clear' == action:
+                remove_downloaded_posts()
+
         else:
             logger.info('No action or stage specified for post handler')
     except Exception:
@@ -53,6 +57,8 @@ def download_post(post_path, stage):
     logger.info(f'downloading post to {post_path}')
     bucket = s3_resource.Bucket(f'website-pf-{stage}')
     for obj in bucket.objects.filter(Prefix=post_path):
+        if '/archive/' in obj.key:
+            continue
         logger.info(f'downloading {obj.key}')
         if not os.path.exists(os.path.dirname(obj.key)):
             os.makedirs(os.path.dirname(obj.key))
@@ -76,6 +82,11 @@ def upload_post(post_path, stage):
                 Key=key,
                 Body=open(f'{post_path}/{filename}', 'rb')
             )
+
+
+def remove_downloaded_posts():
+    logger.info('Removing all downloaded posts.')
+    shutil.rmtree("posts")
 
 
 main()

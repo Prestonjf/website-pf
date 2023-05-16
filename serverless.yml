@@ -18,6 +18,7 @@ custom:
       packRequirements: false
     pythonRequirements:
       usePoetry: true
+      requirePoetryLockFile: true
       pythonBin: python3
       layer:
         name: website-pf-lambda-layer-${self:provider.stage}
@@ -64,6 +65,7 @@ provider:
         - "s3:*"
       Resource:
         - "arn:aws:s3:::website-pf-${self:provider.stage}"
+        - "arn:aws:s3:::website-pf-${self:provider.stage}/*"
     - Effect: "Allow"
       Action:
         - "lambda:InvokeFunction"
@@ -86,12 +88,12 @@ functions:
     layers:
       - Ref: PythonRequirementsLambdaLayer
     package:
-      exclude:
-        - ./**
-      include:
+      patterns:
+        - '!./**'
         - lambda_backend/website_pf/src/**
-        - serverless_wsgi.py
-        - wsgi_handler.py
+        - ./wsgi_handler.py
+        - ./serverless_wsgi.py
+        - ./.serverless-wsgi
     events: ${file(config/events.yml)}
     vpc:
       securityGroupIds:
@@ -110,9 +112,8 @@ functions:
     layers:
       - Ref: PythonRequirementsLambdaLayer
     package:
-      exclude:
-      - ./**
-      include:
+      patterns:
+        - '!./**'
         - lambda_backend/website_pf_post_loader/src/**
     vpc:
       securityGroupIds: 
