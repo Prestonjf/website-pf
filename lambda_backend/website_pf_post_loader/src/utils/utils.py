@@ -44,6 +44,7 @@ def setup_logging(logger):
     logging.getLogger('aws_xray_sdk').setLevel(logging.ERROR)
     logging.getLogger('urllib3').setLevel(logging.ERROR)
     logging.getLogger('requests').setLevel(logging.ERROR)
+    logging.getLogger('mysql.connector').setLevel(logging.ERROR)
 
 
 setup_logging(logger)

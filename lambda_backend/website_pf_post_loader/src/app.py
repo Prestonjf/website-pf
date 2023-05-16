@@ -39,7 +39,7 @@ def lambda_handler(event, context):
     post_service.generate_robots()
     post_service.generate_rss()
     post_service.generate_sitemap()
-    post_service.generate_featured()
+    # post_service.generate_featured()
 
     logger.info('Finished Website-PF post processing.')
     return 'done'
@@ -160,7 +160,7 @@ def archive_html_file(id_name, html_file_name):
         Key=f'posts/{id_name}/archive/{html_file_name}',
         CopySource={
             'Bucket': os.environ['S3_WEBSITE_PF_BUCKET'],
-            'Key': f'upload/{id_name}/{html_file_name}'
+            'Key': f'posts/{id_name}/{html_file_name}'
         }
     )
     s3_client.delete_object(

@@ -45,7 +45,7 @@ code {
 .main-link-style {
   text-decoration: none;
   color: #ddffaa;
-  font-family: "Century Gothic", "Arial", "sans-serif";
+  font-family: "Century Gothic", "Arial", sans-serif;
   font-weight: bold;
 }
 
@@ -57,7 +57,7 @@ code {
 .main-link-style-dark {
   text-decoration: none;
   color: #343a40;
-  font-family: "Century Gothic", "Arial", "sans-serif";
+  font-family: "Century Gothic", "Arial", sans-serif;
   font-weight: bold;
 }
 
@@ -111,14 +111,12 @@ code {
 */
 .post {
   max-width: 1150px;
-  margin-left: auto;
-  margin-right: auto;
   margin-left:1%;
   margin-right: 1%;
 }
 
 .post-title {
-  font-family: "Century Gothic", "Arial", "sans-serif";
+  font-family: "Century Gothic", "Arial", sans-serif;
   font-size: 1.5rem;
   text-align: center;
   font-weight: bold;

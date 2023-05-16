@@ -2,7 +2,8 @@ import boto3
 from flask import request
 import jsonpickle
 from urllib.parse import urlparse
-import jwt
+import json
+import base64
 import logging
 from pythonjsonlogger import jsonlogger
 from lambda_backend.website_pf.src import config
@@ -32,25 +33,31 @@ def get_s3_object(s3_path):
 
 
 def get_authorization_client_id():
+    auth_token = get_authorization_token()
+    if auth_token:
+        return auth_token['client_id']
+    else:
+        return ''
+
+
+def get_authorization_token():
     try:
         req_headers = request.headers
         if 'Authorization' in req_headers:
             authorization = req_headers['Authorization']
-            if len(authorization) > 7:
-                token = authorization[7:]
-                token_decoded = jwt.decode(token, verify=False)
-                requestor_id = token_decoded['client_id']
-                return requestor_id
+            if authorization and authorization.strip().startswith('Bearer'):
+                authorization = authorization.replace('Bearer', '', 1)
+            authorization_split = authorization.split(".")
+            if len(authorization_split) > 1:
+                token_claims = authorization_split[1]
+                decoded_token = base64.b64decode(token_claims + '==').decode('utf-8')
+                return json.loads(decoded_token)
     except Exception:
-        logger.error("ERROR: Could not retrieve requestor id from JWT token")
+        logger.error("ERROR: Could not retrieve JWT token", exc_info=True)
     return ''
 
 
 def get_iam_role():
-    try:
-        return request.environ.get('context', None).invoked_function_arn
-    except Exception:
-        logger.error("ERROR: Could not retrieve IAM role from context")
     return ''
 
 
@@ -69,6 +76,7 @@ def setup_logging(logger_conf):
     logging.getLogger('aws_xray_sdk').setLevel(logging.ERROR)
     logging.getLogger('urllib3').setLevel(logging.ERROR)
     logging.getLogger('requests').setLevel(logging.ERROR)
+    logging.getLogger('mysql.connector').setLevel(logging.ERROR)
 
 
 setup_logging(logger)

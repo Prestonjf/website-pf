@@ -1,9 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file
 
-## [0.6.0] - 2022-xx-xx
+## [0.7.0] - 2022-05-16
 ### Added
+- Added clear local post files in post-handler.py script
+### Changed
+- Updated python and node packages
+### Fixed
+- Fixed html archive on post update
+- Fixed lambda permissions to s3 bucket
 
+
+## [0.6.0] - 2022-02-01
 ### Changed
 - Updated to flask2
 
