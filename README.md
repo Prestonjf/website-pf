@@ -14,10 +14,10 @@ This README file describes how to configure and deploy the website-pf applicatio
 Before you begin, ensure you have met the following requirements:
 
 - AWS CLI & AWS Account Console Access
-- NPM/NodeJS v12+
-- Python v3.6+
-- Poetry v1.1.4+
-- Serverless Framework v2.29.0+
+- NPM/NodeJS v14+
+- Python v3.11+
+- Poetry v1.6+
+- Serverless Framework v3
 
 
 ### Deployment Instructions

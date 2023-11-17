@@ -24,7 +24,7 @@ custom:
         name: website-pf-lambda-layer-${self:provider.stage}
         description: Lambda Layer for Website-PF application.
         compatibleRuntimes:
-          - python3.8
+          - python3.11
 
 # Provider/Service Definition
 provider:
@@ -51,7 +51,7 @@ provider:
     LOG_LEVEL: INFO
     ENVIRONMENT: ${self:provider.stage}
     REGION: ${self:provider.region}
-    VERSION: ${file(package.json):version}
+    VERSION: 0.8.0
     WEBSITE_URL: ${ssm:/${self:provider.stage}/${self:service}/acm/url}
     S3_WEBSITE_PF_BUCKET: "website-pf-${self:provider.stage}"
     DATABASE_URL: ${ssm:/${self:provider.stage}/${self:service}/rds/hostname}
@@ -79,7 +79,7 @@ package:
 # Lambda backend configuration
 functions:
   website_pf:
-    runtime: python3.8
+    runtime: python3.11
     handler: wsgi_handler.handler
     name: website-pf-${self:provider.stage}
     description: Website-PF backend for querying and retrieving post information.
@@ -103,7 +103,7 @@ functions:
     environment:  
 
   website_pf_post_loader:
-    runtime: python3.8
+    runtime: python3.11
     handler: lambda_backend/website_pf_post_loader/src/app.lambda_handler
     name: website-pf-post-loader-${self:provider.stage}
     description: Website-PF loader for new and existing posts.
