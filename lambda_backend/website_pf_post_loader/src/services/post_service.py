@@ -7,6 +7,7 @@ import boto3
 import os
 import datetime
 import logging
+from lambda_backend.website_pf_post_loader.src import config
 from lambda_backend.website_pf_post_loader.src.utils import utils
 
 logger = logging.getLogger()
@@ -18,7 +19,7 @@ def generate_robots():
     try:
         data = '''User-agent: *\n
                 Allow: /\n
-                Sitemap: ''' + os.environ['WEBSITE_URL'] + 'sitemap.xml\n'
+                Sitemap: ''' + config.WEBSITE_URL + 'sitemap.xml\n'
         _put_file_website_bucket('robots.txt', data, 'maxage=86400,s-maxage=86400', 'text/plain')
         return True
     except Exception:
@@ -31,13 +32,13 @@ def generate_rss():
         rss = ET.Element('rss', attrib={'version': '2.0'})
         channel = ET.SubElement(rss, 'channel')
         title = ET.SubElement(channel, 'title', attrib={})
-        title.text = os.environ['WEBSITE_URL']
+        title.text = config.WEBSITE_URL
         link = ET.SubElement(channel, 'link', attrib={})
-        link.text = os.environ['WEBSITE_URL']
+        link.text = config.WEBSITE_URL
         description = ET.SubElement(channel, 'description', attrib={})
         description.text = 'A tech blog and portfolio'
 
-        _xml_build_rss_item(channel, 'Sitemap', f'{os.environ["WEBSITE_URL"]}/sitemap.xml', 'Website sitemap')
+        _xml_build_rss_item(channel, 'Sitemap', f'{config.WEBSITE_URL}/sitemap.xml', 'Website sitemap')
         # build other rss items here
         data = ET.tostring(rss, encoding='utf8', method='xml')
         _put_file_website_bucket('rss.xml', data, 'maxage=0,s-maxage=0', 'application/xml')
@@ -81,7 +82,7 @@ def generate_featured():
 
 
 def _put_file_website_bucket(s3_key, data, cache_control, content_type):
-    config_obj = s3_resource.Object(os.environ['S3_WEBSITE_PF_BUCKET'], s3_key)
+    config_obj = s3_resource.Object(config.S3_WEBSITE_PF_BUCKET, s3_key)
     config_obj.put(Body=data, ContentType=content_type, CacheControl=cache_control)
 
 

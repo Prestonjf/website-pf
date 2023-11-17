@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file
 
+## [0.8.0] - 2022-11-17
+### Changed
+- Updated to python3.11. Serverless 3
+
+
 ## [0.7.0] - 2022-05-16
 ### Added
 - Added clear local post files in post-handler.py script

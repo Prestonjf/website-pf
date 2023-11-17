@@ -1,23 +1,16 @@
 # Config
 import os
-from ruamel.yaml import YAML
+
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
+WEBSITE_URL = os.environ.get('WEBSITE_URL', 'http://localhost:3001/site/0.7.0')
+DATABASE_URL = os.environ.get('DATABASE_URL', 'localhost')
+DATABASE_SCHEMA = os.environ.get('DATABASE_SCHEMA', 'website_pf')
+DATABASE_USERNAME = os.environ.get('DATABASE_USERNAME', '')
+DATABASE_PASSWORD = os.environ.get('DATABASE_PASSWORD', '')
+S3_WEBSITE_PF_BUCKET = os.environ.get('S3_WEBSITE_PF_BUCKET', 'website-pf-test')
+
+MODE = 'PROD'
+REGION = 'us-east-1'
 
 if 'ENVIRONMENT' not in os.environ:
-    with open(os.getcwd() + '/config/local-example.yml') as f:
-        yaml = YAML(typ='safe')
-        data = yaml.load(f)
-        LOG_LEVEL = data['logLevel']
-        DATABASE_URL = data['databaseUrl']
-        DATABASE_SCHEMA = data['databaseSchema']
-        DATABASE_USERNAME = data['databaseUsername']
-        DATABASE_PASSWORD = data['databasePassword']
-        WEBSITE_URL = data['websiteUrl']
-        MODE = 'TEST'
-else:
-    LOG_LEVEL = os.environ['LOG_LEVEL']
-    WEBSITE_URL = os.environ['WEBSITE_URL']
-    DATABASE_URL = os.environ['DATABASE_URL']
-    DATABASE_SCHEMA = os.environ['DATABASE_SCHEMA']
-    DATABASE_USERNAME = os.environ['DATABASE_USERNAME']
-    DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
-    MODE = 'PROD'
+    MODE = 'TEST'

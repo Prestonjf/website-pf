@@ -3,25 +3,30 @@ import logging
 import boto3
 import datetime
 import pytz
-import os
 import json
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
 from lambda_backend.website_pf_post_loader.src.services import post_service
 from lambda_backend.website_pf_post_loader.src.utils import utils
+from lambda_backend.website_pf_post_loader.src import config
 from lambda_backend.website_pf_post_loader.src.repositories import mysql_repository as mysql
 
 
 logger = logging.getLogger()
 utils.setup_logging(logger)
-s3_client = boto3.client('s3')
-s3_resource = boto3.resource('s3')
+s3_client = boto3.client('s3', region_name=config.REGION)
+s3_resource = boto3.resource('s3', region_name=config.REGION)
+
+
+def do_post_work():
+    post_service.generate_robots()
+    post_service.generate_rss()
 
 
 def lambda_handler(event, context):
     logger.info('Begin Website-PF post processing.')
     posts = {}
-    for item in s3_client.list_objects(Bucket=os.environ['S3_WEBSITE_PF_BUCKET'], Prefix='upload')['Contents']:
+    for item in s3_client.list_objects(Bucket=config.S3_WEBSITE_PF_BUCKET, Prefix='upload')['Contents']:
         post_folder = item['Key'].split("/")
         if (post_folder[1] and post_folder[1] not in posts):
             posts[post_folder[1]] = {}
@@ -52,7 +57,7 @@ def process_post(key):
         post_file_key = 'upload/' + key + '/'
 
         # Find all post files
-        for item in s3_client.list_objects(Bucket=os.environ['S3_WEBSITE_PF_BUCKET'], Prefix='upload/' + key)['Contents']:
+        for item in s3_client.list_objects(Bucket=config.S3_WEBSITE_PF_BUCKET, Prefix='upload/' + key)['Contents']:
             file = item['Key'].split('/')
             if (len(file) > 1 and file[2]):
                 post_files.append(file[2])
@@ -100,7 +105,7 @@ def process_post(key):
                 # Write new config file
                 cache_control = 'maxage=0,s-maxage=0'
                 content_type = 'text/yaml'
-                config_obj = s3_resource.Object(os.environ['S3_WEBSITE_PF_BUCKET'], f'posts/{post_data["post_config"]["id"]}/config.yml')
+                config_obj = s3_resource.Object(config.S3_WEBSITE_PF_BUCKET, f'posts/{post_data["post_config"]["id"]}/config.yml')
                 yaml = YAML(typ='safe')
                 stream = StringIO()
                 yaml.dump(post_data["post_config"], stream)
@@ -109,21 +114,21 @@ def process_post(key):
                 # rename html file
                 content_type = 'text/html'
                 html_file_s3_key = f'posts/{post_data["post_config"]["id"]}/{post_data["post_config"]["htmlFile"]}'
-                config_obj = s3_resource.Object(os.environ['S3_WEBSITE_PF_BUCKET'], html_file_s3_key)
+                config_obj = s3_resource.Object(config.S3_WEBSITE_PF_BUCKET, html_file_s3_key)
                 config_obj.put(Body=post_data['post_html'], ContentType=content_type)
                 # Upload old html file to archive and delete from posts folder
                 archive_html_file(post_data["post_config"]["id"], html_file_s3)
             else:
                 # move files to post folder
                 s3_resource.Object(
-                    os.environ['S3_WEBSITE_PF_BUCKET'],
+                    config.S3_WEBSITE_PF_BUCKET,
                     f'posts/{post_data["post_config"]["id"]}/{file}'
-                ).copy_from(CopySource={'Bucket': os.environ['S3_WEBSITE_PF_BUCKET'], 'Key': f'{post_file_key}{file}'})
+                ).copy_from(CopySource={'Bucket': config.S3_WEBSITE_PF_BUCKET, 'Key': f'{post_file_key}{file}'})
 
         post_data['status'] = 'success'
         logger.info(f'Files moved for {post_data["post_config"]["idName"]} {post_files}')
 
-        bucket = s3_resource.Bucket(os.environ['S3_WEBSITE_PF_BUCKET'])
+        bucket = s3_resource.Bucket(config.S3_WEBSITE_PF_BUCKET)
         bucket.objects.filter(Prefix=post_file_key).delete()
         logger.info(f'Upload files deleted for {post_file_key}')
 
@@ -135,38 +140,41 @@ def process_post(key):
 
 
 def get_post_config(post_file_key):
-    obj = s3_resource.Object(os.environ['S3_WEBSITE_PF_BUCKET'], post_file_key + 'config.yml')
+    obj = s3_resource.Object(config.S3_WEBSITE_PF_BUCKET, post_file_key + 'config.yml')
     body = obj.get()['Body'].read()
     yaml = YAML(typ='safe')
-    config = yaml.load(body)
-    return config
+    post_config = yaml.load(body)
+    return post_config
 
 
 def get_s3_file_text(post_file_key, html_file):
-    obj = s3_resource.Object(os.environ['S3_WEBSITE_PF_BUCKET'], post_file_key + html_file)
+    obj = s3_resource.Object(config.S3_WEBSITE_PF_BUCKET, post_file_key + html_file)
     body = obj.get()['Body'].read()
     return str(body.decode())
 
 
 def replace_html_dynamic_values(html):
     # Replace with domain name $$_domain_$$
-    html = html.replace('$$_domain_$$', os.environ['WEBSITE_URL'])
+    html = html.replace('$$_domain_$$', config.WEBSITE_URL)
     return html
 
 
 def archive_html_file(id_name, html_file_name):
-    s3_client.copy_object(
-        Bucket=os.environ['S3_WEBSITE_PF_BUCKET'],
-        Key=f'posts/{id_name}/archive/{html_file_name}',
-        CopySource={
-            'Bucket': os.environ['S3_WEBSITE_PF_BUCKET'],
-            'Key': f'posts/{id_name}/{html_file_name}'
-        }
-    )
-    s3_client.delete_object(
-        Bucket=os.environ['S3_WEBSITE_PF_BUCKET'],
-        Key=f'posts/{id_name}/{html_file_name}',
-    )
+    try:
+        s3_client.copy_object(
+            Bucket=config.S3_WEBSITE_PF_BUCKET,
+            Key=f'posts/{id_name}/archive/{html_file_name}',
+            CopySource={
+                'Bucket': config.S3_WEBSITE_PF_BUCKET,
+                'Key': f'posts/{id_name}/{html_file_name}'
+            }
+        )
+        s3_client.delete_object(
+            Bucket=config.S3_WEBSITE_PF_BUCKET,
+            Key=f'posts/{id_name}/{html_file_name}',
+        )
+    except Exception:
+        logger.warning(f"Unable to archive file: posts/{id_name}/{html_file_name}. It might not exist.")
 
 
 def get_add_author(username, displayName):
@@ -187,7 +195,7 @@ def create_update_post(config, mode):
     if 'CREATE' == mode:
         sql = '''insert into post (post_s3_path, post_name, post_html_path, primary_image_path, thumbnail_image_path, post_summary, author_id, meta, post_url)
             values (%s,%s,%s,%s,%s,%s,%s,%s,%s) '''
-        params.append(f's3://{os.environ["S3_WEBSITE_PF_BUCKET"]}/posts/{config["id"]}')
+        params.append(f's3://{config.S3_WEBSITE_PF_BUCKET}/posts/{config["id"]}')
     else:
         sql = '''update post set post_name=%s, post_html_path=%s, primary_image_path=%s, thumbnail_image_path=%s, post_summary=%s, author_id=%s, meta=%s,
             updated_date=now() where post_url=%s'''
