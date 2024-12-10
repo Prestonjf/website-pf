@@ -189,23 +189,23 @@ def get_add_author(username, displayName):
         return mysql.mysql_modify(sql, params)
 
 
-def create_update_post(config, mode):
+def create_update_post(post_config, mode):
     sql = ''
     params = []
     if 'CREATE' == mode:
         sql = '''insert into post (post_s3_path, post_name, post_html_path, primary_image_path, thumbnail_image_path, post_summary, author_id, meta, post_url)
             values (%s,%s,%s,%s,%s,%s,%s,%s,%s) '''
-        params.append(f's3://{config.S3_WEBSITE_PF_BUCKET}/posts/{config["id"]}')
+        params.append(f's3://{config.S3_WEBSITE_PF_BUCKET}/posts/{post_config["id"]}')
     else:
         sql = '''update post set post_name=%s, post_html_path=%s, primary_image_path=%s, thumbnail_image_path=%s, post_summary=%s, author_id=%s, meta=%s,
             updated_date=now() where post_url=%s'''
 
-    params.append(config['name'])
-    params.append(config['htmlFile'])
-    params.append(config['primaryImageFile'])
-    params.append(config['primaryImageThumbnail'])
-    params.append(config['summary'])
-    params.append(config['author']['id'])
+    params.append(post_config['name'])
+    params.append(post_config['htmlFile'])
+    params.append(post_config['primaryImageFile'])
+    params.append(post_config['primaryImageThumbnail'])
+    params.append(post_config['summary'])
+    params.append(post_config['author']['id'])
 
     # Process Tags
     post_meta = {}

@@ -9,6 +9,7 @@ node_modules/*
 serverless_wsgi.py
 wsgi_handler.py
 *.pyc
+.DS_Store
 
 config/local.yml
 config/prod.yml
