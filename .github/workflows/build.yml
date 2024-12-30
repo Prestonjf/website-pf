@@ -2,13 +2,14 @@ name: Build
 on:
   push:
     branches:
+      - main
       - master
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
   project-build-test-scan:
     name: WebsitePfBuildTestScan
-    runs-on: ubuntu-20.04
+    runs-on: python:3.13
     steps:
       - uses: actions/checkout@v2
         with:
