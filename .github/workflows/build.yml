@@ -18,7 +18,7 @@ jobs:
           curl -sSL https://install.python-poetry.org | python -
           export PATH="/home/runner/.local/bin:$PATH"
           poetry install
-          poetry run pytest -v --cov lambda_backend/ --cov-report term --cov-report xml
+          poetry run pytest
           sed -i.bak 's+/home/runner/work/website-pf/website-pf/+/github/workspace/+g' coverage.xml
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
