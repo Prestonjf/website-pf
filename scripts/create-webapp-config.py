@@ -35,13 +35,13 @@ def build_config_file():
             logger.error("Could not retrieve all SSM parameters")
 
         logger.info('Building website-pf s3 webapp .env file.')
-        file = open(str(pathlib.Path(__file__).parent.absolute()) + "/../s3-webapp/.env", "w")
+        file = open(str(pathlib.Path(__file__).parent.absolute()) + "/../webapp/website-pf/.env", "w")
         file.write(f"REACT_APP_API_URL={website_pf_api_url}\n")
         file.write(f"REACT_APP_API_KEY={website_pf_api_key}\n")
         file.write(f"REACT_APP_WEB_URL={website_pf_react_web_url}\n")
         file.write("REACT_APP_ENV=prod\n")
         file.close()
-        logger.info(".env created at " + str(pathlib.Path(__file__).parent.absolute()) + "/../s3-webapp/.env")
+        logger.info(".env created at " + str(pathlib.Path(__file__).parent.absolute()) + "/../webapp/website-pf/.env")
         return 1
     except Exception:
         logger.error("ERROR: ", exc_info=True)

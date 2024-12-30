@@ -1,0 +1,40 @@
+{
+  "name": "website-pf",
+  "version": "0.9.0",
+  "description": "Website-PF S3 Webapp",
+  "private": true,
+  "homepage": "site/0.9.0",
+  "dependencies": {
+    "bootstrap": "^4.5.3",
+    "js-yaml": "^3.14.0",
+    "react": "16.11.0",
+    "react-bootstrap": "1.4.0",
+    "react-dom": "16.11.0",
+    "react-helmet": "^6.1.0",
+    "react-router-dom": "5.2.0",
+    "react-scripts": "3.4.1",
+    "react-social-icons": "4.1.0"
+  },
+  "devDependencies": {
+    "babel-jest": "24.9.0",
+    "jest": "24.9.0",
+    "react-test-renderer": "16.11.0"  
+  },
+  "scripts": {
+    "start": "export PORT=3001 && react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

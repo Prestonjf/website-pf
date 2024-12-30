@@ -15,7 +15,7 @@ Before you begin, ensure you have met the following requirements:
 
 - AWS CLI & AWS Account Console Access
 - NPM/NodeJS v14+
-- Python v3.11+
+- Python v3.13+
 - Poetry v1.6+
 - Serverless Framework v3
 
