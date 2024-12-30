@@ -26,7 +26,6 @@ jobs:
           cd serverless/website-pf
           poetry install
           poetry run pytest
-          sed -i.bak 's+/home/runner/work/website-pf/website-pf/+/github/workspace/+g' coverage.xml
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v4
         env:
