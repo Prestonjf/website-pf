@@ -19,6 +19,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - name: Set uo Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
       - name: Install dependencies, Run Tests
         run: |
           curl -sSL https://install.python-poetry.org | python -
@@ -26,6 +30,10 @@ jobs:
           cd serverless/website-pf
           poetry install
           poetry run pytest
+          cd ../../webapp/website-pf
+          npm install
+          npm run test
+          cd ../..
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v4
         env:
