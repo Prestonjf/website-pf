@@ -33,6 +33,7 @@ jobs:
           cd ../../webapp/website-pf
           npm install
           npm run test
+          cd ../..
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v4
         env:
