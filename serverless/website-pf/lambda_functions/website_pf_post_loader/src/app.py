@@ -209,9 +209,9 @@ def create_update_post(post_config, mode):
 
     # Process Tags
     post_meta = {}
-    post_meta['tags'] = config['tags']
+    post_meta['tags'] = post_config['tags']
     params.append(json.dumps(post_meta))
 
-    params.append(config['id'])
+    params.append(post_config['id'])
 
     return mysql.mysql_modify(sql, params)

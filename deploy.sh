@@ -1,11 +1,14 @@
 #!/bin/bash
 set -e
 
-if [[ $# -eq 0 ]]; then
-    echo "You need to supply a stage to deploy. usage: ./deploy.sh prod"
+SERVICE=website-pf
+USAGE='usage: deploy.sh <stage>'
+
+if [ $# -lt 1 ]; then
+    echo "$USAGE"
+    echo '(You forgot to put a stage!)'
     exit 1
 fi
-echo "Deploying website-pf to $1"
 
 skipServerless=false
 skipWebapp=false
@@ -23,6 +26,8 @@ do
     fi
 done
 
+echo "Deploying $SERVICE $VERSION to ${1} at $(date)!"
+
 # Install deployment tools 
 python3 -m venv .website-pf-venv
 source .website-pf-venv/bin/activate
@@ -32,30 +37,19 @@ npm install
 # serverless deploy
 if [[ "$skipServerless" = false ]]; then
     cd serverless/website-pf
-    npx serverless deploy -s $1
+    ./deploy.sh $1
     cd ../..
 fi
 
-# build webapp .env file
-# build webapp
-# Remove old webapp content
-# Upload new webapp content
+# webapp deploy
 if [[ "$skipWebapp" = false ]]; then
-    python3 scripts/create-webapp-config.py $1
     cd webapp/website-pf
-    npm run-script build
-
-    aws s3 rm s3://website-pf-$1/ --recursive --exclude "posts/*" --exclude "upload/*" --exclude "homepage.jpg" --exclude "featured.yml"  --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml"
-    aws s3 cp build/ s3://website-pf-$1/site/$VERSION/ --exclude "posts/*" --exclude "homepage.jpg" --exclude "featured.yml" --exclude "robots.txt" --exclude "sitemap.xml" --exclude "rss.xml" --recursive --cache-control max-age=31536000,s-maxage=2592000
-
-    aws s3 cp build/robots.txt s3://website-pf-$1/ --cache-control max-age=86400,s-maxage=86400
-    aws s3 cp build/rss.xml s3://website-pf-$1/ --cache-control max-age=86400,s-maxage=86400
-    aws s3 cp build/featured.yml s3://website-pf-$1/ --cache-control max-age=0,s-maxage=0
-    aws s3 cp build/sitemap.xml s3://website-pf-$1/ --cache-control max-age=86400,s-maxage=86400
-    aws s3 cp build/homepage.jpg s3://website-pf-$1/ --cache-control max-age=86400,s-maxage=86400
+    ./deploy.sh $1
     cd ../..
 fi
 
 # Cleanup deployment
 deactivate
 # log deployment completion and seconds
+
+echo "Deployed $SERVICE $VERSION to ${1} at $(date) completed in $SECONDS seconds!"
