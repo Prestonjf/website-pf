@@ -1,39 +1,105 @@
-name: Build
+name: WebsitePFActions
 on:
   push:
     branches:
       - main
-      - master
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
-  build-test-scan:
-    name: BuildTestScan
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install Backend Dependencies
+        run: |
+          curl -sSL https://install.python-poetry.org | python -
+          export PATH="/home/runner/.local/bin:$PATH"
+          cd serverless/website-pf
+          poetry install
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
+
+      - name: Cache Node modules
+        uses: actions/cache@v4
+        with:
+          path: webapp/website-pf/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd webapp/website-pf
+          npm install
+
+  test:
+    name: Test
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Restore Poetry cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Run Python Tests
+        run: |
+          curl -sSL https://install.python-poetry.org | python -
+          export PATH="/home/runner/.local/bin:$PATH"
+          cd serverless/website-pf
+          poetry run pytest
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
+
+      - name: Restore Node cache
+        uses: actions/cache@v4
+        with:
+          path: webapp/website-pf/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Run React Tests
+        run: |
+          cd webapp/website-pf
+          npm run test
+
+  scan:
+    name: Scan
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-      - name: Set uo Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 16
-      - name: Install dependencies, Run Tests
-        run: |
-          curl -sSL https://install.python-poetry.org | python -
-          export PATH="/home/runner/.local/bin:$PATH"
-          cd serverless/website-pf
-          poetry install
-          poetry run pytest
-          cd ../../webapp/website-pf
-          npm install
-          npm run test
-          cd ../..
+
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v4
         env:
