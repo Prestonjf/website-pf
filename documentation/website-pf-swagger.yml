@@ -1,0 +1,161 @@
+openapi: 3.0.0
+info:
+  title: Website PF API
+  description: API for retrieving and searching blog posts and tags on website pf application.
+  version: 0.9.0
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /posts/recent:
+    get:
+      summary: Get recent posts
+      operationId: getRecentPosts
+      responses:
+        '200':
+          description: A list of the most recent posts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostsResponse'
+
+  /posts/search:
+    get:
+      summary: Search posts by term
+      operationId: searchPosts
+      parameters:
+        - name: q
+          in: query
+          description: Search term to filter posts.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of posts matching the search criteria.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostsResponse'
+
+  /posts/tags:
+    get:
+      summary: Get all post tags
+      operationId: getTags
+      responses:
+        '200':
+          description: A list of all unique tags used across posts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /posts/tags/{tag}:
+    get:
+      summary: Get posts by tag
+      operationId: getTagPosts
+      parameters:
+        - name: tag
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The tag to filter posts by.
+      responses:
+        '200':
+          description: A list of posts associated with the specified tag.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostsResponse'
+
+  /post/{post_name}:
+    get:
+      summary: Get a post by name
+      operationId: getPost
+      parameters:
+        - name: post_name
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The slug or name of the post.
+      responses:
+        '200':
+          description: The detailed content of the post.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostsResponse'
+        '404':
+          description: Post not found.
+
+components:
+  schemas:
+
+    PostsResponse:
+      type: object
+      properties:
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
+    
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        idName:
+          type: string
+          description: "Slugified name used for URLs"
+        summary:
+          type: string
+        htmlFile:
+          type: string
+        primaryImageFile:
+          type: string
+        primaryImageThumbnail:
+          type: string
+        views:
+          type: integer
+          format: int32
+        createdDate:
+          type: string
+          format: date-time
+        updatedDate:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            type: string
+        author:
+          $ref: '#/components/schemas/Author'
+
+    Author:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        username:
+          type: string
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
