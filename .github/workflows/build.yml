@@ -1,11 +1,16 @@
 name: WebsitePFActions
 on:
+  workflow_dispatch:
+    inputs:
+    target_action:
+      description: 'Specify specific action'
+      required: false
+      default: ''
   push:
     branches:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
-  workflow_dispatch:
 
 jobs:
   build:
@@ -124,7 +129,7 @@ jobs:
     name: Deploy
     needs: scan
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: ${{ github.event.inputs.target_action == 'deploy' }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
