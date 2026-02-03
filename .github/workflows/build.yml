@@ -2,10 +2,10 @@ name: WebsitePFActions
 on:
   workflow_dispatch:
     inputs:
-    target_action:
-      description: 'Specify specific action'
-      required: false
-      default: ''
+      target_action:
+        description: 'Specify specific action'
+        required: false
+        default: ''
   push:
     branches:
       - main
