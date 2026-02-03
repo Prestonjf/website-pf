@@ -18,6 +18,7 @@ echo "Deploying $SERVICE-webapp to ${1}!"
 python3 ../../scripts/create-webapp-config.py $1
 
 # build webapp
+export NODE_OPTIONS=--openssl-legacy-provider
 npm run-script build
 
 # Remove old webapp content
