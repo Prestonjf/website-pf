@@ -157,5 +157,5 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run Deploy
-        run:
-          - deploy.sh prod
+        run: |
+          deploy.sh prod
