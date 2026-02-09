@@ -1,10 +1,19 @@
 name: WebsitePFActions
 on:
+  workflow_dispatch:
+    inputs:
+      target_action:
+        description: 'Specify specific action'
+        required: false
+        default: ''
   push:
     branches:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+
+permissions:
+  id-token: write
 
 jobs:
   build:
@@ -27,7 +36,7 @@ jobs:
 
       - name: Install Backend Dependencies
         run: |
-          curl -sSL https://install.python-poetry.org | python -
+          curl -sSL https://install.python-poetry.org | python - --version 2.2.1
           export PATH="/home/runner/.local/bin:$PATH"
           cd serverless/website-pf
           poetry install
@@ -35,7 +44,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 22
 
       - name: Cache Node modules
         uses: actions/cache@v4
@@ -69,7 +78,7 @@ jobs:
 
       - name: Run Python Tests
         run: |
-          curl -sSL https://install.python-poetry.org | python -
+          curl -sSL https://install.python-poetry.org | python - --version 2.2.1
           export PATH="/home/runner/.local/bin:$PATH"
           cd serverless/website-pf
           poetry run pytest
@@ -77,7 +86,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 22
 
       - name: Restore Node cache
         uses: actions/cache@v4
@@ -114,7 +123,54 @@ jobs:
           name: test-results
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  deploy:
+    name: Deploy
+    needs: scan
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.target_action == 'deploy' }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Restore Poetry cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python - --version 2.2.1
+          export PATH="/home/runner/.local/bin:$PATH"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Restore Node cache
+        uses: actions/cache@v4
+        with:
+          path: webapp/website-pf/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::890384337971:role/github-pipeline-access
+          aws-region: us-east-1
+
+      - name: Run Deploy
+        run: |
+          aws sts get-caller-identity
+          ./deploy.sh prod

@@ -12,4 +12,5 @@ fi
 
 echo "Deploying $SERVICE-serverless to ${1}!"
 
+poetry install
 npx serverless deploy -s $1
