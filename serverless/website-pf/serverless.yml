@@ -41,7 +41,7 @@ provider:
     LOG_LEVEL: INFO
     ENVIRONMENT: ${self:provider.stage}
     REGION: ${self:provider.region}
-    VERSION: 0.9.0
+    VERSION: 1.0.0
     WEBSITE_URL: ${ssm:/${self:provider.stage}/${self:service}/acm/url}
     S3_WEBSITE_PF_BUCKET: "website-pf-${self:provider.stage}"
     DATABASE_URL: ${ssm:/${self:provider.stage}/${self:service}/rds/hostname}

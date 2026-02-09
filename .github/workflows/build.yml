@@ -38,6 +38,7 @@ jobs:
         run: |
           curl -sSL https://install.python-poetry.org | python - --version 2.2.1
           export PATH="/home/runner/.local/bin:$PATH"
+          poetry config virtualenvs.in-project true
           cd serverless/website-pf
           poetry install
 
@@ -80,6 +81,7 @@ jobs:
         run: |
           curl -sSL https://install.python-poetry.org | python - --version 2.2.1
           export PATH="/home/runner/.local/bin:$PATH"
+          poetry config virtualenvs.in-project true
           cd serverless/website-pf
           poetry run pytest
 
@@ -152,6 +154,7 @@ jobs:
         run: |
           curl -sSL https://install.python-poetry.org | python - --version 2.2.1
           export PATH="/home/runner/.local/bin:$PATH"
+          poetry config virtualenvs.in-project true
 
       - name: Set up Node
         uses: actions/setup-node@v4

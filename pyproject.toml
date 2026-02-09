@@ -1,25 +1,18 @@
 [tool.poetry]
 name = "website-react-pf"
 version = "1.0.0"
-description = "Website-PF Application"
+description = "website-react-pf application"
 authors = [
     "Preston Frazier <preston@prestonfrazier.net>"
 ]
 packages = [
-   { include = "lambda_functions" }
+   { include = "scripts" }
 ]
 
 [tool.poetry.dependencies]
 boto3 = "1.35.81"
 python = "~3.13"
-werkzeug = "3.1.3"
-Flask = "3.1.0"
-Flask-Cors = "5.0.0"
-jsonpickle = "4.0.1"
-mysql-connector-python = "9.1.0"
 "ruamel.yaml" = "0.18.6"
-pytz = "2024.2"
-python-json-logger = "3.2.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "8.3.4"
@@ -29,9 +22,6 @@ coverage = {extras = ["toml"], version = "7.6.9"}
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.requires-plugins]
-poetry-plugin-export = "1.9.0"
 
 [tool.pytest.ini_options]
 addopts = "-v --cov --cov-report term --cov-report xml"
