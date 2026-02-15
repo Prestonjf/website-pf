@@ -6,10 +6,10 @@ import pytz
 import json
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
-from lambda_functions.website_pf_post_loader.src.services import post_service
-from lambda_functions.website_pf_post_loader.src.utils import utils
-from lambda_functions.website_pf_post_loader.src import config
-from lambda_functions.website_pf_post_loader.src.repositories import mysql_repository as mysql
+from website_pf_post_loader.services import post_service
+from website_pf_post_loader.utils import utils
+from website_pf_post_loader import config
+from website_pf_post_loader.repositories import mysql_repository as mysql
 
 
 logger = logging.getLogger()

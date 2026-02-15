@@ -1,8 +1,8 @@
 # MySQL Services.
 import logging
 import mysql.connector
-from lambda_functions.website_pf_post_loader.src.utils import utils
-from lambda_functions.website_pf_post_loader.src import config
+from website_pf_post_loader.utils import utils
+from website_pf_post_loader import config
 
 logger = logging.getLogger()
 utils.setup_logging(logger)

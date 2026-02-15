@@ -1,9 +1,9 @@
-# Python Flask App
 from flask import Flask
 from flask_cors import CORS
 from markupsafe import escape
-from lambda_functions.website_pf.src.services import post_service
-from lambda_functions.website_pf.src.decorators.basic_request_logging import basic_request_logging
+import serverless_wsgi
+from website_pf_api.services import post_service
+from website_pf_api.decorators.basic_request_logging import basic_request_logging
 
 
 app = Flask(__name__)
@@ -38,3 +38,7 @@ def get_tag_posts(tag):
 @basic_request_logging
 def get_post(post_name):
     return post_service.get_post(escape(post_name))
+
+
+def lambda_handler(event, context):
+    return serverless_wsgi.handle_request(app.app, event, context)

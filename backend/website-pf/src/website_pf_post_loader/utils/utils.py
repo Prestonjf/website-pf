@@ -3,7 +3,7 @@ import jsonpickle
 from urllib.parse import urlparse
 import logging
 from pythonjsonlogger.json import JsonFormatter
-from lambda_functions.website_pf_post_loader.src import config
+from website_pf_post_loader import config
 
 logger = logging.getLogger(__file__)
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-SERVICE=website-pf
+SERVICE=website-react-pf-backend
 USAGE='usage: deploy.sh <stage>'
 
 if [ $# -lt 1 ]; then
@@ -13,6 +13,7 @@ fi
 echo "Deploying $SERVICE to ${1}!"
 
 poetry install
-cd ../cdk
-
+cd ../../infrastructure/cloudformation
+poetry install
 cdk deploy $1/WebsitePf 
+cd ../../bqckend/website-pf

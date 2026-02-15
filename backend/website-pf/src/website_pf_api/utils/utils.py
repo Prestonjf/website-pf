@@ -6,7 +6,7 @@ import json
 import base64
 import logging
 from pythonjsonlogger.json import JsonFormatter
-from lambda_functions.website_pf.src import config
+from website_pf_api import config
 
 logger = logging.getLogger()
 

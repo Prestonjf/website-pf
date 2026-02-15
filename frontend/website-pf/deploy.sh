@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-SERVICE=website-pf
+SERVICE=website-react-pf-webapp
 USAGE='usage: deploy.sh <stage>'
 CONFIG_FILE="../../sonar-project.properties"
 VERSION=$(sed -n 's/^sonar.projectVersion=//p' $CONFIG_FILE)
@@ -15,7 +15,7 @@ fi
 echo "Deploying $SERVICE-webapp to ${1}!"
 
 # build webapp .env file
-python3 ../../scripts/create-webapp-config.py $1
+poetry run python3 ../../scripts/create-webapp-config.py $1
 
 # build webapp
 export NODE_OPTIONS=--openssl-legacy-provider

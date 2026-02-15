@@ -3,8 +3,8 @@ import pytest
 import logging
 import boto3
 from unittest.mock import patch, call, Mock
-from lambda_functions.website_pf_post_loader.src import config
-from lambda_functions.website_pf_post_loader.src import app
+from website_pf_post_loader import config
+from website_pf_post_loader import app
 
 logger = logging.getLogger()
 logger.setLevel(config.LOG_LEVEL)
@@ -18,7 +18,7 @@ def mock_boto3_client():
 
 @pytest.fixture(scope="function")
 def mock_post_service(mock_boto3_client):
-    with patch('lambda_functions.website_pf_post_loader.src.post_service') as mock_service:
+    with patch('website_pf_post_loader.services.post_service') as mock_service:
         mock_service.return_value.toggle = Mock(return_value='post success')
         yield mock_service
 

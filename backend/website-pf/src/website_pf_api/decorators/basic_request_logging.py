@@ -1,7 +1,7 @@
 from flask import request
 from functools import wraps
 import logging
-from lambda_functions.website_pf.src.utils import utils
+from website_pf_api.utils import utils
 
 logger = logging.getLogger()
 utils.setup_logging(logger)

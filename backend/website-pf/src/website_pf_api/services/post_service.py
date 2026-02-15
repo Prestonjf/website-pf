@@ -3,10 +3,10 @@ from flask import Response
 from flask import request
 import logging
 import json
-from lambda_functions.website_pf.src.repositories import mysql_repository
-from lambda_functions.website_pf.src.utils import utils
-from lambda_functions.website_pf.src.models.post import Post
-from lambda_functions.website_pf.src.models.author import Author
+from website_pf_api.repositories import mysql_repository
+from website_pf_api.utils import utils
+from website_pf_api.models.post import Post
+from website_pf_api.models.author import Author
 
 logger = logging.getLogger()
 utils.setup_logging(logger)

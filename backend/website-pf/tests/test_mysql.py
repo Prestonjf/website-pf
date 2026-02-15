@@ -1,7 +1,7 @@
 import logging
 import mysql.connector
-from lambda_functions.website_pf.src.utils import utils
-from lambda_functions.website_pf.src import config
+from website_pf_api.utils import utils
+from website_pf_api import config
 
 logger = logging.getLogger(__file__)
 logger.setLevel(config.LOG_LEVEL)

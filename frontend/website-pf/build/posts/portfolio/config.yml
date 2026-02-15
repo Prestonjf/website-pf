@@ -1,0 +1,21 @@
+# Post Config File
+
+id: "portfolio"
+name: "Portfolio"
+idName: "portfolio"
+summary: "Portfolio page for prestonfrazier.net displaying featured projects."
+htmlFile: "post.html"
+primaryImageFile: "post-logo.png"
+primaryImageThumbnail: "post-logo-alt.png"
+
+author:
+  name: "Preston Frazier"
+  username: "prestonfrazier"
+
+createdDate: "2021-02-20 02:30:00"
+updatedDate:
+
+tags:
+  - "general"
+
+mode: "UPDATE"

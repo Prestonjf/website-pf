@@ -1,4 +1,4 @@
-from lambda_functions.website_pf.src.models.author import Author
+from website_pf_api.models.author import Author
 
 
 class Post:

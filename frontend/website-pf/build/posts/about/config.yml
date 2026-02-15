@@ -1,0 +1,22 @@
+# Post Config File
+
+id: "about"
+name: "About"
+idName: "about"
+summary: "Prestonfrazier.net is a personal blog and portfolio site. Check in for technology posts and content."
+htmlFile: "post.html"
+primaryImageFile: "post-logo.png"
+primaryImageThumbnail: "post-logo-alt.png"
+
+author:
+  name: "Preston Frazier"
+  username: "prestonfrazier"
+
+createdDate: "2021-02-20 01:30:00"
+updatedDate: ""
+
+tags:
+  - "general"
+  - "prestonfrazier.net"
+
+mode: "UPDATE"

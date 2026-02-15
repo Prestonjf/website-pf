@@ -1,6 +1,6 @@
 # Website-PF Tests
 import logging
-from lambda_functions.website_pf.src import config
+from website_pf_api import config
 
 logger = logging.getLogger(__file__)
 logger.setLevel(config.LOG_LEVEL)

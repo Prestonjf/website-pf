@@ -1,0 +1,25 @@
+# Post Config File
+
+id: "pc-build-03-2016"
+name: "Custom PC Build 03-2016"
+idName: "pc-build-03-2016"
+summary: "Description of a custom PC build on 03/2016."
+htmlFile: "post.html"
+primaryImageFile: "pc-build-2016.png"
+primaryImageThumbnail: "post-image-1-alt.png"
+
+author:
+  name: "Preston Frazier"
+  username: "prestonfrazier"
+
+createdDate: ""
+updatedDate: ""
+
+tags:
+  - "pc-building"
+  - "my-projects"
+
+mode: "CREATE"
+
+
+

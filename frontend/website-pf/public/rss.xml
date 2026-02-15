@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+
+<channel>
+  <title>prestonfrazier.net</title>
+  <link>https://www.prestonfrazier.net</link>
+  <description>A tech blog and portfolio"</description>
+  <item>
+    <title>Sitemap</title>
+    <link>https://www.prestonfrazier.net/sitemap.xml</link>
+    <description>New prestonfrazier.net sitemap</description>
+  </item>
+</channel>
+
+</rss>
