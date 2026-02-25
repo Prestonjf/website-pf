@@ -1,22 +1,23 @@
 """
 CloudFront distribution for Website-PF stack.
 """
+
+from constructs import Construct
 from aws_cdk import (
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as origins,
     aws_s3 as s3,
     aws_iam as iam,
-    aws_certificatemanager as acm,
-    core,
+    aws_certificatemanager as acm
 )
 
 
-class WebsitePFCloudFront(core.Construct):
+class WebsitePFCloudFront(Construct):
     """CloudFront distribution for Website-PF."""
 
     def __init__(
         self,
-        scope: core.Construct,
+        scope: Construct,
         id: str,
         stage: str,
         version: str,

@@ -15,5 +15,5 @@ echo "Deploying $SERVICE to ${1}!"
 poetry install
 cd ../../infrastructure/cloudformation
 poetry install
-cdk deploy $1/WebsitePf 
+cdk deploy $1/WebsitePf -c stage_name=$1
 cd ../../bqckend/website-pf

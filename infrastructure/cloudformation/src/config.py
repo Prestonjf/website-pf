@@ -4,7 +4,7 @@ Configuration for Website-PF CDK application.
 from aws_cdk import Environment
 from boto3 import client
 from typing import Optional
-from src import utils
+import utils
 
 
 logger = utils.setup_logging()
@@ -29,19 +29,10 @@ class Config:
         self.region = env.region
         self.version = app_version
         self.project_name = project_name
+        self.deployment_bucket_name = f"{project_name}-{stage_id}" # From ssm parameter store in future
 
         # Stack Resource Names
         self.website_pf_stack_name = f"{project_name}-{stage_id}"
-
-        # S3 configuration
-        self.s3_bucket_name = f"{project_name}-{stage_id}"
-
-        # Lambda configuration
-        self.lambda_runtime = python_lambda_runtime or "python3.13"
-        self.lambda_memory_api = 256
-        self.lambda_timeout_api = 10
-        self.lambda_memory_post_loader = 256
-        self.lambda_timeout_post_loader = 30
 
         # CloudFront configuration
         self.cloudfront_aliases = ["prestonfrazier.net", "www.prestonfrazier.net"]
@@ -59,9 +50,9 @@ class Config:
         self.api_usage_plan_rate_limit = 20
 
         # VPC configuration
-        self.vpc_sg_id = self.get_ssm_parameter(f"/{stage_id}/website-pf/vpc/sg/id")
-        self.vpc_subnet_id = self.get_ssm_parameter(f"/{stage_id}/website-pf/vpc/subnet/id")
         self.vpc_id = self.get_ssm_parameter(f"/{stage_id}/website-pf/vpc/id")
+        self.vpc_subnet_id = self.get_ssm_parameter(f"/{stage_id}/website-pf/vpc/subnet/id")
+        self.vpc_sg_id = self.get_ssm_parameter(f"/{stage_id}/website-pf/vpc/sg/id")    
 
         # RDS configuration
         self.db_hostname = self.get_ssm_parameter(f"/{stage_id}/website-pf/rds/hostname")

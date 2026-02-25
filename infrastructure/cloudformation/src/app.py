@@ -4,17 +4,13 @@ Main CDK Application for Website-PF Infrastructure.
 
 This application synthesizes the CloudFormation template for the Website-PF
 lambda functions, S3 bucket, CloudFront distribution, and related AWS resources.
-
-Usage:
-    python app.py          # Synthesize CDK
-    cdk deploy             # Deploy to AWS
-    cdk deploy --stage dev # Deploy to dev environment
 """
+from constructs import Construct
 import aws_cdk as cdk
 from aws_cdk import App, Stage
-from src import utils
-from src.config import Config
-from src.website_pf_stack import WebsitePfStack
+import utils
+from config import Config
+from website_pf_stack.pf_stack import WebsitePfStack
 
 logger = utils.setup_logging()
 
@@ -22,8 +18,8 @@ logger = utils.setup_logging()
 class CdkStage(Stage):
     """CDK Stage for Website-PF stack."""
 
-    def __init__(self, scope: cdk.Construct, stage_id: str, **kwargs):
-        super().__init__(scope, id, **kwargs)
+    def __init__(self, scope: Construct, stage_id: str, **kwargs):
+        super().__init__(scope, stage_id, **kwargs)
 
         # Get configuration
         config = Config(stage_id, kwargs['env'], app_version="1.0.0", project_name="website-pf")

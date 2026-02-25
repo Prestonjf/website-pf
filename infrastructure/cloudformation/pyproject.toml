@@ -30,16 +30,17 @@ addopts = "-v --cov --cov-report term --cov-report xml"
 log_cli = true
 log_cli_level = "WARNING"
 testpaths = [
-    "lambda_functions/*/tests"
+    "tests"
 ]
 
 [tool.coverage.run]
 branch = true
 include = [
-    "lambda_functions/*/src/*"
+    "src/*"
 ]
 omit = [
     "*/tests/*",
+    "*/resources/*",
     "*__init.__*"
 ]
 

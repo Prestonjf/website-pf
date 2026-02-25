@@ -14,10 +14,10 @@ This README file describes how to configure and deploy the website-pf applicatio
 Before you begin, ensure you have met the following requirements:
 
 - AWS CLI & AWS Account Console Access
-- NPM/NodeJS v14+
-- Python v3.13+
-- Poetry v1.6+
-- Serverless Framework v3
+- Python 3.13
+- Poetry 2.1.0+
+- Node 22+
+- CDK 2.1100+
 
 
 ### Deployment Instructions
@@ -63,9 +63,10 @@ $ ./deploy.sh prod
 
 ### Built With
 
-* [Serverless](https://serverless.com/) - AWS Services Manager
-* [NPM](https://www.npmjs.com/) - Node Dependency Management
+* [AWS CDK](https://aws.amazon.com/cdk//) - AWS Infrastructure as Code
 * [Poetry](https://python-poetry.org/) - Python Dependency Management
+* [NPM](https://www.npmjs.com/) - Node Dependency Management
+
 
 ### Authors
 
