@@ -1,10 +1,14 @@
 from aws_cdk import App, Environment, CliCredentialsStackSynthesizer
 from logging import Logger, getLogger, StreamHandler, Formatter, ERROR
 from pythonjsonlogger.json import JsonFormatter
-from os import getenv
+from os import getenv, getcwd
+from os.path import exists, join, getsize
+import subprocess
+import shutil
 
 
 logger = getLogger("website_pf")
+WORK_DIR = './requirements'
 
 
 class CustomSynthesizer(CliCredentialsStackSynthesizer):
@@ -42,7 +46,7 @@ def get_stack_synthesizer(config, stack_name: str) -> CliCredentialsStackSynthes
 def get_stage_environment(app: App):
 
     environments = {
-        "prod": {"account_id": "", "region": "us-east-1"}
+        "prod": {"account_id": "890384337971", "region": "us-east-1"}
     }
 
     stage_name = app.node.try_get_context("stage_name")

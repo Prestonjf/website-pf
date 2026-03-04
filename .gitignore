@@ -1,26 +1,42 @@
-build/*
-node_modules/
-coverage/
-.serverless/
-.vscode/
-.website-pf-venv/
-serverless/htmlcov/
-.pytest_cache/
+# Build outputs
+build/
 /webapp/*/build/
-/webapp/*/public/posts/
-/webapp/*/.env
-/webapp/*/.env.development
-/scripts/posts/
+.serverless/
+**/cdk.out
+cdk.context.json
+
+# Node.js
+node_modules/
+
+# Python
+.venv
+.website-pf-venv/
+*.pyc
+__pycache__/
+.pytest_cache/
+.coverage
+coverage.xml
+
+# Test coverage reports
+coverage/
+serverless/htmlcov/
 **/htmlcov/
 
+# Generated files
 serverless_wsgi.py
 .serverless-wsgi
 wsgi_handler.py
-coverage.xml
-.coverage
-*.pyc
+
+# IDE and editors
+.vscode/
+
+# OS-specific
 .DS_Store
 
-**__pycache__**
+# Environment variables
+/webapp/*/.env
+/webapp/*/.env.development
 
-.venv
+# Local files
+/scripts/posts/
+/webapp/*/public/posts/

@@ -29,7 +29,7 @@ class Config:
         self.region = env.region
         self.version = app_version
         self.project_name = project_name
-        self.deployment_bucket_name = f"{project_name}-{stage_id}" # From ssm parameter store in future
+        self.deployment_bucket_name = f"{project_name}-{stage_id}"  # From ssm parameter store in future
 
         # Stack Resource Names
         self.website_pf_stack_name = f"{project_name}-{stage_id}"
@@ -52,7 +52,7 @@ class Config:
         # VPC configuration
         self.vpc_id = self.get_ssm_parameter(f"/{stage_id}/website-pf/vpc/id")
         self.vpc_subnet_id = self.get_ssm_parameter(f"/{stage_id}/website-pf/vpc/subnet/id")
-        self.vpc_sg_id = self.get_ssm_parameter(f"/{stage_id}/website-pf/vpc/sg/id")    
+        self.vpc_sg_id = self.get_ssm_parameter(f"/{stage_id}/website-pf/vpc/sg/id")
 
         # RDS configuration
         self.db_hostname = self.get_ssm_parameter(f"/{stage_id}/website-pf/rds/hostname")

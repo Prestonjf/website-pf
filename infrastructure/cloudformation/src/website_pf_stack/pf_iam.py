@@ -3,14 +3,13 @@ IAM roles and policies for Website-PF stack.
 """
 from constructs import Construct
 from aws_cdk import aws_iam
+from config import Config
 
 
-
-class WebsitePfIAM(Construct):
+class WebsitePfIam(Construct):
     """Constructs for IAM roles and policies."""
 
-    def __init__(self, scope: Construct, id: str, **kwargs):
-        super().__init__(scope, id, **kwargs)
+    def __init__(self, scope: Construct, id: str, config: Config, **kwargs):
 
         # Lambda execution role
         self.lambda_role = aws_iam.Role(

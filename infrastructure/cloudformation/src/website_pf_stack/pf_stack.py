@@ -4,7 +4,6 @@ Website-PF CDK Stack.
 from constructs import Construct
 import aws_cdk as cdk
 from aws_cdk import aws_ec2, Stack, App, CfnOutput
-from website_pf_stack.pf_functions import WebsitePfLambdaLayer, WebsitePfLambdaFunction
 from website_pf_stack import pf_functions
 from config import Config
 
@@ -17,8 +16,8 @@ class WebsitePfStack(Stack):
 
         cdk.Tags.of(self).add("Component", config.website_pf_stack_name)
 
-        lambda_layer = WebsitePfLambdaLayer(self, "WebsitePfLambdaLayer", config)
-        website_pf_api_lambda = WebsitePfLambdaFunction(self, "WebsitePfApiLambda", config)
+        lambda_layer = pf_functions.website_pf_lambda_layer(self, "WebsitePfLambdaLayer", config)
+        website_pf_api_lambda = pf_functions.website_pf_api_lambda(self, "WebsitePfApiLambda", config, layers=[lambda_layer.layer])
 
     #     environment_vars = {
     #         "LOG_LEVEL": "INFO",

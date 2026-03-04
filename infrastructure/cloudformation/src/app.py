@@ -41,21 +41,15 @@ class CdkStage(Stage):
         )
 
 
-def package_project_assets():
-    """Package project assets for deployment."""
-    pass
-
-
 def main():
     """Main entry point for CDK application."""
     logger.info("Starting CDK application synthesis...")
     app = App()
 
-    stage_name, env = utils.get_stage_environment()
+    stage_name, env = utils.get_stage_environment(app)
 
     if stage_name and env:
         logger.info(f"Deploying stage '{stage_name}' to environment '{env}'")
-        package_project_assets()
         CdkStage(app, stage_name, env=env)
         app.synth()
     else:
