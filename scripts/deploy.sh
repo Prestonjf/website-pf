@@ -29,6 +29,7 @@ done
 echo "Deploying $SERVICE $VERSION to ${1} at $(date)!"
 
 # Install deployment tools 
+cd ..
 poetry install
 
 # serverless deploy

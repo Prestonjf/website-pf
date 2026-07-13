@@ -16,6 +16,7 @@ Before you begin, ensure you have met the following requirements:
 - AWS CLI & AWS Account Console Access
 - Python 3.13
 - Poetry 2.1.0+
+- Docker
 - Node 22+
 - CDK 2.1100+
 

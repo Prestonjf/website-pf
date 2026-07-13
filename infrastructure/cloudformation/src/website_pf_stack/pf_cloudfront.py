@@ -3,124 +3,222 @@ CloudFront distribution for Website-PF stack.
 """
 
 from constructs import Construct
+from aws_cdk import Duration
 from aws_cdk import (
     aws_cloudfront as cloudfront,
-    aws_cloudfront_origins as origins,
-    aws_s3 as s3,
-    aws_iam as iam,
-    aws_certificatemanager as acm
+    aws_cloudfront_origins as origins
 )
+from aws_cdk import aws_certificatemanager
+from aws_cdk import aws_iam
+from aws_cdk import aws_route53 as route53
+from aws_cdk.aws_route53_targets import CloudFrontTarget
+from aws_cdk.aws_s3 import Bucket, BlockPublicAccess, BucketEncryption
+import utils
+from config import Config
+
+# bucket for posts
 
 
-class WebsitePFCloudFront(Construct):
+class WebsitePfCloudFront():
     """CloudFront distribution for Website-PF."""
+
+    webapp_bucket = None
+    posts_bucket = None
+    distribution = None
 
     def __init__(
         self,
         scope: Construct,
-        id: str,
-        stage: str,
-        version: str,
-        acm_config: dict,
-        waf_config: dict,
+        construct_id: str,
+        config: Config,
+        override_properties: dict = {},
         **kwargs,
     ):
-        super().__init__(scope, id, **kwargs)
 
-        # S3 bucket for website
-        self.bucket = s3.Bucket(
-            self,
-            "WebsitePFBucket",
-            bucket_name=f"website-pf-{stage}",
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
-            encryption=s3.BucketEncryption.S3_MANAGED,
+        # S3 bucket for website UI
+        self.webapp_bucket = Bucket(
+            scope,
+            "WebsitePfWebappBucket",
+            bucket_name=config.website_pf_webapp_bucket_name,
+            block_public_access=BlockPublicAccess.BLOCK_ALL,
+            encryption=BucketEncryption.S3_MANAGED,
         )
 
-        # CloudFront Origin Access Identity
-        oai = cloudfront.OriginAccessIdentity(
-            self,
-            "WebsitePFOAI",
-            comment=f"website-pf-{stage}-access-identity",
+        # S3 bucket for website content (posts)
+        self.posts_bucket = Bucket(
+            scope,
+            "WebsitePfPostsBucket",
+            bucket_name=config.website_pf_posts_bucket_name,
+            block_public_access=BlockPublicAccess.BLOCK_ALL,
+            encryption=BucketEncryption.S3_MANAGED,
         )
 
-        # Grant OAI read access to bucket
-        self.bucket.grant_read(oai)
+        # CloudFront Origin Access Control
+        oac = cloudfront.S3OriginAccessControl(
+            scope,
+            "WebsitePfOAC",
+            origin_access_control_name=f"website-pf-{config.stage}-access-control",
+        )
+
+        # Add S3 bucket policy to allow read access from CloudFront OAC
+        self.webapp_bucket.add_to_resource_policy(
+            aws_iam.PolicyStatement(
+                sid="OACReadGetObjects",
+                effect=aws_iam.Effect.ALLOW,
+                principals=[aws_iam.ServicePrincipal("cloudfront.amazonaws.com")],
+                actions=["s3:GetObject"],
+                conditions={"StringEquals": {"AWS:SourceArn": f"arn:aws:cloudfront::{oac.origin_access_control_id}"}},
+                resources=[f"{self.webapp_bucket.bucket_arn}/*"]
+            )
+        )
+        self.posts_bucket.add_to_resource_policy(
+            aws_iam.PolicyStatement(
+                sid="OACReadGetObjects",
+                effect=aws_iam.Effect.ALLOW,
+                principals=[aws_iam.ServicePrincipal("cloudfront.amazonaws.com")],
+                actions=["s3:GetObject"],
+                conditions={"StringEquals": {"AWS:SourceArn": f"arn:aws:cloudfront::{oac.origin_access_control_id}"}},
+                resources=[f"{self.posts_bucket.bucket_arn}/*"]
+            )
+        )
 
         # Cache policy
         cache_policy = cloudfront.CachePolicy(
-            self,
-            "WebsitePFCachePolicy",
-            cache_policy_name=f"website-pf-{stage}-cache-policy",
-            default_ttl=core.Duration.days(1),
-            max_ttl=core.Duration.days(365),
-            min_ttl=core.Duration.seconds(1),
+            scope,
+            "WebsitePfCachePolicy",
+            cache_policy_name=f"website-pf-{config.stage}-cache-policy",
+            default_ttl=Duration.days(1),
+            max_ttl=Duration.days(365),
+            min_ttl=Duration.seconds(1),
             enable_accept_encoding_brotli=True,
             enable_accept_encoding_gzip=True,
         )
 
         # Origin request policy
         origin_request_policy = cloudfront.OriginRequestPolicy(
-            self,
-            "WebsitePFOriginRequestPolicy",
-            origin_request_policy_name=f"website-pf-{stage}-origin-request-policy",
-            header_behavior=cloudfront.OriginRequestHeaderBehavior.whitelist(
+            scope,
+            "WebsitePfOriginRequestPolicy",
+            origin_request_policy_name=f"website-pf-{config.stage}-origin-request-policy",
+            header_behavior=cloudfront.OriginRequestHeaderBehavior.allow_list(
                 "origin", "access-control-request-headers", "access-control-request-method"
             ),
         )
 
-        # CloudFront distribution
-        self.distribution = cloudfront.Distribution(
-            self,
-            "WebsitePFDistribution",
-            default_root_object=f"site/{version}/index.html",
-            default_behavior=cloudfront.BehaviorOptions(
-                origin=origins.S3Origin(self.bucket, origin_access_identity=oai),
+        # Determine domain names based on environment
+        if config.environment == "prod":
+            domain_names = [config.domain_name, f"www.{config.domain_name}"]
+        else:
+            domain_names = [f"{config.environment}.{config.domain_name}", f"www.{config.environment}.{config.domain_name}"]
+
+        properties = {
+            "default_root_object": f"site/{config.version}/index.html",
+            "default_behavior": cloudfront.BehaviorOptions(
+                origin=origins.S3Origin(self.webapp_bucket, origin_access_control_id=oac.origin_access_control_id),
                 cache_policy=cache_policy,
                 origin_request_policy=origin_request_policy,
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 response_headers_policy=cloudfront.ResponseHeadersPolicy.from_response_headers_policy_id(
+                    scope,
+                    f"{construct_id}ResponseHeadersPolicy",
                     "5cc3b908-e619-4b99-88e5-2cf7f45965bd"
                 ),
             ),
-            error_responses=[
+            "additional_behaviors": {
+                "post/*": cloudfront.BehaviorOptions(
+                    origin=origins.S3Origin(self.posts_bucket, origin_access_control_id=oac.origin_access_control_id),
+                    cache_policy=cache_policy,
+                    viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                ),
+            },
+            "error_responses": [
                 cloudfront.ErrorResponse(
                     http_status=403,
                     response_http_status=200,
-                    response_page_path=f"/site/{version}/index.html",
+                    response_page_path=f"/site/{config.version}/index.html",
                 ),
                 cloudfront.ErrorResponse(
                     http_status=404,
                     response_http_status=200,
-                    response_page_path=f"/site/{version}/index.html",
+                    response_page_path=f"/site/{config.version}/index.html",
                 ),
             ],
-            domain_names=["prestonfrazier.net", "www.prestonfrazier.net"],
-            certificate=self._get_certificate(acm_config),
-            web_acl_id=waf_config.get("arn") if waf_config else None,
-            price_class=cloudfront.PriceClass.PRICE_CLASS_100,
-            comment=f"Website-PF serverless distribution for webapp in s3 bucket",
+            "domain_names": domain_names,
+            "web_acl_id": config.waf_cloudfront_arn if config.waf_cloudfront_arn else None,
+            "price_class": cloudfront.PriceClass.PRICE_CLASS_100,
+            "comment": f"Website-Pf {config.stage} distribution",
+        }
+
+        if config.environment == "prod":
+            if config.domain_acm_arn:
+                properties["certificate"] = aws_certificatemanager.Certificate.from_certificate_arn(
+                    scope,
+                    "WebsitePfCloudfrontCertificate",
+                    certificate_arn=config.domain_acm_arn,
+                )
+        else:
+            # Create new ACM certificate for non-prod environments
+            certificate = aws_certificatemanager.Certificate(
+                scope,
+                "WebsitePfCloudfrontCertificate",
+                domain_name=domain_names[0],
+                subject_alternative_names=domain_names[1:] if len(domain_names) > 1 else []
+            )
+            properties["certificate"] = certificate
+
+        utils.update_dictionaries(properties, override_properties)
+
+        # CloudFront distribution
+        self.distribution = cloudfront.Distribution(scope, "WebsitePfCloudfrontDistribution", **properties)
+
+        # Look up the hosted zone
+        hosted_zone = route53.HostedZone.from_lookup(
+            scope,
+            "WebsitePfHostedZone",
+            domain_name=config.domain_name,
         )
 
-        # Add S3 bucket policy to allow read access from CloudFront and Lambda
-        self.bucket.add_to_resource_policy(
-            iam.PolicyStatement(
-                sid="OAIReadGetObjects",
-                effect=iam.Effect.ALLOW,
-                principals=[oai],
-                actions=["s3:GetObject"],
-                resources=[f"{self.bucket.bucket_arn}/*"],
+        # Create Route53 A and AAAA records for each domain name
+        for idx, domain in enumerate(domain_names):
+            # A record
+            route53.ARecord(
+                scope,
+                f"WebsitePfARecord{idx}",
+                zone=hosted_zone,
+                record_name=domain,
+                target=route53.RecordTarget.from_alias(
+                    CloudFrontTarget(self.distribution)
+                ),
             )
-        )
+            # AAAA record
+            route53.AaaaRecord(
+                scope,
+                f"WebsitePfAaaaRecord{idx}",
+                zone=hosted_zone,
+                record_name=domain,
+                target=route53.RecordTarget.from_alias(
+                    CloudFrontTarget(self.distribution)
+                ),
+            )
 
-    def _get_certificate(self, acm_config: dict):
-        """Get ACM certificate from config."""
-        if acm_config and "arn" in acm_config:
-            # Import existing certificate
-            arn = acm_config["arn"]
-            # Use the ARN to reference existing certificate
-            return cloudfront.Certificate.from_certificate_arn(
-                self,
-                "WebsitePFCertificate",
-                certificate_arn=arn,
-            )
-        return None
+
+def website_pf_cloudfront(
+    scope: Construct,
+    construct_id: str,
+    config: Config,
+    override_properties: dict = {},
+    **kwargs
+) -> WebsitePfCloudFront:
+    """
+    Factory function to create the CloudFront distribution for Website-PF stack.
+
+    Args:
+        scope: CDK scope
+        construct_id: Construct ID
+        config: Configuration object
+        override_properties: Dictionary of properties to override defaults
+        sub_domain: Subdomain to use for custom domain (e.g., 'www')
+
+    """
+
+    cloudfront_distribution = WebsitePfCloudFront(scope, construct_id, config, override_properties, **kwargs)
+    return cloudfront_distribution

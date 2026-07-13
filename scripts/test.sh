@@ -9,11 +9,11 @@ do
     fi
 done
 
-cd serverless/website-pf
+cd ../backend/website-pf
 poetry $POETRY_CMD
 poetry run pytest
 cd ../..
 
-cd webapp/website-pf
+cd ../frontend/website-pf
 npm run test
 cd ../..

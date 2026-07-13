@@ -1,10 +1,10 @@
+from constructs import Construct
 from aws_cdk import App, Environment, CliCredentialsStackSynthesizer
+from aws_cdk.aws_ssm import StringParameter, ParameterType, ParameterTier
 from logging import Logger, getLogger, StreamHandler, Formatter, ERROR
 from pythonjsonlogger.json import JsonFormatter
 from os import getenv, getcwd
 from os.path import exists, join, getsize
-import subprocess
-import shutil
 
 
 logger = getLogger("website_pf")
@@ -46,7 +46,8 @@ def get_stack_synthesizer(config, stack_name: str) -> CliCredentialsStackSynthes
 def get_stage_environment(app: App):
 
     environments = {
-        "prod": {"account_id": "890384337971", "region": "us-east-1"}
+        "pfrazier-prod": {"account_id": "890384337971", "region": "us-east-1"},
+        "pfrazier-dev": {"account_id": "890384337971", "region": "us-east-1"}
     }
 
     stage_name = app.node.try_get_context("stage_name")
@@ -68,6 +69,33 @@ def update_dictionaries(dict1: dict, dict2: dict) -> dict:
         else:
             dict1[key] = value
     return dict1
+
+
+def add_ssm_parameter(
+    scope,
+    construct_id: str,
+    parameter_name: str,
+    value: str,
+    description: str = "",
+    tier: ParameterTier = ParameterTier.STANDARD
+) -> StringParameter:
+
+    if not isinstance(scope, Construct):
+        raise ValueError("scope must be a valid CDK Construct")
+
+    if not parameter_name or not value:
+        raise ValueError("parameter_name and value must not be empty")
+
+    parameter = StringParameter(
+        scope,
+        f"{construct_id}Parameter",
+        parameter_name=parameter_name,
+        string_value=value,
+        description=description,
+        tier=tier,
+    )
+
+    return parameter
 
 
 def setup_logging(logger: Logger = None, json_format: bool = True):

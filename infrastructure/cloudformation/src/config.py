@@ -1,17 +1,13 @@
-"""
-Configuration for Website-PF CDK application.
-"""
+from typing import Optional
+
+import utils
 from aws_cdk import Environment
 from boto3 import client
-from typing import Optional
-import utils
-
 
 logger = utils.setup_logging()
 
 
 class Config:
-    """Base configuration class."""
 
     def __init__(
         self,
@@ -24,48 +20,48 @@ class Config:
         self.ssm_client = client("ssm", region_name=env.region)
 
         # Basic configuration
+        stage_split = stage_id.split("-")
         self.stage = stage_id
+        self.customer = stage_split[0]
+        self.environment = stage_split[1]
         self.account_id = env.account
         self.region = env.region
         self.version = app_version
         self.project_name = project_name
-        self.deployment_bucket_name = f"{project_name}-{stage_id}"  # From ssm parameter store in future
+
+        # Existing Infrastructure Configurations
+        self.deployment_bucket_name = "pfrazier-cdk-deployments"
+        # Route 53 / ACM configuration
+        self.domain_name = "prestonfrazier.net"
+        self.domain_acm_arn = self.get_ssm_parameter(f"/{self.environment}/website-pf/acm/arn")
+        # VPC configuration
+        self.vpc_id = self.get_ssm_parameter(f"/{self.environment}/website-pf/vpc/id")
+        self.vpc_subnet_id = self.get_ssm_parameter(f"/{self.environment}/website-pf/vpc/subnet/id")
+        self.vpc_sg_id = self.get_ssm_parameter(f"/{self.environment}/website-pf/vpc/sg/id")
+        # WAF configuration
+        self.waf_cloudfront_arn = self.get_ssm_parameter(f"/{self.environment}/waf/cloudfront/arn")
 
         # Stack Resource Names
         self.website_pf_stack_name = f"{project_name}-{stage_id}"
 
+        # Lambda Resource Names
+        self.website_pf_api_lambda_name = f"website-pf-api-{self.stage}"
+        self.website_pf_loader_lambda_name = f"website-pf-post-loader-{self.stage}"
+
         # CloudFront configuration
-        self.cloudfront_aliases = ["prestonfrazier.net", "www.prestonfrazier.net"]
-        self.cloudfront_price_class = "PriceClass_100"
-        self.cloudfront_cache_default_ttl = 86400
-        self.cloudfront_cache_max_ttl = 31536000
-        self.cloudfront_cache_min_ttl = 1
+        # S3 Resource Names
+        self.website_pf_webapp_bucket_name = f"website-pf-webapp-{self.stage}"
+        self.website_pf_posts_bucket_name = f"website-pf-posts-{self.stage}"
+
+        # CloudFront configuration
 
         # API Gateway configuration
-        self.api_key_name = f"website-pf-{stage_id}-client-key-111112"
-        self.api_key_description = "Client key for website-pf api application."
-        self.api_usage_plan_quota_limit = 40001
-        self.api_usage_plan_quota_period = "DAY"
-        self.api_usage_plan_burst_limit = 10
-        self.api_usage_plan_rate_limit = 20
-
-        # VPC configuration
-        self.vpc_id = self.get_ssm_parameter(f"/{stage_id}/website-pf/vpc/id")
-        self.vpc_subnet_id = self.get_ssm_parameter(f"/{stage_id}/website-pf/vpc/subnet/id")
-        self.vpc_sg_id = self.get_ssm_parameter(f"/{stage_id}/website-pf/vpc/sg/id")
 
         # RDS configuration
-        self.db_hostname = self.get_ssm_parameter(f"/{stage_id}/website-pf/rds/hostname")
-        self.db_schema = self.get_ssm_parameter(f"/{stage_id}/website-pf/rds/schema")
-        self.db_username = self.get_ssm_parameter(f"/{stage_id}/website-pf/rds/username")
-        self.db_password = self.get_ssm_parameter(f"/{stage_id}/website-pf/rds/password")
-
-        # ACM configuration
-        self.acm_url = self.get_ssm_parameter(f"/{stage_id}/website-pf/acm/url")
-        self.acm_arn = self.get_ssm_parameter(f"/{stage_id}/website-pf/acm/arn")
-
-        # WAF configuration
-        self.waf_cloudfront_arn = self.get_ssm_parameter(f"/{stage_id}/waf/cloudfront/arn")
+        self.db_hostname = self.get_ssm_parameter(f"/{self.environment}/website-pf/rds/hostname")
+        self.db_schema = self.get_ssm_parameter(f"/{self.environment}/website-pf/rds/schema")
+        self.db_username = self.get_ssm_parameter(f"/{self.environment}/website-pf/rds/username")
+        self.db_password = self.get_ssm_parameter(f"/{self.environment}/website-pf/rds/password")
 
     def get_ssm_parameter(self, name: str, default_value: str = "") -> Optional[str]:
         """Get parameter value from SSM Parameter Store."""

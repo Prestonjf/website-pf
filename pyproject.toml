@@ -22,24 +22,3 @@ coverage = {extras = ["toml"], version = "7.6.9"}
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.pytest.ini_options]
-addopts = "-v --cov --cov-report term --cov-report xml"
-log_cli = true
-log_cli_level = "WARNING"
-testpaths = [
-    "lambda_functions/*/tests"
-]
-
-[tool.coverage.run]
-branch = true
-include = [
-    "lambda_functions/*/src/*"
-]
-omit = [
-    "*/tests/*",
-    "*__init.__*"
-]
-
-[tool.coverage.xml]
-output = "coverage.xml"

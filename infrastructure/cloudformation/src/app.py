@@ -25,8 +25,10 @@ class CdkStage(Stage):
         config = Config(stage_id, kwargs['env'], app_version="1.0.0", project_name="website-pf")
 
         # Add tags
-        cdk.Tags.of(self).add("Application", "website-pf")
-        cdk.Tags.of(self).add("Environment", config.stage)
+        cdk.Tags.of(self).add("Application", config.project_name)
+        cdk.Tags.of(self).add("Stage", config.stage)
+        cdk.Tags.of(self).add("Customer", config.customer)
+        cdk.Tags.of(self).add("Environment", config.environment)
         cdk.Tags.of(self).add("Version", config.version)
         cdk.Tags.of(self).add("ManagedBy", "CDK")
 

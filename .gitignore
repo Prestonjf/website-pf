@@ -7,6 +7,7 @@ cdk.context.json
 
 # Node.js
 node_modules/
+.env
 
 # Python
 .venv
