@@ -1,29 +1,26 @@
-"""
-API Gateway constructs for Website-PF stack.
-"""
+from typing import Optional
 
-from constructs import Construct
 from aws_cdk import aws_apigateway, aws_certificatemanager, aws_route53
 from aws_cdk.aws_apigateway import (
-    RestApi,
-    LogGroupLogDestination,
     AccessLogFormat,
     ApiKey,
-    UsagePlan,
-    MethodLoggingLevel,
-    ThrottleSettings,
-    QuotaSettings,
-    Period,
-    LambdaIntegration,
-    CorsOptions,
-    MockIntegration,
     IntegrationResponse,
+    LambdaIntegration,
+    LogGroupLogDestination,
+    MethodLoggingLevel,
     MethodOptions,
-    MethodResponse
+    MethodResponse,
+    MockIntegration,
+    Period,
+    QuotaSettings,
+    RestApi,
+    ThrottleSettings,
+    UsagePlan,
 )
 from aws_cdk.aws_certificatemanager import Certificate
-from aws_cdk.aws_route53_targets import ApiGatewayDomainNameTarget
-from typing import Optional
+from aws_cdk.aws_route53_targets import ApiGatewayDomain
+from constructs import Construct
+
 import utils
 from config import Config
 from website_pf_stack import pf_cloudwatch
@@ -77,19 +74,6 @@ class WebsitePfRestApi:
                 access_log_format=AccessLogFormat.clf(),
             ),
             "endpoint_types": [aws_apigateway.EndpointType.REGIONAL],
-            "default_cors_preflight_options": CorsOptions(
-                allow_origins=["*"],
-                allow_methods=["OPTIONS", "GET"],
-                allow_headers=[
-                    "Content-Type",
-                    "X-Amz-Date",
-                    "Authorization",
-                    "X-Api-Key",
-                    "X-Amz-Security-Token",
-                    "X-Amz-User-Agent",
-                ],
-                allow_credentials=True,
-            )
         }
 
         utils.update_dictionaries(properties, override_properties)
@@ -115,14 +99,19 @@ class WebsitePfRestApi:
         # Construct the full domain name
         full_domain_name = f"{sub_domain}.{config.domain_name}"
 
-        # Create ACM certificate
+        # Look up the hosted zone for the domain so we can create DNS validation records
+        hosted_zone = aws_route53.HostedZone.from_lookup(
+            scope,
+            f"{construct_id}HostedZone",
+            domain_name=config.domain_name,
+        )
+
+        # Create ACM certificate with DNS validation using the hosted zone
         certificate = Certificate(
             scope,
             f"{construct_id}Certificate",
             domain_name=full_domain_name,
-            validation=aws_certificatemanager.CertificateValidation.from_dns(
-                hosted_zone=None  # Will use default hosted zone lookup
-            ),
+            validation=aws_certificatemanager.CertificateValidation.from_dns(hosted_zone),
         )
 
         # Add custom domain name to API Gateway
@@ -130,35 +119,33 @@ class WebsitePfRestApi:
             f"{construct_id}DomainName",
             domain_name=full_domain_name,
             certificate=certificate,
-            security_policy=aws_apigateway.SecurityPolicy.SecurityPolicy_TLS13_1_2_2021_06,
+            security_policy=aws_apigateway.SecurityPolicy.TLS_1_2,
         )
+        # Ensure the DomainName resource depends on the ACM certificate
+        self.domain_name.node.add_dependency(certificate)
 
         # Create Route53 A and AAAA records for the custom API domain
-        hosted_zone = aws_route53.HostedZone.from_lookup(
-            scope,
-            f"{construct_id}HostedZone",
-            domain_name=config.domain_name,
-        )
-
-        aws_route53.ARecord(
+        a_record = aws_route53.ARecord(
             scope,
             f"{construct_id}ARecord",
             zone=hosted_zone,
             record_name=full_domain_name,
             target=aws_route53.RecordTarget.from_alias(
-                ApiGatewayDomainNameTarget(self.domain_name)
+                ApiGatewayDomain(self.domain_name)
             )
         )
+        a_record.node.add_dependency(self.domain_name)
 
-        aws_route53.AaaaRecord(
+        aaaa_record = aws_route53.AaaaRecord(
             scope,
             f"{construct_id}AaaaRecord",
             zone=hosted_zone,
             record_name=full_domain_name,
             target=aws_route53.RecordTarget.from_alias(
-                ApiGatewayDomainNameTarget(self.domain_name)
+                ApiGatewayDomain(self.domain_name)
             )
         )
+        aaaa_record.node.add_dependency(self.domain_name)
 
 
 def website_pf_rest_api(
@@ -235,8 +222,8 @@ def website_pf_rest_api(
                     response_parameters={
                         "method.response.header.Access-Control-Allow-Headers": True,
                         "method.response.header.Access-Control-Allow-Methods": True,
-                        "method.response.header.Access-Control-Allow-Origin": True,
-                    },
+                        "method.response.header.Access-Control-Allow-Origin": True
+                    }
                 )
             ]
         )
@@ -247,22 +234,22 @@ def website_pf_rest_api(
         # /posts/recent
         recent_resource = posts_resource.add_resource("recent")
         _ = recent_resource.add_method("GET", lambda_integration, api_key_required=True)
-        _ = recent_resource.add_method("OPTIONS", mock_integration, cors_options=cors_options)
+        _ = recent_resource.add_method("OPTIONS", mock_integration, method_responses=cors_options.method_responses)
 
         # /posts/search
         search_resource = posts_resource.add_resource("search")
         _ = search_resource.add_method("GET", lambda_integration, api_key_required=True)
-        _ = search_resource.add_method("OPTIONS", mock_integration, cors_options=cors_options)
+        _ = search_resource.add_method("OPTIONS", mock_integration, method_responses=cors_options.method_responses)
 
         # /posts/tags
         tags_resource = posts_resource.add_resource("tags")
         _ = tags_resource.add_method("GET", lambda_integration, api_key_required=True)
-        _ = tags_resource.add_method("OPTIONS", mock_integration, cors_options=cors_options)
+        _ = tags_resource.add_method("OPTIONS", mock_integration, method_responses=cors_options.method_responses)
 
         # /posts/tags/{proxy+}
         tags_proxy_resource = tags_resource.add_resource("{proxy+}")
         _ = tags_proxy_resource.add_method("GET", lambda_integration, api_key_required=True)
-        _ = tags_proxy_resource.add_method("OPTIONS", mock_integration, cors_options=cors_options)
+        _ = tags_proxy_resource.add_method("OPTIONS", mock_integration, method_responses=cors_options.method_responses)
 
         # /post resource
         post_resource = api_gateway.api.root.add_resource("post")
@@ -270,7 +257,7 @@ def website_pf_rest_api(
         # /post/{proxy+}
         post_proxy_resource = post_resource.add_resource("{proxy+}")
         _ = post_proxy_resource.add_method("GET", lambda_integration, api_key_required=True)
-        _ = post_proxy_resource.add_method("OPTIONS", mock_integration, cors_options=cors_options)
+        _ = post_proxy_resource.add_method("OPTIONS", mock_integration, method_responses=cors_options.method_responses)
 
     # Store API key name in SSM Parameter Store as SecureString
     _ = utils.add_ssm_parameter(

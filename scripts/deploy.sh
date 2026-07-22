@@ -3,6 +3,8 @@ set -e
 
 SERVICE=website-pf
 USAGE='usage: deploy.sh <stage>'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
 if [ $# -lt 1 ]; then
     echo "$USAGE"
@@ -13,8 +15,8 @@ fi
 skipCloudformation=false
 skipWebapp=false
 
-CONFIG_FILE="sonar-project.properties"
-VERSION=$(sed -n 's/^sonar.projectVersion=//p' $CONFIG_FILE)
+CONFIG_FILE="$SCRIPT_DIR/../sonar-project.properties"
+VERSION=$(sed -n 's/^sonar.projectVersion=//p' "$CONFIG_FILE")
 
 for var in "$@"
 do

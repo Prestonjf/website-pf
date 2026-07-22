@@ -2,18 +2,59 @@ name: website-react-pf pr
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
-  push:
-    branches:
-      - main
+    branches: [main]
 
 permissions:
   id-token: write
+  contents: read
+  pull-requests: write
 
 jobs:
-  build:
-    name: Build
+
+  build-test-sonar:
+    name: Poetry Build Test Sonar
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.13'
+
+      - name: Install Backend Dependencies
+        run: |
+          curl -sSL https://install.python-poetry.org | python - --version 2.2.1
+          export PATH="/home/runner/.local/bin:$PATH"
+          poetry config virtualenvs.in-project true
+          cd serverless/website-pf
+          poetry install
+
+      - name: Run Backend Tests
+        run: |
+          cd serverless/website-pf
+          poetry run pytest
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd webapp/website-pf
+          npm install
+
+      - name: Run Frontend Tests
+        run: |
+          cd webapp/website-pf
+          npm run test
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v7 # v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

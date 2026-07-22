@@ -1,11 +1,11 @@
-from constructs import Construct
-from aws_cdk import App, Environment, CliCredentialsStackSynthesizer
-from aws_cdk.aws_ssm import StringParameter, ParameterType, ParameterTier
-from logging import Logger, getLogger, StreamHandler, Formatter, ERROR
-from pythonjsonlogger.json import JsonFormatter
-from os import getenv, getcwd
-from os.path import exists, join, getsize
+from logging import ERROR, Formatter, Logger, StreamHandler, getLogger
+from os import getcwd, getenv
+from os.path import exists, getsize, join
 
+from aws_cdk import App, CliCredentialsStackSynthesizer, Environment
+from aws_cdk.aws_ssm import ParameterTier, ParameterType, StringParameter
+from constructs import Construct
+from pythonjsonlogger.json import JsonFormatter
 
 logger = getLogger("website_pf")
 WORK_DIR = './requirements'

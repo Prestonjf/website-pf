@@ -113,7 +113,7 @@ class WebsitePfCloudFront():
         properties = {
             "default_root_object": f"site/{config.version}/index.html",
             "default_behavior": cloudfront.BehaviorOptions(
-                origin=origins.S3Origin(self.webapp_bucket, origin_access_control_id=oac.origin_access_control_id),
+                origin=origins.S3BucketOrigin(self.webapp_bucket, origin_access_control_id=oac.origin_access_control_id),
                 cache_policy=cache_policy,
                 origin_request_policy=origin_request_policy,
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -125,7 +125,7 @@ class WebsitePfCloudFront():
             ),
             "additional_behaviors": {
                 "post/*": cloudfront.BehaviorOptions(
-                    origin=origins.S3Origin(self.posts_bucket, origin_access_control_id=oac.origin_access_control_id),
+                    origin=origins.S3BucketOrigin(self.posts_bucket, origin_access_control_id=oac.origin_access_control_id),
                     cache_policy=cache_policy,
                     viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 ),

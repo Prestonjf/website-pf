@@ -20,6 +20,9 @@ python-json-logger = "3.2.0"
 pytest = "8.3.4"
 pytest-cov = "6.0.0"
 coverage = {extras = ["toml"], version = "7.6.9"}
+pylint = "4.0.6"
+black = "26.5.1"
+isort = "8.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -46,3 +49,39 @@ omit = [
 
 [tool.coverage.xml]
 output = "coverage.xml"
+
+[tool.black]
+line-length = 140
+target-version = ["py313"]
+include = '\.pyi?$'
+extend-exclude = '''\.*test\.*'''
+
+[tool.isort]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+src_paths = ["src"]
+profile = "black"
+line_length = 140
+
+[tool.pylint.messages_control]
+disable = [
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "missing-module-docstring",
+    "import-error",
+    "broad-exception-caught",
+    "unused-argument",
+    "raw-checker-failed",
+    "bad-inline-option",
+    "locally-disabled",
+    "file-ignored",
+    "suppressed-message",
+    "deprecated-pragma",
+    "useless-suppression",
+    "use-symbolic-message-instead",
+    "use-implicit-booleaness-not-comparison-to-string",
+    "use-implicit-booleaness-not-comparison-to-zero",
+    "unused-private-member"
+]
+
+[tool.pylint.format]
+max-line-length = 140

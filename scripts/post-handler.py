@@ -1,9 +1,10 @@
-import sys
-import logging
 import argparse
-import boto3
+import logging
 import os
 import shutil
+import sys
+
+import boto3
 
 parser = argparse.ArgumentParser(description='Read in a file containing HL7 messages and send them somewhere. Ask developer for usage help.')
 parser.add_argument('--action', type=str, required=True, help='Action for the post handler')

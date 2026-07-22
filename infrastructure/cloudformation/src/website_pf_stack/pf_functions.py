@@ -1,13 +1,13 @@
 from os.path import dirname, join
 
-import utils
 from aws_cdk import BundlingOptions, Duration, RemovalPolicy, aws_lambda
 from aws_cdk.aws_ec2 import SecurityGroup, Subnet, SubnetSelection, Vpc
 from aws_cdk.aws_lambda import Function, LayerVersion, RuntimeManagementMode
 from constructs import Construct
-from website_pf_stack import pf_cloudwatch, pf_iam
 
+import utils
 from config import Config
+from website_pf_stack import pf_cloudwatch, pf_iam
 
 DEFAULT_LAMBDA_CODE = '''def lambda_handler(event, context):
     return {"statusCode": 200, "body": "OK"}'''

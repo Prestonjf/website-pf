@@ -3,8 +3,11 @@ set -e
 
 SERVICE=website-react-pf-webapp
 USAGE='usage: deploy.sh <stage>'
-CONFIG_FILE="../../sonar-project.properties"
-VERSION=$(sed -n 's/^sonar.projectVersion=//p' $CONFIG_FILE)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+CONFIG_FILE="$SCRIPT_DIR/../../sonar-project.properties"
+VERSION=$(sed -n 's/^sonar.projectVersion=//p' "$CONFIG_FILE")
 
 if [ $# -lt 1 ]; then
     echo "$USAGE"
