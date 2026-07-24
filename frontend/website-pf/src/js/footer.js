@@ -21,11 +21,11 @@ class AppFooter extends React.Component {
         <Link className="main-link-style" to="/post/about"><b>About</b></Link>&nbsp;&nbsp;       
         <SocialIcon url="https://github.com/Prestonjf" style={{ height: 25, width: 25 }} bgColor="#ddffaa" target="_blank"/>&nbsp;&nbsp;
         <SocialIcon url="https://www.linkedin.com/in/preston-frazier/" style={{ height: 25, width: 25 }} bgColor="#ddffaa" target="_blank"/>&nbsp;&nbsp;
-        <SocialIcon url="/rss.xml" network="rss" style={{ height: 25, width: 25 }} bgColor="#ddffaa" target="_blank"/>
+        <SocialIcon url="/config/rss.xml" network="rss" style={{ height: 25, width: 25 }} bgColor="#ddffaa" target="_blank"/>
         <br />
         <Link className="secondary-link-style small" to="/privacypolicy">Privacy Policy</Link>&nbsp;&nbsp;
         <CommonModal type="cookiepreferences" />&nbsp;&nbsp;
-        <Link className="secondary-link-style small" to="/sitemap.xml" target="_blank">Sitemap</Link>&nbsp;&nbsp;
+        <Link className="secondary-link-style small" to="/config/sitemap.xml" target="_blank">Sitemap</Link>&nbsp;&nbsp;
         <br />
         <span className="small credit copyright">Copyright &#169; {this.state.date}&nbsp;
         | <Link className="secondary-link-style"  to="/">prestonfrazier.net</Link></span>&nbsp;

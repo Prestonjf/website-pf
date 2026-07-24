@@ -1,10 +1,10 @@
-import React from 'react';
 import yaml from 'js-yaml';
-import {Link} from "react-router-dom";
-import {Helmet} from "react-helmet";
-import { Container, Row, Col, Badge} from 'react-bootstrap';
+import React from 'react';
+import { Badge, Col, Container, Row } from 'react-bootstrap';
+import { Helmet } from "react-helmet";
+import { Link } from "react-router-dom";
 
-import { formatTimeStamp } from './utils';
+import { formatTimeStamp, getContentFileUrl } from './utils';
 
 class Post extends React.Component {
   constructor(props) {
@@ -22,7 +22,7 @@ class Post extends React.Component {
       return (
         <div>
         <div className="post-title">
-        {post.primaryImageFile.length > 0 && <img alt="primary-post-img" src={this.state.postFolder + post.primaryImageFile} width="100%" />}
+        {post.primaryImageFile.length > 0 && <img alt="primary-post-img" src={getContentFileUrl(post.primaryImageFile, post.id)} width="100%" />}
         <br />
         {post.name}
         </div>

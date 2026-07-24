@@ -35,11 +35,11 @@ class App extends React.Component {
             <Route path="/post" exact= {true} component={props => (<Post {...props}/>)} />
             <Route path="/privacypolicy" exact= {true} component={CommonPost} />
             <Route path={["/sitemap"]} component={() => {
-               window.location.href = '/sitemap.xml';
+               window.location.href = '/config/sitemap.xml';
                return null;
              }}/>
              <Route path={["/robots"]} component={() => {
-                window.location.href = '/robots.txt';
+                window.location.href = '/config/robots.txt';
                 return null;
               }}/>
             <Route path="/*" component={Post} />

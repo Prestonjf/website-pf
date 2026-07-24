@@ -15,7 +15,9 @@ class WebsitePfStack(Stack):
         cdk.Tags.of(self).add("Component", config.project_name)
 
         website_pf_lambda_layer = pf_functions.website_pf_lambda_layer(self, "WebsitePfLambdaLayer", config)
-        website_pf_api_lambda = pf_functions.website_pf_api_lambda(self, "WebsitePfApiLambda", config, layers=[website_pf_lambda_layer.layer])
+        website_pf_api_lambda = pf_functions.website_pf_api_lambda(
+            self, "WebsitePfApiLambda", config, layers=[website_pf_lambda_layer.layer]
+        )
         _ = pf_functions.website_pf_post_loader_lambda(self, "WebsitePfPostLoaderLambda", config, layers=[website_pf_lambda_layer.layer])
 
         _ = pf_apigateway.website_pf_rest_api(self, "WebsitePfApi", config, lambda_handler_function=website_pf_api_lambda)

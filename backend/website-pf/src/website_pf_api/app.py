@@ -41,4 +41,4 @@ def get_post(post_name):
 
 
 def lambda_handler(event, context):
-    return serverless_wsgi.handle_request(app.app, event, context)
+    return serverless_wsgi.handle_request(app, event, context)

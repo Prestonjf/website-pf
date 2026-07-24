@@ -29,17 +29,18 @@ class Config:
         self.version = app_version
         self.project_name = project_name
 
+        # /website-pf/api-gateway/key
         # Existing Infrastructure Configurations
         self.deployment_bucket_name = "pfrazier-cdk-deployments"
         # Route 53 / ACM configuration
-        self.domain_name = "prestonfrazier.net"
-        self.domain_acm_arn = self.get_ssm_parameter(f"/{self.environment}/website-pf/acm/arn")
+        self.domain_name = self.get_ssm_parameter(f"/{self.stage}/domain/name")
+        self.domain_acm_arn = self.get_ssm_parameter(f"/{self.stage}/domain/acm/arn")
         # VPC configuration
-        self.vpc_id = self.get_ssm_parameter(f"/{self.environment}/website-pf/vpc/id")
-        self.vpc_subnet_id = self.get_ssm_parameter(f"/{self.environment}/website-pf/vpc/subnet/id")
-        self.vpc_sg_id = self.get_ssm_parameter(f"/{self.environment}/website-pf/vpc/sg/id")
+        self.vpc_id = self.get_ssm_parameter(f"/{self.stage}/vpc/id")
+        self.vpc_subnet_id = self.get_ssm_parameter(f"/{self.stage}/vpc/subnet/id")
+        self.vpc_sg_id = self.get_ssm_parameter(f"/{self.stage}/vpc/sg/id")
         # WAF configuration
-        self.waf_cloudfront_arn = self.get_ssm_parameter(f"/{self.environment}/waf/cloudfront/arn")
+        self.waf_cloudfront_arn = self.get_ssm_parameter(f"/{self.stage}/waf/cloudfront/arn")
 
         # Stack Resource Names
         self.website_pf_stack_name = f"{project_name}-{stage_id}"
@@ -51,17 +52,17 @@ class Config:
         # CloudFront configuration
         # S3 Resource Names
         self.website_pf_webapp_bucket_name = f"website-pf-webapp-{self.stage}"
-        self.website_pf_posts_bucket_name = f"website-pf-posts-{self.stage}"
+        self.website_pf_content_bucket_name = f"website-pf-content-{self.stage}"
 
         # CloudFront configuration
 
         # API Gateway configuration
 
         # RDS configuration
-        self.db_hostname = self.get_ssm_parameter(f"/{self.environment}/website-pf/rds/hostname")
-        self.db_schema = self.get_ssm_parameter(f"/{self.environment}/website-pf/rds/schema")
-        self.db_username = self.get_ssm_parameter(f"/{self.environment}/website-pf/rds/username")
-        self.db_password = self.get_ssm_parameter(f"/{self.environment}/website-pf/rds/password")
+        self.db_hostname = self.get_ssm_parameter(f"/{self.stage}/website-pf/rds/hostname")
+        self.db_schema = self.get_ssm_parameter(f"/{self.stage}/website-pf/rds/schema")
+        self.db_username = self.get_ssm_parameter(f"/{self.stage}/website-pf/rds/username")
+        self.db_password = self.get_ssm_parameter(f"/{self.stage}/website-pf/rds/password")
 
     def get_ssm_parameter(self, name: str, default_value: str = "") -> Optional[str]:
         """Get parameter value from SSM Parameter Store."""

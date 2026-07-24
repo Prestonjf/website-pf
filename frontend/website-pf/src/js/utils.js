@@ -11,9 +11,13 @@ function formatTimeStamp(str) {
     return time;
   }
 
-function getPostFileUrl(path, file) {
-  let p = process.env.REACT_APP_WEB_URL + '/posts/' + path;
-  if (file) p += "/" + file;
+function getContentFileUrl(filePath, postPath) {
+  const normalizedFilePath = (filePath || '').replace(/^\/+/, '');
+  const normalizedPostPath = (postPath || '').replace(/^\/+/, '');
+  const hasSpecialPrefix = ['media', 'config', 'posts'].some((segment) => normalizedFilePath.startsWith(segment + '/'));
+  const prefix = hasSpecialPrefix ? '' : `posts/${normalizedPostPath}`;
+  const separator = prefix ? '/' : '';
+  const p = `${process.env.REACT_APP_WEB_URL}/${prefix}${separator}${normalizedFilePath}`;
   return p;
 }
 
@@ -23,4 +27,4 @@ function getPostPath(path) {
   return p;
 }
 
-export { formatTimeStamp, getPostFileUrl, getPostPath }
+export { formatTimeStamp, getContentFileUrl, getPostPath }

@@ -16,7 +16,7 @@ class Home extends React.Component {
     return (
       <div>
       <div className="post-title">
-      <img alt="homepage" src={process.env.REACT_APP_WEB_URL + '/homepage.jpg'} />
+      <img alt="homepage" src={process.env.REACT_APP_WEB_URL + '/media/homepage.jpg'} />
       <p className="photo-credit">Photo by <a href="https://unsplash.com/@adigold1">Adi Goldstein</a> on <a href="https://unsplash.com">Unsplash</a></p>
       </div>
       <div className="post-title">
@@ -51,7 +51,7 @@ class Home extends React.Component {
   }
 
   fetchFeaturedPosts() {
-    const url = process.env.REACT_APP_WEB_URL + '/featured.yml';
+    const url = process.env.REACT_APP_WEB_URL + '/config/featured.yml';
     return fetch(url, {
       method: 'get', 
       cache: "reload"

@@ -47,7 +47,7 @@ class AppNavbar extends React.Component {
               <SocialIcon url="https://www.linkedin.com/in/preston-frazier/" style={{ height: 25, width: 25 }} bgColor="#ddffaa" target="_blank"/>
             </Nav.Item>
             <Nav.Item className="nav-link">
-              <SocialIcon url="/rss.xml" network="rss" style={{ height: 25, width: 25 }} bgColor="#ddffaa" target="_blank"/>
+              <SocialIcon url="/config/rss.xml" network="rss" style={{ height: 25, width: 25 }} bgColor="#ddffaa" target="_blank"/>
             </Nav.Item>
           </Nav>
         </Navbar.Collapse>

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from "react-router-dom";
 import { Row, Col } from 'react-bootstrap';
-import { formatTimeStamp, getPostFileUrl , getPostPath} from './utils';
+import { formatTimeStamp, getContentFileUrl , getPostPath} from './utils';
 
 class PostList extends React.Component {
   
@@ -48,7 +48,7 @@ function getThumbnail(post, index) {
   if (post.primaryImageThumbnail) {
     return (
     <Link className="main-link-style-dark" to={getPostPath(post.id)}>
-    <img src={getPostFileUrl(post.id, post.primaryImageThumbnail)} alt={index} width={160} className="post-list-img" />
+    <img src={getContentFileUrl(post.primaryImageThumbnail, post.id)} alt={index} width={160} className="post-list-img" />
   </Link>);
   }
   return '';

@@ -31,7 +31,7 @@ class CommonPost extends React.Component {
   }
 
   getCommonPost() {
-    fetch(process.env.PUBLIC_URL+'/privacypolicy.html')
+    fetch(process.env.REACT_APP_WEB_URL + '/config/privacypolicy.html')
     .then((resp)=>{ return resp.text() })
     .then((text)=>{
       this.setState({content: text });

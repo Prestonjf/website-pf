@@ -1,3 +1,7 @@
+# IDE and editors
+.vscode/
+.DS_Store
+
 # Build outputs
 **/build/**
 /webapp/*/build/
@@ -23,20 +27,10 @@ coverage/
 serverless/htmlcov/
 **/htmlcov/
 
-# Generated files
-serverless_wsgi.py
-.serverless-wsgi
-wsgi_handler.py
-
-# IDE and editors
-.vscode/
-
-# OS-specific
-.DS_Store
 
 # Environment variables
-/webapp/*/.env
-/webapp/*/.env.development
+.env
+.env.development
 
 # Local files
 /scripts/posts/

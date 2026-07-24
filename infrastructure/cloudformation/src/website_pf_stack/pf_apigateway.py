@@ -4,18 +4,13 @@ from aws_cdk import aws_apigateway, aws_certificatemanager, aws_route53
 from aws_cdk.aws_apigateway import (
     AccessLogFormat,
     ApiKey,
-    IntegrationResponse,
     LambdaIntegration,
     LogGroupLogDestination,
     MethodLoggingLevel,
-    MethodOptions,
-    MethodResponse,
-    MockIntegration,
     Period,
     QuotaSettings,
     RestApi,
-    ThrottleSettings,
-    UsagePlan,
+    ThrottleSettings
 )
 from aws_cdk.aws_certificatemanager import Certificate
 from aws_cdk.aws_route53_targets import ApiGatewayDomain
@@ -66,9 +61,16 @@ class WebsitePfRestApi:
             "description": "REST API Gateway for Website-PF stack",
             "deploy": True,
             "disable_execute_api_endpoint": bool(sub_domain),
+            "default_cors_preflight_options": aws_apigateway.CorsOptions(
+                allow_origins=aws_apigateway.Cors.ALL_ORIGINS,
+                allow_methods=aws_apigateway.Cors.ALL_METHODS,
+                allow_headers=["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"],
+                allow_credentials=True
+
+            ),
             "deploy_options": aws_apigateway.StageOptions(
                 stage_name=config.stage,
-                logging_level=MethodLoggingLevel.INFO,
+                logging_level=MethodLoggingLevel.ERROR,
                 data_trace_enabled=False,
                 access_log_destination=LogGroupLogDestination(api_log_group.log_group),
                 access_log_format=AccessLogFormat.clf(),
@@ -183,49 +185,25 @@ def website_pf_rest_api(
         api_key_name=api_key_name,
     )
 
-    # Create Usage Plan
-    usage_plan = UsagePlan(
-        scope,
+    # Create Usage Plan and attach it to the API stage so API keys are enforced correctly
+    usage_plan = api_gateway.api.add_usage_plan(
         f"{construct_id}UsagePlan",
         name=f"website-pf-{config.stage}-usage-plan",
         description="Usage plan for website-pf api application.",
         throttle=ThrottleSettings(burst_limit=10, rate_limit=20),
-        quota=QuotaSettings(limit=40001, offset=0, period=Period.DAY)
+        quota=QuotaSettings(limit=40001, offset=0, period=Period.DAY),
     )
+    usage_plan.add_api_stage(stage=api_gateway.api.deployment_stage)
 
     # Add API Key to Usage Plan
     usage_plan.add_api_key(api_key)
 
-    # Add proxy integration methods if lambda_handler_function is provided
+    # Add explicit API resources and rely on a single shared integration permission.
     if lambda_handler_function:
-        lambda_integration = LambdaIntegration(lambda_handler_function)
-
-        # Setup mock integration for OPTIONS methods
-        mock_integration = MockIntegration(
-            integration_responses=[
-                IntegrationResponse(
-                    status_code="200",
-                    response_parameters={
-                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-                        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'",
-                        "method.response.header.Access-Control-Allow-Origin": "'*'",
-                    },
-                )
-            ]
-        )
-
-        # Setup CORS options for OPTIONS methods
-        cors_options = MethodOptions(
-            method_responses=[
-                MethodResponse(
-                    status_code="200",
-                    response_parameters={
-                        "method.response.header.Access-Control-Allow-Headers": True,
-                        "method.response.header.Access-Control-Allow-Methods": True,
-                        "method.response.header.Access-Control-Allow-Origin": True
-                    }
-                )
-            ]
+        lambda_integration = LambdaIntegration(
+            lambda_handler_function,
+            allow_test_invoke=False,
+            scope_permission_to_method=False,
         )
 
         # /posts resource
@@ -234,22 +212,18 @@ def website_pf_rest_api(
         # /posts/recent
         recent_resource = posts_resource.add_resource("recent")
         _ = recent_resource.add_method("GET", lambda_integration, api_key_required=True)
-        _ = recent_resource.add_method("OPTIONS", mock_integration, method_responses=cors_options.method_responses)
 
         # /posts/search
         search_resource = posts_resource.add_resource("search")
         _ = search_resource.add_method("GET", lambda_integration, api_key_required=True)
-        _ = search_resource.add_method("OPTIONS", mock_integration, method_responses=cors_options.method_responses)
 
         # /posts/tags
         tags_resource = posts_resource.add_resource("tags")
         _ = tags_resource.add_method("GET", lambda_integration, api_key_required=True)
-        _ = tags_resource.add_method("OPTIONS", mock_integration, method_responses=cors_options.method_responses)
 
         # /posts/tags/{proxy+}
         tags_proxy_resource = tags_resource.add_resource("{proxy+}")
         _ = tags_proxy_resource.add_method("GET", lambda_integration, api_key_required=True)
-        _ = tags_proxy_resource.add_method("OPTIONS", mock_integration, method_responses=cors_options.method_responses)
 
         # /post resource
         post_resource = api_gateway.api.root.add_resource("post")
@@ -257,18 +231,15 @@ def website_pf_rest_api(
         # /post/{proxy+}
         post_proxy_resource = post_resource.add_resource("{proxy+}")
         _ = post_proxy_resource.add_method("GET", lambda_integration, api_key_required=True)
-        _ = post_proxy_resource.add_method("OPTIONS", mock_integration, method_responses=cors_options.method_responses)
 
-    # Store API key name in SSM Parameter Store as SecureString
     _ = utils.add_ssm_parameter(
         scope,
-        f"{construct_id}ApiKey",
-        parameter_name=f"/{config.stage}/website-pf/api-gateway/key",
+        f"{construct_id}ApiKeyName",
+        parameter_name=f"/{config.stage}/website-pf/api-gateway/name",
         value=api_key_name,
-        description="API Gateway key for website-pf application."
+        description="API Gateway name for website-pf application."
     )
 
-    # Store API domain URL in SSM Parameter Store
     _ = utils.add_ssm_parameter(
         scope,
         f"{construct_id}ApiDomainUrlParameter",

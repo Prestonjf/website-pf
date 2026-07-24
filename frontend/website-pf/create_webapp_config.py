@@ -23,25 +23,26 @@ def build_config_file():
         website_pf_react_web_url = ""
         website_pf_api_url_ssm = f'/{sys.argv[1]}/website-pf/api-gateway/url'
         website_pf_api_key_ssm = f'/{sys.argv[1]}/website-pf/api-gateway/key'
-        website_pf_react_web_url_ssm = f'/{sys.argv[1]}/website-pf/acm/url'
+        website_pf_react_web_url_ssm = f'/{sys.argv[1]}/domain/name'
         try:
             website_pf_api_url = ssm.get_parameter(Name=website_pf_api_url_ssm, WithDecryption=True)['Parameter']['Value']
-            logger.info(f"Retrieved {website_pf_api_url_ssm}")
+            logger.info("Retrieved %s", website_pf_api_url_ssm)
             website_pf_api_key = ssm.get_parameter(Name=website_pf_api_key_ssm, WithDecryption=True)['Parameter']['Value']
-            logger.info(f"Retrieved {website_pf_api_key_ssm}")
+            logger.info("Retrieved %s", website_pf_api_key_ssm)
             website_pf_react_web_url = ssm.get_parameter(Name=website_pf_react_web_url_ssm, WithDecryption=True)['Parameter']['Value']
-            logger.info(f"Retrieved {website_pf_api_key_ssm}")
+            logger.info("Retrieved %s", website_pf_react_web_url_ssm)
         except Exception:
             logger.error("Could not retrieve all SSM parameters")
 
         logger.info('Building website-pf s3 webapp .env file.')
-        file = open(str(pathlib.Path(__file__).parent.absolute()) + "/../webapp/website-pf/.env", "w")
+        output_path = pathlib.Path(__file__).resolve().parent / ".env"
+        file = open(output_path, "w", encoding="utf-8")
         file.write(f"REACT_APP_API_URL={website_pf_api_url}\n")
         file.write(f"REACT_APP_API_KEY={website_pf_api_key}\n")
-        file.write(f"REACT_APP_WEB_URL={website_pf_react_web_url}\n")
+        file.write(f"REACT_APP_WEB_URL=https://{website_pf_react_web_url}\n")
         file.write("REACT_APP_ENV=prod\n")
         file.close()
-        logger.info(".env created at " + str(pathlib.Path(__file__).parent.absolute()) + "/../webapp/website-pf/.env")
+        logger.info(".env created at %s", str(output_path))
         return 1
     except Exception:
         logger.error("ERROR: ", exc_info=True)

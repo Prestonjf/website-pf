@@ -1,6 +1,6 @@
 from os.path import dirname, join
 
-from aws_cdk import BundlingOptions, Duration, RemovalPolicy, aws_lambda
+from aws_cdk import BundlingOptions, IgnoreMode, Duration, RemovalPolicy, aws_lambda
 from aws_cdk.aws_ec2 import SecurityGroup, Subnet, SubnetSelection, Vpc
 from aws_cdk.aws_lambda import Function, LayerVersion, RuntimeManagementMode
 from constructs import Construct
@@ -124,15 +124,16 @@ def website_pf_api_lambda(scope: Construct, construct_id: str, config: Config, *
         'handler': 'website_pf_api.app.lambda_handler',
         'layers': kwargs.get('layers', []),
         'code': aws_lambda.Code.from_asset(
-            join(dirname(__file__), '../../../../backend/website-pf/src/website_pf_api/'),
-            exclude=["*.pyc", "**__pycache__"]
+            join(dirname(__file__), '../../../../backend/website-pf/src'),
+            exclude=["*", "!website_pf_api", "!website_pf_api/**", "!__init__.py", "**/__pycache__", "*.pyc"],
+            ignore_mode=IgnoreMode.GLOB
         ),
         'memory_size': 256,
         'timeout': Duration.seconds(28),
         'role': website_pf_api_iam.role,
         'log_group': website_pf_api_log_group.log_group,
         'environment': {
-            "S3_WEBSITE_PF_BUCKET": config.website_pf_posts_bucket_name,
+            "S3_WEBSITE_PF_BUCKET": config.website_pf_content_bucket_name,
             "WEBSITE_URL": f"https://{config.domain_name}",
             "DATABASE_URL": config.db_hostname,
             "DATABASE_SCHEMA": config.db_schema,
@@ -162,15 +163,16 @@ def website_pf_post_loader_lambda(scope: Construct, construct_id: str, config: C
         'handler': 'website_pf_post_loader.app.lambda_handler',
         'layers': kwargs.get('layers', []),
         'code': aws_lambda.Code.from_asset(
-            join(dirname(__file__), '../../../../backend/website-pf/src/website_pf_post_loader/'),
-            exclude=["*.pyc", "**__pycache__"]
+            join(dirname(__file__), '../../../../backend/website-pf/src'),
+            exclude=["*", "!website_pf_post_loader", "!website_pf_post_loader/**", "!__init__.py", "**/__pycache__", "*.pyc"],
+            ignore_mode=IgnoreMode.GLOB
         ),
         'memory_size': 256,
         'timeout': Duration.seconds(60),
         'role': website_pf_loader_iam.role,
         'log_group': website_pf_loader_log_group.log_group,
         'environment': {
-            "S3_WEBSITE_PF_BUCKET": config.website_pf_posts_bucket_name,
+            "S3_WEBSITE_PF_BUCKET": config.website_pf_content_bucket_name,
             "WEBSITE_URL": f"https://{config.domain_name}",
             "FEATURED_POSTS": "about,portfolio",
             "DATABASE_URL": config.db_hostname,

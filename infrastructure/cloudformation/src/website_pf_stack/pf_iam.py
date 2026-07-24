@@ -30,8 +30,8 @@ class WebsitePfIam():
                 effect=aws_iam.Effect.ALLOW,
                 actions=["s3:*"],
                 resources=[
-                    f"arn:aws:s3:::{config.website_pf_posts_bucket_name}",
-                    f"arn:aws:s3:::{config.website_pf_posts_bucket_name}/*",
+                    f"arn:aws:s3:::{config.website_pf_content_bucket_name}",
+                    f"arn:aws:s3:::{config.website_pf_content_bucket_name}/*",
                 ]
             ),
             aws_iam.PolicyStatement(
