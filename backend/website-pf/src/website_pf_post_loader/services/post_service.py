@@ -1,17 +1,15 @@
-# Post Services
-# from website_pf_post_loader.repositories import mysql_repository as mysql
+import datetime
+import os
+import xml.etree.cElementTree as ET
+
+import boto3
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
-import xml.etree.cElementTree as ET
-import boto3
-import os
-import datetime
-import logging
-from website_pf_post_loader import config
-from website_pf_post_loader.utils import utils
+from website_pf_shared.utils import utils as shared_utils
 
-logger = logging.getLogger()
-utils.setup_logging(logger)
+from website_pf_post_loader import config
+
+logger = shared_utils.setup_logging()
 s3_resource = boto3.resource('s3')
 
 

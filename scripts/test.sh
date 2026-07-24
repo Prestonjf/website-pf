@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
 POETRY_CMD="install"
 for var in "$@"
 do
@@ -14,6 +17,6 @@ poetry $POETRY_CMD
 poetry run pytest
 cd ../..
 
-cd ../frontend/website-pf
+cd ./frontend/website-pf
 npm run test
 cd ../..

@@ -1,11 +1,9 @@
-# MySQL Services.
-import logging
 import mysql.connector
-from website_pf_post_loader.utils import utils
+from website_pf_shared.utils import utils as shared_utils
+
 from website_pf_post_loader import config
 
-logger = logging.getLogger()
-utils.setup_logging(logger)
+logger = shared_utils.setup_logging()
 
 
 def mysql_select(query, params):

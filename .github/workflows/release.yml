@@ -6,16 +6,44 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
 
+  validate-version:
+    name: Validate Version
+    runs-on: ubuntu-latest
+    outputs:
+      release_version: ${{ steps.extract_version.outputs.version }}
+      branch_name: ${{ github.event.ref }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Extract & Validate Tag
+        id: extract_version
+        run: |
+          BRANCH_NAME="${{ github.event.ref }}"
+          VERSION="${BRANCH_NAME#release/}"
+          
+          echo "Branch created: ${BRANCH_NAME}"
+          echo "Checking for tag: ${VERSION}"
+
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "::error:: Tag '$VERSION' already exists in this repository!"
+            exit 1
+          fi
+
+          echo "Tag '$VERSION' is available!"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
   deploy-prod:
     name: Deploy Prod
-    needs: scan
+    needs: validate-version
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -56,4 +84,31 @@ jobs:
           aws sts get-caller-identity
           ./deploy.sh prod
 
-  # TODO: Add a job to create a release in GitHub and delete release branch.
+  release-version:
+    name: Release Version
+    needs: deploy-prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ needs.validate-version.outputs.branch_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Git Tag & GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ needs.validate-version.outputs.release_version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG_NAME" -m "Release $TAG_NAME"
+          git push origin "$TAG_NAME"
+
+          gh release create "$TAG_NAME" --title "Release $TAG_NAME" --generate-notes
+
+      - name: Delete Release Branch
+        run: |
+          BRANCH_NAME="${{ needs.validate-version.outputs.branch_name }}"
+          echo "Deleting remote branch: $BRANCH_NAME"
+          git push origin --delete "$BRANCH_NAME"

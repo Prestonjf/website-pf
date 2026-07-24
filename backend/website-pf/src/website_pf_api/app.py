@@ -1,13 +1,15 @@
+import serverless_wsgi
 from flask import Flask
 from flask_cors import CORS
+from flask_talisman import Talisman
 from markupsafe import escape
-import serverless_wsgi
-from website_pf_api.services import post_service
-from website_pf_api.decorators.basic_request_logging import basic_request_logging
 
+from website_pf_api.decorators.basic_request_logging import basic_request_logging
+from website_pf_api.services import post_service
 
 app = Flask(__name__)
 CORS(app)
+Talisman(app)
 
 
 @app.route('/posts/recent', methods=['GET'])

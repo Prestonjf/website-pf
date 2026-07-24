@@ -1,19 +1,17 @@
-# Python Lambda App
-import logging
-import boto3
 import datetime
-import pytz
 import json
+
+import boto3
+import pytz
 from ruamel.yaml import YAML
 from ruamel.yaml.compat import StringIO
-from website_pf_post_loader.services import post_service
-from website_pf_post_loader.utils import utils
+
 from website_pf_post_loader import config
 from website_pf_post_loader.repositories import mysql_repository as mysql
+from website_pf_post_loader.services import post_service
+from website_pf_shared.utils import utils as shared_utils
 
-
-logger = logging.getLogger()
-utils.setup_logging(logger)
+shared_utils.setup_logging()
 s3_client = boto3.client('s3', region_name=config.REGION)
 s3_resource = boto3.resource('s3', region_name=config.REGION)
 

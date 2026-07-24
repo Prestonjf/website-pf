@@ -1,11 +1,14 @@
+import logging
+import sys
+from logging import Logger, getLogger
+from os import getenv
+from urllib.parse import urlparse
+
 import boto3
 import jsonpickle
-from urllib.parse import urlparse
-import logging
 from pythonjsonlogger.json import JsonFormatter
-from website_pf_post_loader import config
 
-logger = logging.getLogger(__file__)
+logger = None
 
 
 def serialize_reponse(data):
@@ -21,7 +24,7 @@ def get_s3_object(s3_path):
     try:
         s3 = boto3.resource('s3')
         u = urlparse(s3_path)
-        logger.debug('Getting file from s3: {} {}'.format(u.netloc, u.path))
+        logger.debug('Getting file from s3: %s %s', u.netloc, u.path)
         obj = s3.Object(u.netloc, u.path[1:])
         return obj.get()['Body'].read().decode('utf-8')
     except Exception:
@@ -29,16 +32,22 @@ def get_s3_object(s3_path):
     return ''
 
 
-def setup_logging(logger):
-    for h in logger.handlers:
-        logger.removeHandler(h)
-    logHandler = logging.StreamHandler()
+def setup_logging(name: str = "website_pf", level: str = None) -> Logger:
+    logger_conf = getLogger(name)
+    logger_conf.propagate = False
+    log_level = level if level else getenv("LOG_LEVEL", "INFO")
+
+    for handler in list(logger_conf.handlers):
+        logger_conf.removeHandler(handler)
+
+    log_handler = logging.StreamHandler(sys.stdout)
     formatter = JsonFormatter((
-        "%(levelname)s %(message)s %(funcName)s %(asctime)s %(exc_info)s %(name)s %(pathname)s %(args)s %(levelno)s"
+        "%(levelname)s %(message)s %(funcName)s %(asctime)s %(exc_info)s %(name)s %(pathname)s %(args)s"
     ))
-    logHandler.setFormatter(formatter)
-    logger.addHandler(logHandler)
-    logger.setLevel(config.LOG_LEVEL)
+    log_handler.setFormatter(formatter)
+    logger_conf.addHandler(log_handler)
+    logger_conf.setLevel(log_level)
+
     logging.getLogger('boto3').setLevel(logging.ERROR)
     logging.getLogger('botocore').setLevel(logging.ERROR)
     logging.getLogger('aws_xray_sdk').setLevel(logging.ERROR)
@@ -46,5 +55,7 @@ def setup_logging(logger):
     logging.getLogger('requests').setLevel(logging.ERROR)
     logging.getLogger('mysql.connector').setLevel(logging.ERROR)
 
+    return logger_conf
 
-setup_logging(logger)
+
+logger = setup_logging()

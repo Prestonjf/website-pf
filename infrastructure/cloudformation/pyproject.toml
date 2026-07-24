@@ -11,15 +11,15 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "~3.13"
-boto3 = "1.42.45"
+boto3 = "1.43.45"
 aws-cdk-lib = "2.238.0"
 constructs = "10.4.5"
 python-json-logger = "3.2.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "8.3.4"
-pytest-cov = "6.0.0"
-coverage = {extras = ["toml"], version = "7.6.9"}
+pytest = "9.1.1"
+pytest-cov = "7.1.0"
+coverage = {extras = ["toml"], version = "7.15.0"}
 pylint = "4.0.6"
 black = "26.5.1"
 isort = "8.0.1"

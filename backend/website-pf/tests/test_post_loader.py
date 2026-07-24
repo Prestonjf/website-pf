@@ -1,13 +1,9 @@
-# Website-PF Tests
-import pytest
-import logging
-import boto3
-from unittest.mock import patch, call, Mock
-from website_pf_post_loader import config
-from website_pf_post_loader import app
+from unittest.mock import Mock, call, patch
 
-logger = logging.getLogger()
-logger.setLevel(config.LOG_LEVEL)
+import boto3
+import pytest
+
+from website_pf_post_loader import app
 
 
 @pytest.fixture(scope="module")

@@ -1,10 +1,9 @@
-import logging
 import mysql.connector
-from website_pf_api.utils import utils
-from website_pf_api import config
 
-logger = logging.getLogger(__file__)
-logger.setLevel(config.LOG_LEVEL)
+from website_pf_api import config
+from website_pf_shared.utils import utils as shared_utils
+
+logger = shared_utils.setup_logging()
 
 
 def database_handler(query, params):
@@ -30,4 +29,4 @@ def database_handler(query, params):
     except Exception:
         logger.error('Error connecting to database', exc_info=True)
     records['posts'] = posts
-    return utils.serialize_reponse(records)
+    return shared_utils.serialize_reponse(records)

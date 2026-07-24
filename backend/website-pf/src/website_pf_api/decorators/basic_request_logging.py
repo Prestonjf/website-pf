@@ -1,10 +1,11 @@
-from flask import request
 from functools import wraps
-import logging
+
+from flask import request
+from website_pf_shared.utils import utils as shared_utils
+
 from website_pf_api.utils import utils
 
-logger = logging.getLogger()
-utils.setup_logging(logger)
+logger = shared_utils.setup_logging()
 
 
 def basic_request_logging(f):
