@@ -1,10 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file
 
+## [1.0.0] - 2026-02-08
+### Changed
+- Changed from serverless to CDK IaC
+
+
 ## [0.9.0] - 2024-12-24
 ### Changed
 - Updated to python3.13.
-- Various environment updates and rwstructuring.
+- Various environment updates and restructuring.
 
 
 ## [0.7.0] - 2022-05-16

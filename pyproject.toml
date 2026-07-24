@@ -1,0 +1,64 @@
+[tool.poetry]
+name = "website-react-pf"
+version = "1.0.0"
+description = "website-react-pf application"
+authors = [
+    "Preston Frazier <preston@prestonfrazier.net>"
+]
+packages = [
+   { include = "scripts" }
+]
+
+[tool.poetry.dependencies]
+python = "~3.13"
+boto3 = "1.43.45"
+"ruamel.yaml" = "0.18.6"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "9.1.1"
+pytest-cov = "7.1.0"
+coverage = {extras = ["toml"], version = "7.15.0"}
+pylint = "4.0.6"
+black = "26.5.1"
+isort = "8.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 140
+target-version = ["py313"]
+include = '\.pyi?$'
+extend-exclude = '''\.*test\.*'''
+
+[tool.isort]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+src_paths = ["scripts"]
+profile = "black"
+line_length = 140
+
+[tool.pylint.messages_control]
+disable = [
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "missing-module-docstring",
+    "import-error",
+    "broad-exception-caught",
+    "unused-argument",
+    "raw-checker-failed",
+    "bad-inline-option",
+    "locally-disabled",
+    "file-ignored",
+    "suppressed-message",
+    "deprecated-pragma",
+    "useless-suppression",
+    "use-symbolic-message-instead",
+    "use-implicit-booleaness-not-comparison-to-string",
+    "use-implicit-booleaness-not-comparison-to-zero",
+    "unused-private-member",
+    "logging-fstring-interpolation"
+]
+
+[tool.pylint.format]
+max-line-length = 140

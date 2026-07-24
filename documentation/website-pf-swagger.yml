@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Website PF API
   description: API for retrieving and searching blog posts and tags on website pf application.
-  version: 0.9.0
+  version: 1.0.0
 
 security:
   - ApiKeyAuth: []

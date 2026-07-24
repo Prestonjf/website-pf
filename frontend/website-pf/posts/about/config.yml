@@ -1,0 +1,13 @@
+author: {id: 1, name: Preston Frazier, username: prestonfrazier}
+createdDate: '2021-02-20 14:01:01'
+htmlFile: post.html
+id: about
+idName: about
+name: About
+post_db_id: 0
+primaryImageFile: post-logo.png
+primaryImageThumbnail: post-logo-alt.png
+summary: Prestonfrazier.net is a personal blog and portfolio site. Check in for posts
+  and content on a variety of technology related topics.
+tags: [general]
+updatedDate: '2023-05-09 19:11:11'

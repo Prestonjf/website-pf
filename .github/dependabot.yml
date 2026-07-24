@@ -1,0 +1,28 @@
+version: 2
+
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    ignore: []
+    groups:
+      github-actions: 
+        patterns: ["*"]
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 1
+    cooldown:
+      default-days: 3
+
+  - package-ecosystem: "pip"
+    directories: ["/", "/infrastructure/cloudformation", "/backend/website_pf"]
+    ignore: []
+    groups:
+      python:
+        patterns: ["*"]
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 1
+    cooldown:
+      default-days: 3

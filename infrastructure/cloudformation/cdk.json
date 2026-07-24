@@ -1,0 +1,16 @@
+{
+    "app": "poetry run python src/app.py",
+    "requireApproval": "never",
+    "watch": {
+        "include": [
+            "src/**"
+        ],
+        "exclude": [
+            "src/**/*.pyc",
+            "src/__pycache__/**"
+        ]
+    },
+    "context": {
+        "@aws-cdk/core:newStyleStackSynthesis": true
+    }
+}
