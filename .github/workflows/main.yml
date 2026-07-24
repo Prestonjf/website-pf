@@ -36,7 +36,7 @@ jobs:
 
       - name: Run Backend Tests
         run: |
-          cd serverless/website-pf
+          cd backend/website-pf
           poetry run pytest
 
       - name: Set up Node
@@ -51,7 +51,7 @@ jobs:
 
       - name: Run Frontend Tests
         run: |
-          cd webapp/website-pf
+          cd frontend/website-pf
           npm run test
 
       - name: SonarCloud Scan
