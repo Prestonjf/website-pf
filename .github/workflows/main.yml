@@ -31,7 +31,6 @@ jobs:
           curl -sSL https://install.python-poetry.org | python - --version 2.2.1
           export PATH="/home/runner/.local/bin:$PATH"
           poetry config virtualenvs.in-project true
-          cd serverless/website-pf
           poetry install
 
       - name: Run Backend Tests
