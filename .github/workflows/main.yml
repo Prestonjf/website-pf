@@ -33,6 +33,11 @@ jobs:
           poetry config virtualenvs.in-project true
           poetry install
 
+      - name: Install Backend Dependencies
+        run: |
+          cd backend/website-pf
+          poetry install
+
       - name: Run Backend Tests
         run: |
           cd backend/website-pf
@@ -45,7 +50,7 @@ jobs:
 
       - name: Install Frontend Dependencies
         run: |
-          cd webapp/website-pf
+          cd frontend/website-pf
           npm install
 
       - name: Run Frontend Tests
